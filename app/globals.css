@@ -141,19 +141,21 @@ body {
     transform: scaleY(0);
   }
 }
-.jalur-fill {
+@utility jalur-fill {
   transform-origin: left;
-  animation: jalur-fill 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-.jalur-fill-y {
-  transform-origin: top;
-  animation: jalur-fill-y 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-@media (prefers-reduced-motion: reduce) {
-  .jalur-fill,
-  .jalur-fill-y {
+  animation: jalur-fill 600ms cubic-bezier(0.22, 1, 0.36, 1) 150ms both;
+  @media (prefers-reduced-motion: reduce) {
     animation: none;
   }
+}
+@utility jalur-fill-y {
+  transform-origin: top;
+  animation: jalur-fill-y 600ms cubic-bezier(0.22, 1, 0.36, 1) 150ms both;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
   .action-button,
   .control {
     transition: none;
