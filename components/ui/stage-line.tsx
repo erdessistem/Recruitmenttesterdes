@@ -52,7 +52,7 @@ export function StageLine({
       aria-label="Tahapan rekrutmen"
     >
       {/* Track (vertical on phones, horizontal from sm). Stations are centered in each 1/6 column. */}
-      <div
+      <li
         aria-hidden="true"
         className="absolute bottom-[30px] left-[10px] top-3 w-1 rounded-full bg-border sm:inset-x-[8.333%] sm:bottom-auto sm:top-[10px] sm:h-1 sm:w-auto"
       >
@@ -64,7 +64,7 @@ export function StageLine({
           )}
           style={{ ["--p" as string]: progress }}
         />
-      </div>
+      </li>
       {STAGES.map((stage, index) => {
         const reached = index <= currentIndex;
         const current = index === currentIndex;
@@ -171,7 +171,7 @@ export function StageMeter({
 export function StageRoute({ className }: { className?: string }) {
   return (
     <ol className={cn("relative grid gap-4 sm:grid-cols-6 sm:gap-0", className)}>
-      <div
+      <li
         aria-hidden="true"
         className="absolute bottom-2 left-[6px] top-2 w-1 rounded-full bg-primary-soft sm:inset-x-[8.333%] sm:bottom-auto sm:top-[6px] sm:h-1 sm:w-auto"
       />

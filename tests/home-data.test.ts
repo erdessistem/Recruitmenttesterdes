@@ -23,4 +23,14 @@ describe("home page data", () => {
     expect(data.others.map((v) => v.id)).toEqual(open.slice(1).map((v) => v.id));
     expect((await repo.getVacancyPageData("tidak-ada", now)).vacancy).toBeNull();
   });
+  it("returns everything a token page needs, or null for an unknown token", async () => {
+    const seed = createSeedData(now);
+    const repo = new MemoryRepository({ seed, now: () => now });
+    const app = seed.applications[0];
+    const data = await repo.getTrackingPageData(app.token);
+    expect(data?.application.id).toBe(app.id);
+    expect(data?.vacancy?.id).toBe(app.vacancyId);
+    expect(data?.history).toEqual(await repo.getStageHistory(app.id));
+    expect(await repo.getTrackingPageData("tidak-ada")).toBeNull();
+  });
 });

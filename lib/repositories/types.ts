@@ -211,6 +211,13 @@ export interface Repository {
   findApplicationBySubmissionKey(key: string): Promise<Application | null>;
   getApplicationById(id: string): Promise<Application | null>;
   getApplicationByToken(token: string): Promise<Application | null>;
+  /** Everything a token page needs (application, vacancy, history, company profile) in one read. */
+  getTrackingPageData(token: string): Promise<{
+    application: Application;
+    vacancy: Vacancy | null;
+    history: StageHistoryEntry[];
+    companyProfile: CompanyProfile;
+  } | null>;
   findActiveApplicationByPhoneAndVacancy(
     phone: string,
     vacancyId: string,

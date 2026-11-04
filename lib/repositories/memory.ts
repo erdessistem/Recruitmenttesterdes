@@ -327,6 +327,16 @@ export class MemoryRepository implements Repository {
     return index >= 0 ? clone(this.applications[index]!) : null;
   }
 
+  async getTrackingPageData(token: string) {
+    const application = await this.getApplicationByToken(token);
+    if (!application) return null;
+    const [vacancy, history] = await Promise.all([
+      this.getVacancyById(application.vacancyId),
+      this.getStageHistory(application.id),
+    ]);
+    return { application, vacancy, history, companyProfile: clone(this.settings.companyProfile) };
+  }
+
   async getApplicationByToken(token: string): Promise<Application | null> {
     const trimmed = token.trim();
     if (!trimmed) return null;

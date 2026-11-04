@@ -42,7 +42,7 @@ export default async function Dashboard() {
         </div>
         <div className="-mx-2 mt-6 overflow-x-auto px-2 pb-1">
           <ol className="relative grid min-w-[36rem] grid-cols-6">
-            <div
+            <li
               aria-hidden="true"
               className="absolute inset-x-[8.333%] top-[46px] h-1 rounded-full bg-primary-soft"
             />

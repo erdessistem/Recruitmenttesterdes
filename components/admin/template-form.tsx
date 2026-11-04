@@ -19,7 +19,7 @@ export function TemplateForm({ templates }: { templates: WhatsAppTemplates }) {
     }
   }
   return (
-    <form onSubmit={submit} className="admin-card mt-6 space-y-5">
+    <form method="post" onSubmit={submit} className="admin-card mt-6 space-y-5">
       <p className="text-sm text-muted">
         Gunakan variabel {"{nama}"}, {"{posisi}"}, {"{tahap}"}, {"{pesan_tambahan}"},{" "}
         {"{link_lacak}"}, dan {"{applicant_id}"}. Template tahap yang kosong menggunakan template

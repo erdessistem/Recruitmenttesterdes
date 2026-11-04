@@ -39,7 +39,7 @@ export default async function Home({
             </a>
           </div>
           <ol aria-label="Cara melamar" className="relative space-y-6">
-            <div
+            <li
               aria-hidden="true"
               className="absolute bottom-[34px] left-[10px] top-2 w-1 rounded-full bg-primary-soft"
             />

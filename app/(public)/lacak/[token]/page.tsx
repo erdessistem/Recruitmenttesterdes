@@ -14,12 +14,9 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Status lamaran" };
 export default async function TrackingPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  const application = await repository.getApplicationByToken(token);
-  if (!application) notFound();
-  const [vacancy, history] = await Promise.all([
-    repository.getVacancyById(application.vacancyId),
-    repository.getStageHistory(application.id),
-  ]);
+  const data = await repository.getTrackingPageData(token);
+  if (!data) notFound();
+  const { application, vacancy, history } = data;
   const statusTone =
     application.status === "rejected"
       ? "danger"

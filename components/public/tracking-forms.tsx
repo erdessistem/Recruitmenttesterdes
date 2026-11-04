@@ -6,6 +6,7 @@ import { lookup, recover, reveal, withdraw } from "@/app/(public)/lacak/actions"
 import { formatDate } from "@/lib/format/date";
 import { buttonClass } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
+import { Dialog } from "@/components/ui/dialog";
 
 function Values({ names = false }: { names?: boolean }) {
   return (
@@ -61,7 +62,7 @@ export function LookupForm() {
     }
   }
   return (
-    <form onSubmit={submit} className="mt-6 space-y-4">
+    <form method="post" onSubmit={submit} className="mt-6 space-y-4">
       <Values />
       {error && (
         <p role="alert" className="text-sm text-danger">
@@ -117,7 +118,7 @@ export function RecoveryForm() {
   }
   return (
     <>
-      <form onSubmit={submit} className="mt-6 space-y-4">
+      <form method="post" onSubmit={submit} className="mt-6 space-y-4">
         <Values names />
         {error && (
           <p role="alert" className="text-sm text-danger">
@@ -220,41 +221,50 @@ export function WithdrawalForm({ token }: { token: string }) {
     <section className="mt-10 border-t border-border pt-8">
       <h2 className="text-lg font-bold">Tarik lamaran</h2>
       <p className="mt-2 text-sm text-muted">
-        Anda dapat mengundurkan diri dari proses rekrutmen ini.
+        Anda dapat mengundurkan diri dari proses rekrutmen ini kapan saja selama lamaran masih
+        aktif.
       </p>
-      {!open ? (
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="mt-4 text-sm font-semibold text-danger underline"
-        >
-          Saya ingin menarik lamaran
-        </button>
-      ) : (
-        <form onSubmit={submit} className="mt-4 space-y-4">
-          <p className="text-sm">
-            Konfirmasikan identitas Anda. Lamaran yang ditarik tidak dapat dibuka kembali melalui
-            portal.
-          </p>
-          <Values />
-          <label className="flex gap-2 text-sm">
-            <input type="checkbox" required /> Saya yakin ingin menarik lamaran ini.
-          </label>
-          <div className="flex flex-wrap gap-3">
-            <button className={buttonClass("danger")} disabled={pending}>
-              {pending ? "Memproses…" : "Tarik lamaran"}
-            </button>
-            <button type="button" onClick={() => setOpen(false)} className={buttonClass("ghost")}>
-              Batal
-            </button>
-          </div>
-        </form>
-      )}
-      {message && (
+      <button
+        type="button"
+        onClick={() => {
+          setMessage("");
+          setOpen(true);
+        }}
+        className={buttonClass("secondary", "mt-4 text-danger")}
+      >
+        Tarik lamaran
+      </button>
+      {message && !open && (
         <p role="status" className="mt-3 text-sm">
           {message}
         </p>
       )}
+      <Dialog open={open} onClose={() => setOpen(false)} title="Tarik lamaran ini?">
+        <form method="post" onSubmit={submit} className="space-y-4">
+          <p className="text-sm leading-6 text-muted">
+            Lamaran yang ditarik tidak dapat dibuka kembali melalui portal. Konfirmasikan dengan
+            Applicant ID dan nomor WhatsApp Anda.
+          </p>
+          <Values />
+          <label className="flex items-start gap-2.5 text-sm">
+            <input type="checkbox" required className="mt-0.5 h-4 w-4 accent-danger" /> Saya yakin
+            ingin menarik lamaran ini.
+          </label>
+          {message && (
+            <p role="alert" className="text-sm text-danger">
+              {message}
+            </p>
+          )}
+          <div className="flex flex-wrap-reverse justify-end gap-3">
+            <button type="button" onClick={() => setOpen(false)} className={buttonClass("ghost")}>
+              Batal
+            </button>
+            <button className={buttonClass("danger")} disabled={pending}>
+              {pending ? "Memproses…" : "Tarik lamaran"}
+            </button>
+          </div>
+        </form>
+      </Dialog>
     </section>
   );
 }

@@ -25,7 +25,7 @@ export function CompanyForm({ profile }: { profile: CompanyProfile }) {
     }
   }
   return (
-    <form onSubmit={submit} className="admin-card mt-6 space-y-4">
+    <form method="post" onSubmit={submit} className="admin-card mt-6 space-y-4">
       <h2 className="text-lg font-bold">Profil perusahaan</h2>
       {(
         [
@@ -75,7 +75,7 @@ export function PasswordForm() {
     }
   }
   return (
-    <form onSubmit={submit} className="admin-card mt-6 space-y-4">
+    <form method="post" onSubmit={submit} className="admin-card mt-6 space-y-4">
       <h2 className="text-lg font-bold">Ubah password</h2>
       {(
         [
@@ -128,7 +128,7 @@ export function RetentionForm({ eligible, months }: { eligible: number; months: 
     }
   }
   return (
-    <form onSubmit={submit} className="admin-card mt-6 space-y-4">
+    <form method="post" onSubmit={submit} className="admin-card mt-6 space-y-4">
       <h2 className="text-lg font-bold">Pembersihan retensi</h2>
       <p className="text-sm text-muted">
         {eligible} lamaran ditolak atau ditarik telah ditutup lebih dari {months} bulan dan siap
