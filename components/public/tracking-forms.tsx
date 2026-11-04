@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { lookup, recover, reveal, withdraw } from "@/app/lacak/actions";
+import { lookup, recover, reveal, withdraw } from "@/app/(public)/lacak/actions";
 import { formatDate } from "@/lib/format/date";
 
 function Values({ names = false }: { names?: boolean }) {

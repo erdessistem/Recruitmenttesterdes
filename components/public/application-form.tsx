@@ -9,7 +9,7 @@ import {
   EDUCATION_LEVEL_LABELS,
 } from "@/lib/constants";
 import { formatRupiahInput } from "@/lib/format/currency";
-import { apply } from "@/app/lowongan/[slug]/lamar/actions";
+import { apply } from "@/app/(public)/lowongan/[slug]/lamar/actions";
 
 const fields = [
   ["full_name", "Nama lengkap", "text", true],
