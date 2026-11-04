@@ -193,6 +193,8 @@ export interface AnonymizationResult {
 export interface Repository {
   // Vacancies
   getOpenVacancies(now?: Date): Promise<Vacancy[]>;
+  /** Open vacancies plus the public company profile in one read (one Sheets load). */
+  getHomePageData(now?: Date): Promise<{ vacancies: Vacancy[]; companyProfile: CompanyProfile }>;
   getVacancies(filters?: VacancyFilters): Promise<Vacancy[]>;
   getVacancyBySlug(slug: string): Promise<Vacancy | null>;
   getVacancyById(id: string): Promise<Vacancy | null>;

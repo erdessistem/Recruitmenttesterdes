@@ -182,6 +182,13 @@ export class MemoryRepository implements Repository {
     }
   }
 
+  async getHomePageData(now: Date = this.clock()) {
+    return {
+      vacancies: await this.getOpenVacancies(now),
+      companyProfile: clone(this.settings.companyProfile),
+    };
+  }
+
   async getOpenVacancies(now: Date = this.clock()): Promise<Vacancy[]> {
     return this.vacancies
       .filter((vacancy) => isVacancyPubliclyOpen(vacancy, now))
