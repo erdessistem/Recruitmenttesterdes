@@ -32,102 +32,116 @@
   --radius-panel: 0.875rem;
 }
 
-body {
-  background: var(--color-background);
-  color: var(--color-foreground);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
+@layer base {
+  body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  *:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
 }
-*:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-.tabular {
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.01em;
-}
-.control {
-  min-height: 2.75rem;
-  width: 100%;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  background: var(--color-surface);
-  padding: 0.6rem 0.75rem;
-  color: var(--color-foreground);
-  transition: border-color 120ms ease;
-}
-.control:hover {
-  border-color: #b9c2ca;
-}
-.control:focus-visible {
-  border-color: var(--color-primary);
-  outline-offset: 0;
-}
-.control[aria-invalid="true"] {
-  border-color: var(--color-danger);
-}
-.form-section {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
-  background: var(--color-surface);
-  padding: 1.5rem;
-}
-.form-title {
-  margin-bottom: 1.5rem;
-  font-size: 1.25rem;
-  font-weight: 700;
-}
-.action-button {
-  display: inline-flex;
-  min-height: 2.5rem;
-  align-items: center;
-  gap: 0.375rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  background: var(--color-surface);
-  padding: 0.5rem 0.9rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-foreground);
-  transition:
-    background-color 120ms ease,
-    transform 120ms ease;
-}
-.action-button:hover {
-  background: var(--color-paper);
-}
-.action-button:active {
-  transform: scale(0.98);
-}
-.admin-card {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
-  background: var(--color-surface);
-  padding: 1.5rem;
-}
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  font-size: 0.875rem;
-  white-space: nowrap;
-}
-.admin-table th,
-.admin-table td {
-  padding: 0.75rem;
-  border-bottom: 1px solid var(--color-border);
-  vertical-align: middle;
-}
-.admin-table tbody tr:last-child td {
-  border-bottom: 0;
-}
-.admin-table th {
-  color: var(--color-muted);
-  font-size: 0.8125rem;
-  font-weight: 600;
-}
-.admin-table tbody tr:hover {
-  background: var(--color-paper);
+
+/* Layered so Tailwind utilities on the same element still win. */
+@layer components {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.01em;
+  }
+  .control {
+    min-height: 2.75rem;
+    width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-control);
+    background: var(--color-surface);
+    padding: 0.6rem 0.75rem;
+    color: var(--color-foreground);
+    transition: border-color 120ms ease;
+  }
+  .control:hover {
+    border-color: #b9c2ca;
+  }
+  .control:focus-visible {
+    border-color: var(--color-primary);
+    outline-offset: 0;
+  }
+  .control[aria-invalid="true"] {
+    border-color: var(--color-danger);
+  }
+  .form-section {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-panel);
+    background: var(--color-surface);
+    padding: 1.5rem;
+  }
+  .form-title {
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+  .action-button {
+    display: inline-flex;
+    min-height: 2.5rem;
+    align-items: center;
+    gap: 0.375rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-control);
+    background: var(--color-surface);
+    padding: 0.5rem 0.9rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-foreground);
+    transition:
+      background-color 120ms ease,
+      transform 120ms ease;
+  }
+  .action-button:hover {
+    background: var(--color-paper);
+  }
+  .action-button:active {
+    transform: scale(0.98);
+  }
+  .admin-card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-panel);
+    background: var(--color-surface);
+    padding: 1.5rem;
+  }
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.875rem;
+    white-space: nowrap;
+  }
+  .admin-table th,
+  .admin-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: middle;
+  }
+  .admin-table th:first-child,
+  .admin-table td:first-child {
+    padding-left: 1.5rem;
+  }
+  .admin-table th:last-child,
+  .admin-table td:last-child {
+    padding-right: 1.5rem;
+  }
+  .admin-table tbody tr:last-child td {
+    border-bottom: 0;
+  }
+  .admin-table th {
+    color: var(--color-muted);
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+  .admin-table tbody tr:hover {
+    background: var(--color-paper);
+  }
 }
 
 /* The one orchestrated motion: the route line fills up to the current station. */

@@ -46,7 +46,7 @@ export function VacancyForm({ vacancy }: { vacancy?: Vacancy }) {
   return (
     <form onSubmit={submit} className="admin-card mt-6 space-y-5">
       {result.message && (
-        <p role="alert" className="rounded-control bg-red-50 p-3 text-sm text-danger">
+        <p role="alert" className="rounded-control bg-danger-soft p-3 text-sm text-danger">
           {result.message}
         </p>
       )}

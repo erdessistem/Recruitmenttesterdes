@@ -21,14 +21,20 @@ export default async function TrackingPage({ params }: { params: Promise<{ token
     repository.getStageHistory(application.id),
   ]);
   const statusTone =
-    application.status === "rejected" ? "danger" : application.status === "withdrawn" ? "neutral" : "rel";
+    application.status === "rejected"
+      ? "danger"
+      : application.status === "withdrawn"
+        ? "neutral"
+        : "rel";
   return (
     <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12">
       <div className="rounded-panel border border-border bg-surface p-6 sm:p-10">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-sm text-muted">Lamaran {application.fullName} untuk</p>
-            <h1 className="mt-1 text-3xl font-bold tracking-tight">{vacancy?.title ?? "posisi ini"}</h1>
+            <h1 className="mt-1 text-3xl font-bold tracking-tight">
+              {vacancy?.title ?? "posisi ini"}
+            </h1>
             <p className="mt-2 text-sm text-muted">Dilamar {formatDate(application.appliedAt)}</p>
             <p className="tabular mt-1 break-words text-sm font-medium">{application.id}</p>
           </div>

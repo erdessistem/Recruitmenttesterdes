@@ -30,7 +30,9 @@ export default async function Success({ params }: { params: Promise<{ token: str
 
         <div className="mt-8 rounded-panel border-2 border-sinyal bg-sinyal-soft p-5 sm:p-6">
           <p className="text-sm font-semibold text-sinyal-ink">Applicant ID Anda</p>
-          <p className="tabular mt-1 break-words text-2xl font-bold sm:text-3xl">{application.id}</p>
+          <p className="tabular mt-1 break-words text-2xl font-bold sm:text-3xl">
+            {application.id}
+          </p>
           <p className="mt-3 text-sm text-sinyal-ink">
             Simpan ID ini. Kami tidak mengirimkannya lewat email, dan Anda membutuhkannya untuk
             melacak lamaran.

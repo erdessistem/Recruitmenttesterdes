@@ -5,29 +5,33 @@ import { useState, type FormEvent } from "react";
 import { lookup, recover, reveal, withdraw } from "@/app/(public)/lacak/actions";
 import { formatDate } from "@/lib/format/date";
 import { buttonClass } from "@/components/ui/button";
+import { Field } from "@/components/ui/field";
 
 function Values({ names = false }: { names?: boolean }) {
   return (
     <>
-      <label className="block text-sm font-semibold">
-        {names ? "Nama lengkap" : "Applicant ID"}
+      <Field
+        label={names ? "Nama lengkap" : "Applicant ID"}
+        hint={names ? "Sesuai yang Anda isi saat melamar." : "Ada di halaman bukti lamaran Anda."}
+      >
         <input
-          className="control mt-2 font-normal"
+          className="control"
           name={names ? "full_name" : "applicant_id"}
           required
           autoComplete={names ? "name" : "off"}
+          spellCheck={false}
         />
-      </label>
-      <label className="block text-sm font-semibold">
-        No. WhatsApp
+      </Field>
+      <Field label="No. WhatsApp" hint="Nomor yang dipakai saat melamar, misalnya 0812 3456 7890.">
         <input
-          className="control mt-2 font-normal"
+          className="control"
           name="whatsapp"
           type="tel"
+          inputMode="tel"
           required
           autoComplete="tel"
         />
-      </label>
+      </Field>
     </>
   );
 }

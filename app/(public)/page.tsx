@@ -154,7 +154,7 @@ export default async function Home({
                         <h3 className="text-lg font-semibold">
                           <Link
                             href={`/lowongan/${v.slug}`}
-                            className="after:absolute after:inset-0 focus-visible:outline-none group-has-[:focus-visible]:underline"
+                            className="after:absolute after:inset-0"
                           >
                             {v.title}
                           </Link>

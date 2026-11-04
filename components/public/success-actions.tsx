@@ -23,7 +23,11 @@ export function SuccessActions({ id, token }: { id: string; token: string }) {
     }
   }
   const copyIcon = (active: boolean) =>
-    active ? <Check aria-hidden="true" className="h-4 w-4" /> : <Copy aria-hidden="true" className="h-4 w-4" />;
+    active ? (
+      <Check aria-hidden="true" className="h-4 w-4" />
+    ) : (
+      <Copy aria-hidden="true" className="h-4 w-4" />
+    );
   return (
     <div className="no-print mt-10 border-t border-border pt-8">
       <h2 className="text-lg font-bold">Simpan bukti lamaran</h2>

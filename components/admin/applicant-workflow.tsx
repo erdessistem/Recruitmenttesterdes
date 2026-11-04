@@ -73,7 +73,7 @@ export function ApplicantWorkflow({
         Perubahan tahap memerlukan konfirmasi dan dicatat dalam riwayat.
       </p>
       {notice && (
-        <p role="status" className="mt-4 rounded-control bg-blue-50 p-3 text-sm">
+        <p role="status" className="mt-4 rounded-control bg-primary-soft p-3 text-sm">
           {notice}
         </p>
       )}
@@ -111,7 +111,7 @@ export function ApplicantWorkflow({
                 type="button"
                 disabled={pending || target === stage}
                 onClick={() => perform("move")}
-                className="action-button mt-3 disabled:opacity-50"
+                className="action-button mt-3 border-primary bg-primary text-primary-foreground hover:bg-primary-hover disabled:opacity-50"
               >
                 Pindahkan tahap
               </button>

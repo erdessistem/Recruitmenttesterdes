@@ -81,13 +81,16 @@ export function StageLine({
                 aria-hidden="true"
                 className={cn(
                   "relative z-10 block rounded-full border-2",
-                  current && !closed && !hired
-                    ? "h-6 w-6 border-sinyal-ink bg-sinyal"
-                    : "h-4 w-4",
-                  !current && reached && (closed ? "border-muted bg-muted" : "border-primary bg-primary"),
+                  current && !closed && !hired ? "h-6 w-6 border-sinyal-ink bg-sinyal" : "h-4 w-4",
+                  !current &&
+                    reached &&
+                    (closed ? "border-muted bg-muted" : "border-primary bg-primary"),
                   !reached && "border-border bg-surface",
                   current && hired && "h-6 w-6 border-primary bg-primary",
-                  closedHere && (status === "rejected" ? "h-5 w-5 border-danger bg-surface" : "h-5 w-5 border-muted bg-surface"),
+                  closedHere &&
+                    (status === "rejected"
+                      ? "h-5 w-5 border-danger bg-surface"
+                      : "h-5 w-5 border-muted bg-surface"),
                 )}
               />
             </span>
@@ -95,7 +98,11 @@ export function StageLine({
               <span
                 className={cn(
                   "block text-sm leading-5",
-                  current ? "font-semibold text-foreground" : reached ? "text-foreground" : "text-muted",
+                  current
+                    ? "font-semibold text-foreground"
+                    : reached
+                      ? "text-foreground"
+                      : "text-muted",
                 )}
               >
                 {STAGE_LABELS[stage]}

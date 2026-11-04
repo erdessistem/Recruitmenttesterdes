@@ -262,10 +262,7 @@ export function ApplicationForm({ slug }: { slug: string }) {
             </label>
           </div>
         </section>
-        <button
-          className={buttonClass("primary", "w-full px-6 sm:w-auto")}
-          disabled={pending}
-        >
+        <button className={buttonClass("primary", "w-full px-6 sm:w-auto")} disabled={pending}>
           {pending ? "Mengirim lamaran…" : "Kirim lamaran"}
         </button>
       </fieldset>

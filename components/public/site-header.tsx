@@ -19,7 +19,10 @@ export function SiteHeader() {
           </span>
         </Link>
         <div className="flex items-center gap-1 whitespace-nowrap text-sm font-semibold sm:gap-2">
-          <Link href="/#lowongan" className="hidden rounded-control px-3 py-2 hover:bg-paper sm:inline-block">
+          <Link
+            href="/#lowongan"
+            className="hidden rounded-control px-3 py-2 hover:bg-paper sm:inline-block"
+          >
             Lowongan
           </Link>
           <Link

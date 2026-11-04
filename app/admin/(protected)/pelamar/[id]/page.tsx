@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { repository } from "@/lib/repositories";
 import {
@@ -16,6 +15,10 @@ import { requireAdmin } from "@/lib/auth/session";
 import { ApplicantWorkflow } from "@/components/admin/applicant-workflow";
 import { createWhatsAppMessage } from "@/lib/admin/templates";
 import { env } from "@/lib/env";
+import { BackLink } from "@/components/ui/back-link";
+import { Badge } from "@/components/ui/badge";
+import { StageLine } from "@/components/ui/stage-line";
+export const metadata = { title: "Detail pelamar" };
 
 function safeHttps(value: string) {
   try {
@@ -110,20 +113,40 @@ export default async function ApplicantDetail({ params }: { params: Promise<{ id
   ] as const;
   return (
     <div className="mx-auto max-w-5xl">
-      <Link href="/admin/pelamar" className="text-sm font-semibold text-primary">
-        ← Semua pelamar
-      </Link>
-      <div className="mt-6 flex flex-wrap justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">{application.fullName || application.id}</h1>
-          <p className="mt-2 text-muted">
-            {vacancy?.title ?? "Lowongan"} · {formatDateTime(application.appliedAt)}
-          </p>
+      <BackLink href="/admin/pelamar">Semua pelamar</BackLink>
+      <section className="admin-card mt-4">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="text-3xl font-bold tracking-tight">
+              {application.fullName || application.id}
+            </h1>
+            <p className="mt-1 text-muted">
+              {vacancy?.title ?? "Lowongan"}, dilamar {formatDateTime(application.appliedAt)}
+            </p>
+            <p className="tabular mt-1 break-words text-sm">{application.id}</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Badge tone="rel">{STAGE_LABELS[application.currentStage]}</Badge>
+            <Badge
+              tone={
+                application.status === "active"
+                  ? "rel"
+                  : application.status === "rejected"
+                    ? "danger"
+                    : "neutral"
+              }
+            >
+              {APPLICATION_STATUS_LABELS[application.status]}
+            </Badge>
+          </div>
         </div>
-        <p className="text-sm font-semibold text-primary">
-          {STAGE_LABELS[application.currentStage]} · {APPLICATION_STATUS_LABELS[application.status]}
-        </p>
-      </div>
+        <StageLine
+          className="mt-8"
+          currentStage={application.currentStage}
+          status={application.status}
+          history={history}
+        />
+      </section>
       <ApplicantWorkflow
         id={application.id}
         stage={application.currentStage}
@@ -165,7 +188,7 @@ export default async function ApplicantDetail({ params }: { params: Promise<{ id
           <h2 className="text-lg font-bold">Catatan internal</h2>
           <ul className="mt-4 space-y-4">
             {notes.map((note) => (
-              <li key={note.id} className="rounded-control bg-slate-50 p-3">
+              <li key={note.id} className="rounded-control bg-paper p-3">
                 <p className="whitespace-pre-line text-sm">{note.body}</p>
                 <p className="mt-2 text-xs text-muted">
                   {note.authorEmail} · {formatDateTime(note.createdAt)}

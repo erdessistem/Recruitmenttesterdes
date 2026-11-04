@@ -9,6 +9,11 @@ import {
 import { formatDate } from "@/lib/format/date";
 import { changeVacancyStatus } from "./actions";
 import { requireAdmin } from "@/lib/auth/session";
+import { Plus } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/ui/empty-state";
+import { buttonClass } from "@/components/ui/button";
+export const metadata = { title: "Lowongan" };
 export default async function Vacancies({
   searchParams,
 }: {
@@ -25,20 +30,13 @@ export default async function Vacancies({
   return (
     <div className="mx-auto max-w-7xl">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-widest text-primary">
-            Manajemen rekrutmen
-          </p>
-          <h1 className="mt-2 text-3xl font-bold">Lowongan</h1>
-        </div>
-        <Link
-          href="/admin/lowongan/baru"
-          className="rounded-control bg-primary px-4 py-3 text-sm font-semibold text-white"
-        >
-          + Buat lowongan
+        <h1 className="text-3xl font-bold tracking-tight">Lowongan</h1>
+        <Link href="/admin/lowongan/baru" className={buttonClass("primary")}>
+          <Plus aria-hidden="true" className="h-4 w-4" />
+          Buat lowongan
         </Link>
       </div>
-      <form className="admin-card mt-7 flex flex-wrap items-end gap-3">
+      <form className="admin-card mt-6 flex flex-wrap items-end gap-3">
         <label className="text-sm font-semibold">
           Status
           <select className="control mt-2" name="status" defaultValue={filters.status ?? ""}>
@@ -63,9 +61,9 @@ export default async function Vacancies({
             ))}
           </select>
         </label>
-        <button className="action-button min-h-11">Terapkan</button>
+        <button className={buttonClass("secondary")}>Terapkan</button>
       </form>
-      <div className="admin-card mt-5 overflow-x-auto">
+      <div className="admin-card mt-5 overflow-x-auto p-0">
         <table className="admin-table">
           <thead>
             <tr>
@@ -82,7 +80,10 @@ export default async function Vacancies({
             {vacancies.map((v) => (
               <tr key={v.id}>
                 <td>
-                  <Link className="font-semibold text-primary" href={`/admin/lowongan/${v.id}`}>
+                  <Link
+                    className="font-semibold text-primary hover:underline"
+                    href={`/admin/lowongan/${v.id}`}
+                  >
                     {v.title}
                   </Link>
                 </td>
@@ -92,9 +93,22 @@ export default async function Vacancies({
                   {v.location}
                 </td>
                 <td>{EMPLOYMENT_TYPE_LABELS[v.employmentType]}</td>
-                <td>{VACANCY_STATUS_LABELS[v.status]}</td>
-                <td>{apps.filter((a) => a.vacancyId === v.id).length}</td>
-                <td>{v.closeAt ? formatDate(v.closeAt) : "—"}</td>
+                <td>
+                  <Badge
+                    tone={v.status === "open" ? "rel" : v.status === "draft" ? "sinyal" : "neutral"}
+                  >
+                    {VACANCY_STATUS_LABELS[v.status]}
+                  </Badge>
+                </td>
+                <td className="tabular">
+                  <Link
+                    className="hover:underline"
+                    href={`/admin/pelamar?vacancy=${encodeURIComponent(v.id)}`}
+                  >
+                    {apps.filter((a) => a.vacancyId === v.id).length}
+                  </Link>
+                </td>
+                <td className="tabular text-muted">{v.closeAt ? formatDate(v.closeAt) : "—"}</td>
                 <td>
                   <form action={changeVacancyStatus} className="flex gap-2">
                     <input type="hidden" name="id" value={v.id} />
@@ -102,7 +116,7 @@ export default async function Vacancies({
                       name="status"
                       aria-label={`Status ${v.title}`}
                       defaultValue={v.status}
-                      className="rounded border border-border p-2"
+                      className="control min-h-9 w-auto py-1.5"
                     >
                       {VACANCY_STATUSES.map((s: VacancyStatus) => (
                         <option key={s} value={s}>
@@ -110,7 +124,7 @@ export default async function Vacancies({
                         </option>
                       ))}
                     </select>
-                    <button className="text-sm font-semibold text-primary">Simpan</button>
+                    <button className={buttonClass("ghost", "min-h-9 text-primary")}>Simpan</button>
                   </form>
                 </td>
               </tr>
@@ -118,7 +132,9 @@ export default async function Vacancies({
           </tbody>
         </table>
         {!vacancies.length && (
-          <p className="py-6 text-sm text-muted">Tidak ada lowongan yang sesuai.</p>
+          <EmptyState className="m-6" title="Tidak ada lowongan yang cocok">
+            Ubah filter, atau buat lowongan baru.
+          </EmptyState>
         )}
       </div>
     </div>

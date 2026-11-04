@@ -11,6 +11,12 @@ import {
 import { formatDate } from "@/lib/format/date";
 import { toRepositoryFilters, type ApplicantFilters } from "@/lib/admin/filters";
 import { requireAdmin } from "@/lib/auth/session";
+import { Download } from "lucide-react";
+import { StageMeter } from "@/components/ui/stage-line";
+import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/ui/empty-state";
+import { buttonClass } from "@/components/ui/button";
+export const metadata = { title: "Pelamar" };
 type Filters = ApplicantFilters;
 export default async function Applicants({ searchParams }: { searchParams: Promise<Filters> }) {
   await requireAdmin();
@@ -32,16 +38,20 @@ export default async function Applicants({ searchParams }: { searchParams: Promi
     params.set("page", String(value));
     return `/admin/pelamar?${params}`;
   };
+  const filtering = Boolean(f.q || f.vacancy || f.stage || f.status || f.from || f.to);
   const exportParams = new URLSearchParams();
   for (const [key, value] of Object.entries(f))
     if (value && key !== "page") exportParams.set(key, value);
   return (
     <div className="mx-auto max-w-7xl">
-      <p className="text-sm font-semibold uppercase tracking-widest text-primary">
-        Manajemen rekrutmen
-      </p>
-      <h1 className="mt-2 text-3xl font-bold">Pelamar</h1>
-      <form className="admin-card mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <h1 className="text-3xl font-bold tracking-tight">Pelamar</h1>
+        <a href={`/admin/pelamar/export?${exportParams}`} className={buttonClass("secondary")}>
+          <Download aria-hidden="true" className="h-4 w-4" />
+          Ekspor CSV
+        </a>
+      </div>
+      <form className="admin-card mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <label className="text-sm font-semibold">
           Pencarian
           <input
@@ -101,61 +111,93 @@ export default async function Applicants({ searchParams }: { searchParams: Promi
           Tanggal sampai
           <input type="date" name="to" defaultValue={f.to} className="control mt-2 font-normal" />
         </label>
-        <div className="flex gap-3">
-          <button className="action-button">Terapkan filter</button>
-          <Link href="/admin/pelamar" className="action-button">
-            Reset
-          </Link>
+        <div className="flex items-end gap-3">
+          <button className={buttonClass("primary")}>Terapkan filter</button>
+          {filtering && (
+            <Link href="/admin/pelamar" className={buttonClass("ghost")}>
+              Hapus filter
+            </Link>
+          )}
         </div>
       </form>
-      <div className="my-5 flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-muted">{apps.length} pelamar ditemukan</p>
-        <a href={`/admin/pelamar/export?${exportParams}`} className="action-button">
-          Ekspor CSV hasil filter
-        </a>
-      </div>
-      <div className="admin-card overflow-x-auto">
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Nama</th>
-              <th>Lowongan</th>
-              <th>Tahap</th>
-              <th>Status</th>
-              <th>Tanggal</th>
-              <th>WhatsApp</th>
-            </tr>
-          </thead>
-          <tbody>
-            {apps.slice((page - 1) * size, page * size).map((a) => (
-              <tr key={a.id}>
-                <td>
-                  <Link
-                    className="font-semibold text-primary hover:underline"
-                    href={`/admin/pelamar/${encodeURIComponent(a.id)}`}
-                  >
-                    {a.fullName || a.id}
-                  </Link>
-                  {Date.now() - new Date(a.appliedAt).getTime() >= 0 &&
-                    Date.now() - new Date(a.appliedAt).getTime() < 7 * 86400000 && (
-                      <span className="ml-2 rounded-full bg-blue-50 px-2 py-1 text-xs text-primary">
-                        Baru
-                      </span>
-                    )}
-                  <br />
-                  <span className="text-xs text-muted">{a.id}</span>
-                </td>
-                <td>{title.get(a.vacancyId) ?? "—"}</td>
-                <td>{STAGE_LABELS[a.currentStage]}</td>
-                <td>{APPLICATION_STATUS_LABELS[a.status]}</td>
-                <td>{formatDate(a.appliedAt)}</td>
-                <td>{a.whatsapp || "—"}</td>
+      <p className="mb-3 mt-6 text-sm text-muted" aria-live="polite">
+        {apps.length} pelamar{filtering ? " sesuai filter" : ""}. Ekspor CSV mengikuti filter ini.
+      </p>
+      {apps.length === 0 ? (
+        <EmptyState
+          title={filtering ? "Tidak ada pelamar yang cocok" : "Belum ada pelamar"}
+          action={
+            filtering ? (
+              <Link href="/admin/pelamar" className={buttonClass("secondary")}>
+                Hapus filter
+              </Link>
+            ) : undefined
+          }
+        >
+          {filtering
+            ? "Ubah atau hapus filter untuk melihat pelamar lain."
+            : "Lamaran yang masuk akan muncul di sini."}
+        </EmptyState>
+      ) : (
+        <div className="admin-card overflow-x-auto p-0">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Nama</th>
+                <th>Lowongan</th>
+                <th>Tahap</th>
+                <th>Status</th>
+                <th>Tanggal</th>
+                <th className="hidden xl:table-cell">WhatsApp</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        {!apps.length && <p className="py-6 text-sm text-muted">Tidak ada pelamar yang sesuai.</p>}
-      </div>
+            </thead>
+            <tbody>
+              {apps.slice((page - 1) * size, page * size).map((a) => (
+                <tr key={a.id}>
+                  <td>
+                    <Link
+                      className="font-semibold text-primary hover:underline"
+                      href={`/admin/pelamar/${encodeURIComponent(a.id)}`}
+                    >
+                      {a.fullName || a.id}
+                    </Link>
+                    {Date.now() - new Date(a.appliedAt).getTime() >= 0 &&
+                      Date.now() - new Date(a.appliedAt).getTime() < 7 * 86400000 && (
+                        <Badge tone="sinyal" className="ml-2">
+                          Baru
+                        </Badge>
+                      )}
+                    <br />
+                    <span className="tabular text-xs text-muted">{a.id}</span>
+                  </td>
+                  <td>{title.get(a.vacancyId) ?? "—"}</td>
+                  <td>
+                    <span className="inline-flex items-center gap-2">
+                      <StageMeter currentStage={a.currentStage} status={a.status} />
+                      {STAGE_LABELS[a.currentStage]}
+                    </span>
+                  </td>
+                  <td>
+                    <Badge
+                      tone={
+                        a.status === "active"
+                          ? "rel"
+                          : a.status === "rejected"
+                            ? "danger"
+                            : "neutral"
+                      }
+                    >
+                      {APPLICATION_STATUS_LABELS[a.status]}
+                    </Badge>
+                  </td>
+                  <td className="tabular text-muted">{formatDate(a.appliedAt)}</td>
+                  <td className="tabular hidden xl:table-cell">{a.whatsapp || "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
       <div className="mt-5 flex items-center gap-4 text-sm">
         <span>
           Halaman {page} dari {pages}
