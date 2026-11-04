@@ -518,6 +518,17 @@ export class MemoryRepository implements Repository {
       .map((entry) => clone(entry));
   }
 
+  /** Reconciles every application in one pass; returns how many rows changed. */
+  async reconcileAllApplicationStages(): Promise<number> {
+    let changed = 0;
+    for (const application of this.applications) {
+      const before = `${application.currentStage}|${application.status}`;
+      await this.reconcileApplicationStage(application.id);
+      if (`${application.currentStage}|${application.status}` !== before) changed++;
+    }
+    return changed;
+  }
+
   async reconcileApplicationStage(id: string): Promise<Application | null> {
     const index = this.findApplicationIndex(id);
     if (index < 0) return null;

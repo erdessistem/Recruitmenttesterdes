@@ -5,10 +5,7 @@ import { formatDate } from "@/lib/format/date";
 import { requireAdmin } from "@/lib/auth/session";
 export default async function Dashboard() {
   await requireAdmin();
-  const applications = await repository.getApplications();
-  await Promise.all(
-    applications.map((application) => repository.reconcileApplicationStage(application.id)),
-  );
+  await repository.reconcileAllApplicationStages();
   const [stats, vacancies] = await Promise.all([
     repository.getDashboardStats(),
     repository.getVacancies(),

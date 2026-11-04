@@ -13,7 +13,7 @@ type Item = { id: string };
 type Snapshot = { data: SeedData; rowIndexes: Record<SheetName, number[]>; sheetIds: Record<SheetName, number> };
 const names = Object.keys(SHEET_HEADERS) as SheetName[];
 const properties = { Vacancies: "vacancies", Applications: "applications", Stage_History: "stageHistory", Notes: "notes", Admin_Users: "adminUsers" } as const;
-const mutationMethods = new Set(["createVacancy", "updateVacancy", "appendApplication", "updateApplicationStage", "appendStageHistory", "reconcileApplicationStage", "addNote", "updateSettings", "createAdmin", "updateAdminPassword", "recordAdminLogin", "anonymizeExpiredApplications"]);
+const mutationMethods = new Set(["createVacancy", "updateVacancy", "appendApplication", "updateApplicationStage", "appendStageHistory", "reconcileApplicationStage", "reconcileAllApplicationStages", "addNote", "updateSettings", "createAdmin", "updateAdminPassword", "recordAdminLogin", "anonymizeExpiredApplications"]);
 
 /** Exact headers prevent writing canonical columns into a reordered sheet. */
 export function validateHeaders(sheet: SheetName, headers: readonly unknown[]) {

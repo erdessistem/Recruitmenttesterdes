@@ -39,6 +39,13 @@ describe("admin workflow", () => {
     await repo.appendStageHistory({ applicationId: app.id, fromStage: app.currentStage, toStage: "offering", fromStatus: "active", toStatus: "active", note: "", changedBy: "admin", changedAt: now.toISOString() });
     expect((await repo.reconcileApplicationStage(app.id))?.currentStage).toBe("offering");
   });
+  it("reconciles all applications in one call and reports only changed rows", async () => {
+    const { repo, app } = setup();
+    expect(await repo.reconcileAllApplicationStages()).toBe(0);
+    await repo.appendStageHistory({ applicationId: app.id, fromStage: app.currentStage, toStage: "offering", fromStatus: "active", toStatus: "active", note: "", changedBy: "admin", changedAt: now.toISOString() });
+    expect(await repo.reconcileAllApplicationStages()).toBe(1);
+    expect((await repo.getApplicationById(app.id))?.currentStage).toBe("offering");
+  });
   it("keeps old history notes private in Sheet mappings", async () => {
     const { repo, app, seed } = setup();
     const legacy = seed.stageHistory[1];

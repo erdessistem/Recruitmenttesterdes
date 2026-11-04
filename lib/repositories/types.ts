@@ -226,6 +226,8 @@ export interface Repository {
   appendStageHistory(event: NewStageHistoryEvent): Promise<StageHistoryEntry>;
   getStageHistory(applicationId: string): Promise<StageHistoryEntry[]>;
   reconcileApplicationStage(id: string): Promise<Application | null>;
+  /** One read and at most one write batch for all applications. */
+  reconcileAllApplicationStages(): Promise<number>;
 
   // Internal notes
   addNote(
