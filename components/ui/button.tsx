@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 type Variant = "primary" | "secondary" | "ghost" | "danger";
 
 const base =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-control px-4 py-2 text-sm font-semibold transition-[background-color,transform] duration-100 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100 motion-reduce:transition-none motion-reduce:active:scale-100";
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-control px-4 py-2 text-sm font-semibold transition-[background-color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100 motion-reduce:transition-none motion-reduce:active:scale-100";
 
 const variants: Record<Variant, string> = {
   primary: "bg-primary text-primary-foreground hover:bg-primary-hover",

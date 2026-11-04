@@ -176,7 +176,7 @@ export default async function Home({
                     </div>
                     <ChevronRight
                       aria-hidden="true"
-                      className="h-5 w-5 shrink-0 text-muted transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none"
+                      className="h-5 w-5 shrink-0 text-muted transition-transform duration-150 ease-out motion-reduce:transition-none [@media(hover:hover)]:group-hover:translate-x-0.5"
                     />
                   </div>
                 </li>

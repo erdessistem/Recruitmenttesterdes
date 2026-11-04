@@ -65,7 +65,7 @@ export default async function VacancyPage({ params }: { params: Promise<{ slug: 
         </aside>
       </div>
       {open && (
-        <div className="no-print fixed inset-x-0 bottom-0 z-20 border-t border-border bg-surface/95 px-4 py-3 backdrop-blur lg:hidden">
+        <div className="no-print fixed inset-x-0 bottom-0 z-20 border-t border-border bg-surface/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur lg:hidden">
           <ButtonLink href={`/lowongan/${vacancy.slug}/lamar`} className="w-full">
             Lamar posisi ini
           </ButtonLink>
