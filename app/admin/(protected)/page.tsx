@@ -61,7 +61,7 @@ export default async function Dashboard() {
                         className={
                           count > 0
                             ? "relative z-10 h-4 w-4 rounded-full border-2 border-primary bg-primary"
-                            : "relative z-10 h-4 w-4 rounded-full border-2 border-border bg-surface"
+                            : "relative z-10 h-4 w-4 rounded-full border-2 border-border-strong bg-surface"
                         }
                       />
                     </span>

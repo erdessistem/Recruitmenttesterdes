@@ -14,6 +14,8 @@
   --color-surface: #ffffff;
   --color-muted: #5b6673;
   --color-border: #d8dee3;
+  /* 3:1 on white and paper: input boundaries and unreached stations (WCAG 1.4.11). */
+  --color-border-strong: #848f9b;
   --color-danger: #b42318;
   --color-danger-soft: #fdeceb;
 
@@ -54,7 +56,7 @@
   .control {
     min-height: 2.75rem;
     width: 100%;
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--color-border-strong);
     border-radius: var(--radius-control);
     background: var(--color-surface);
     padding: 0.6rem 0.75rem;
@@ -62,7 +64,7 @@
     transition: border-color 120ms ease;
   }
   .control:hover {
-    border-color: #b9c2ca;
+    border-color: var(--color-muted);
   }
   .control:focus-visible {
     border-color: var(--color-primary);

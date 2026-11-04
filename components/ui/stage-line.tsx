@@ -85,7 +85,7 @@ export function StageLine({
                   !current &&
                     reached &&
                     (closed ? "border-muted bg-muted" : "border-primary bg-primary"),
-                  !reached && "border-border bg-surface",
+                  !reached && "border-border-strong bg-surface",
                   current && hired && "h-6 w-6 border-primary bg-primary",
                   closedHere &&
                     (status === "rejected"
@@ -106,6 +106,9 @@ export function StageLine({
                 )}
               >
                 {STAGE_LABELS[stage]}
+                <span className="sr-only">
+                  {current ? ", tahap saat ini" : reached ? ", sudah dilewati" : ", belum dimulai"}
+                </span>
               </span>
               <span
                 className={cn(
@@ -113,13 +116,15 @@ export function StageLine({
                   closedHere && status === "rejected" ? "font-medium text-danger" : "text-muted",
                 )}
               >
-                {closedHere
-                  ? CLOSED_LABEL[status]
-                  : current && !hired
-                    ? "Tahap saat ini"
-                    : reached && date
-                      ? formatDate(date)
-                      : " "}
+                {closedHere ? (
+                  CLOSED_LABEL[status]
+                ) : current && !hired ? (
+                  <span aria-hidden="true">Tahap saat ini</span>
+                ) : reached && date ? (
+                  formatDate(date)
+                ) : (
+                  " "
+                )}
               </span>
             </span>
           </li>
