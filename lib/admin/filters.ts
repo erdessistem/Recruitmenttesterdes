@@ -1,0 +1,4 @@
+import { APPLICATION_STATUSES, STAGES, type ApplicationStatus, type Stage } from "@/lib/constants";
+import { isDateOnlyString, jakartaDateOnlyToUtc } from "@/lib/format/date";
+export type ApplicantFilters = { q?: string; vacancy?: string; stage?: string; status?: string; from?: string; to?: string; page?: string };
+export function toRepositoryFilters(f: ApplicantFilters) { return { query: f.q, vacancyId: f.vacancy || undefined, stage: STAGES.includes(f.stage as Stage) ? f.stage as Stage : undefined, status: APPLICATION_STATUSES.includes(f.status as ApplicationStatus) ? f.status as ApplicationStatus : undefined, appliedFrom: f.from && isDateOnlyString(f.from) ? jakartaDateOnlyToUtc(f.from) : undefined, appliedTo: f.to && isDateOnlyString(f.to) ? jakartaDateOnlyToUtc(f.to, "end") : undefined }; }
