@@ -9,6 +9,7 @@ import {
   EDUCATION_LEVEL_LABELS,
 } from "@/lib/constants";
 import { formatRupiahInput } from "@/lib/format/currency";
+import { buttonClass } from "@/components/ui/button";
 import { apply } from "@/app/(public)/lowongan/[slug]/lamar/actions";
 
 const fields = [
@@ -147,7 +148,7 @@ export function ApplicationForm({ slug }: { slug: string }) {
             ref={errorSummary}
             tabIndex={-1}
             role="alert"
-            className="rounded-control border border-red-200 bg-red-50 p-4 text-sm text-danger"
+            className="rounded-panel border border-danger/30 bg-danger-soft p-4 text-sm text-danger"
           >
             {message}
             {Object.keys(errors).length > 0 && (
@@ -171,20 +172,20 @@ export function ApplicationForm({ slug }: { slug: string }) {
       </div>
       <fieldset disabled={pending} className="space-y-6">
         <section className="form-section">
-          <h2 className="form-title">1. Data Diri</h2>
+          <h2 className="form-title">Data diri</h2>
           <div className="grid gap-5 sm:grid-cols-2">
             {fields.slice(0, 4).map((f) => field(f[0]))}
           </div>
         </section>
         <section className="form-section">
-          <h2 className="form-title">2. Pendidikan dan Pengalaman</h2>
+          <h2 className="form-title">Pendidikan dan pengalaman</h2>
           <div className="grid gap-5 sm:grid-cols-2">
             {select("last_education", "Pendidikan terakhir", EDUCATION_LEVEL_LABELS)}
             {fields.slice(4, 9).map((f) => field(f[0]))}
           </div>
         </section>
         <section className="form-section">
-          <h2 className="form-title">3. Lamaran</h2>
+          <h2 className="form-title">Lamaran</h2>
           <div className="grid gap-5 sm:grid-cols-2">
             {fields.slice(9).map((f) => field(f[0]))}
             <label className="block sm:col-span-2">
@@ -226,10 +227,10 @@ export function ApplicationForm({ slug }: { slug: string }) {
           </div>
         </section>
         <section className="form-section">
-          <h2 className="form-title">4. Persetujuan</h2>
+          <h2 className="form-title">Persetujuan</h2>
           <label className="flex items-start gap-3 text-sm">
             <input
-              className="mt-1"
+              className="mt-1 h-4 w-4 accent-primary"
               type="checkbox"
               id="consent"
               name="consent"
@@ -262,7 +263,7 @@ export function ApplicationForm({ slug }: { slug: string }) {
           </div>
         </section>
         <button
-          className="w-full rounded-control bg-primary px-6 py-3 font-semibold text-white disabled:opacity-50 sm:w-auto"
+          className={buttonClass("primary", "w-full px-6 sm:w-auto")}
           disabled={pending}
         >
           {pending ? "Mengirim lamaran…" : "Kirim lamaran"}

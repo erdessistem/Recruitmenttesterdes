@@ -1,17 +1,16 @@
-import Link from "next/link";
+import { BackLink } from "@/components/ui/back-link";
 import { repository } from "@/lib/repositories";
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Kebijakan privasi" };
 export default async function Privacy() {
   const settings = await repository.getSettings();
   return (
-    <main className="mx-auto max-w-3xl px-6 py-12">
-      <Link href="/" className="text-sm font-semibold text-primary">
-        ← Beranda karier
-      </Link>
-      <article className="mt-8 rounded-xl border border-border bg-white p-6 sm:p-10">
-        <h1 className="text-3xl font-bold">Kebijakan privasi rekrutmen</h1>
+    <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
+      <BackLink href="/">Beranda karier</BackLink>
+      <article className="mt-6 rounded-panel border border-border bg-surface p-6 sm:p-10">
+        <h1 className="text-3xl font-bold tracking-tight">Kebijakan privasi rekrutmen</h1>
         <p className="mt-2 text-sm text-muted">Versi {settings.privacyVersion}</p>
-        <div className="mt-8 space-y-5 leading-7">
+        <div className="mt-8 max-w-[70ch] space-y-5 leading-7">
           <p>
             Erdes Group menggunakan data yang Anda berikan untuk menilai lamaran, menghubungi Anda,
             dan menjalankan proses rekrutmen. Email dan tautan CV bersifat opsional.

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { repository } from "@/lib/repositories";
 import {
@@ -9,7 +8,10 @@ import {
 } from "@/lib/constants";
 import { formatDate, formatDateTime } from "@/lib/format/date";
 import { WithdrawalForm } from "@/components/public/tracking-forms";
+import { StageLine } from "@/components/ui/stage-line";
+import { Badge } from "@/components/ui/badge";
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Status lamaran" };
 export default async function TrackingPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
   const application = await repository.getApplicationByToken(token);
@@ -18,47 +20,65 @@ export default async function TrackingPage({ params }: { params: Promise<{ token
     repository.getVacancyById(application.vacancyId),
     repository.getStageHistory(application.id),
   ]);
+  const statusTone =
+    application.status === "rejected" ? "danger" : application.status === "withdrawn" ? "neutral" : "rel";
   return (
-    <main className="mx-auto max-w-3xl px-6 py-12">
-      <Link href="/" className="text-sm font-semibold text-primary">
-        ← Beranda karier
-      </Link>
-      <div className="mt-8 rounded-xl border border-border bg-white p-6 sm:p-10">
-        <p className="text-sm font-semibold uppercase tracking-widest text-primary">
-          Status rekrutmen
-        </p>
-        <h1 className="mt-3 text-3xl font-bold">Lamaran {vacancy?.title ?? "Anda"}</h1>
-        <p className="mt-3 text-muted">
-          {application.fullName} · Dilamar {formatDate(application.appliedAt)}
-        </p>
-        <div className="mt-7 rounded-xl bg-blue-50 p-5">
-          <p className="text-sm text-primary">
-            Status: {APPLICATION_STATUS_LABELS[application.status]}
-          </p>
-          <h2 className="mt-1 text-xl font-bold">{STAGE_LABELS[application.currentStage]}</h2>
-          <p className="mt-2 text-sm leading-6">
+    <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12">
+      <div className="rounded-panel border border-border bg-surface p-6 sm:p-10">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="text-sm text-muted">Lamaran {application.fullName} untuk</p>
+            <h1 className="mt-1 text-3xl font-bold tracking-tight">{vacancy?.title ?? "posisi ini"}</h1>
+            <p className="mt-2 text-sm text-muted">Dilamar {formatDate(application.appliedAt)}</p>
+            <p className="tabular mt-1 break-words text-sm font-medium">{application.id}</p>
+          </div>
+          <Badge tone={statusTone}>{APPLICATION_STATUS_LABELS[application.status]}</Badge>
+        </div>
+
+        <StageLine
+          className="mt-10"
+          currentStage={application.currentStage}
+          status={application.status}
+          history={history}
+          animate
+        />
+
+        <div
+          className={
+            application.status === "active"
+              ? "mt-10 rounded-panel bg-primary-soft p-5"
+              : "mt-10 rounded-panel bg-paper p-5"
+          }
+        >
+          <h2 className="font-semibold">
+            {application.status === "active"
+              ? `Saat ini: ${STAGE_LABELS[application.currentStage]}`
+              : "Langkah berikutnya"}
+          </h2>
+          <p className="mt-1 text-sm leading-6">
             {getTrackingNextStep(application.currentStage, application.status)}
           </p>
         </div>
-        <h2 className="mt-10 text-xl font-bold">Riwayat lamaran</h2>
-        <ol className="mt-5 space-y-5 border-l-2 border-border pl-5">
-          {history.map((event) => (
-            <li key={event.id}>
-              <p className="font-semibold">{getTimelineLabel(event)}</p>
-              <p className="mt-1 text-sm text-muted">{formatDateTime(event.changedAt)}</p>
-              {event.noteIsPublic === true && event.note && (
-                <p className="mt-1 whitespace-pre-line text-sm">{event.note}</p>
-              )}
+
+        <h2 className="mt-10 text-lg font-bold">Riwayat lamaran</h2>
+        <ol className="mt-4 divide-y divide-border">
+          {[...history].reverse().map((event) => (
+            <li key={event.id} className="flex flex-col gap-1 py-3 sm:flex-row sm:gap-6">
+              <p className="tabular shrink-0 text-sm text-muted sm:w-52">
+                {formatDateTime(event.changedAt)}
+              </p>
+              <div>
+                <p className="font-medium">{getTimelineLabel(event)}</p>
+                {event.noteIsPublic === true && event.note && (
+                  <p className="mt-1 whitespace-pre-line text-sm text-muted">{event.note}</p>
+                )}
+              </div>
             </li>
           ))}
         </ol>
+
         {application.status === "active" && application.currentStage !== "hired" && (
           <WithdrawalForm token={token} />
-        )}
-        {application.status === "withdrawn" && (
-          <p className="mt-8 rounded-control bg-slate-100 p-4 text-sm">
-            Lamaran ini telah ditarik.
-          </p>
         )}
       </div>
     </main>

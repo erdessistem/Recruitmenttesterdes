@@ -1,13 +1,12 @@
-import Link from "next/link";
+import { BackLink } from "@/components/ui/back-link";
 import { RecoveryForm } from "@/components/public/tracking-forms";
+export const metadata = { title: "Cari Applicant ID" };
 export default function RecoveryPage() {
   return (
-    <main className="mx-auto max-w-2xl px-6 py-12">
-      <Link href="/lacak" className="text-sm font-semibold text-primary">
-        ← Lacak lamaran
-      </Link>
-      <div className="mt-8 rounded-xl border border-border bg-white p-6 sm:p-10">
-        <h1 className="text-3xl font-bold">Cari Applicant ID</h1>
+    <main className="mx-auto max-w-xl px-4 py-8 sm:px-6 sm:py-12">
+      <BackLink href="/lacak">Lacak lamaran</BackLink>
+      <div className="mt-6 rounded-panel border border-border bg-surface p-6 sm:p-10">
+        <h1 className="text-3xl font-bold tracking-tight">Cari Applicant ID</h1>
         <p className="mt-3 text-muted">
           Masukkan nama lengkap dan nomor WhatsApp yang digunakan saat melamar.
         </p>

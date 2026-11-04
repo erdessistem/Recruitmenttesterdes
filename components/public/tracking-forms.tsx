@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { lookup, recover, reveal, withdraw } from "@/app/(public)/lacak/actions";
 import { formatDate } from "@/lib/format/date";
+import { buttonClass } from "@/components/ui/button";
 
 function Values({ names = false }: { names?: boolean }) {
   return (
@@ -30,7 +31,7 @@ function Values({ names = false }: { names?: boolean }) {
     </>
   );
 }
-const button = "rounded-control bg-primary px-5 py-3 font-semibold text-white disabled:opacity-50";
+const button = buttonClass("primary", "w-full sm:w-auto");
 export function LookupForm() {
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
@@ -133,10 +134,10 @@ export function RecoveryForm() {
           ) : (
             <ul className="mt-4 space-y-3">
               {items.map((item) => (
-                <li key={item.handle} className="rounded-control border border-border p-4">
+                <li key={item.handle} className="rounded-panel border border-border p-4">
                   <p className="font-semibold">{item.vacancy}</p>
                   <p className="mt-1 text-sm text-muted">{formatDate(item.appliedAt)}</p>
-                  <p className="mt-2 break-all font-mono text-sm">
+                  <p className="tabular mt-2 break-all text-sm font-semibold">
                     {shown[item.handle] ?? item.maskedId}
                   </p>
                   {shown[item.handle] ? (
@@ -154,14 +155,14 @@ export function RecoveryForm() {
                           type="button"
                           disabled={pending}
                           onClick={() => show(item.handle)}
-                          className={button}
+                          className={buttonClass("primary")}
                         >
                           Ya, tampilkan
                         </button>
                         <button
                           type="button"
                           onClick={() => setConfirm(null)}
-                          className="text-sm text-muted"
+                          className={buttonClass("ghost")}
                         >
                           Batal
                         </button>
@@ -235,11 +236,11 @@ export function WithdrawalForm({ token }: { token: string }) {
           <label className="flex gap-2 text-sm">
             <input type="checkbox" required /> Saya yakin ingin menarik lamaran ini.
           </label>
-          <div className="flex gap-4">
-            <button className={button} disabled={pending}>
-              {pending ? "Memproses…" : "Konfirmasi tarik lamaran"}
+          <div className="flex flex-wrap gap-3">
+            <button className={buttonClass("danger")} disabled={pending}>
+              {pending ? "Memproses…" : "Tarik lamaran"}
             </button>
-            <button type="button" onClick={() => setOpen(false)} className="text-sm text-muted">
+            <button type="button" onClick={() => setOpen(false)} className={buttonClass("ghost")}>
               Batal
             </button>
           </div>

@@ -14,12 +14,12 @@ export function SiteHeader() {
             <span className="h-1 w-3 rounded-full bg-primary" />
             <span className="h-2.5 w-2.5 rounded-full border-2 border-primary" />
           </span>
-          <span>
-            Erdes Group <span className="font-medium text-muted">Karier</span>
+          <span className="whitespace-nowrap">
+            Erdes Group <span className="hidden font-medium text-muted sm:inline">Karier</span>
           </span>
         </Link>
-        <div className="flex items-center gap-1 text-sm font-semibold sm:gap-2">
-          <Link href="/#lowongan" className="rounded-control px-3 py-2 hover:bg-paper">
+        <div className="flex items-center gap-1 whitespace-nowrap text-sm font-semibold sm:gap-2">
+          <Link href="/#lowongan" className="hidden rounded-control px-3 py-2 hover:bg-paper sm:inline-block">
             Lowongan
           </Link>
           <Link
