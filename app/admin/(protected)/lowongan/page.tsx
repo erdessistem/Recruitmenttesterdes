@@ -1,13 +1,126 @@
 import Link from "next/link";
 import { repository } from "@/lib/repositories";
-import { EMPLOYMENT_TYPE_LABELS, VACANCY_STATUSES, VACANCY_STATUS_LABELS, type VacancyStatus } from "@/lib/constants";
+import {
+  EMPLOYMENT_TYPE_LABELS,
+  VACANCY_STATUSES,
+  VACANCY_STATUS_LABELS,
+  type VacancyStatus,
+} from "@/lib/constants";
 import { formatDate } from "@/lib/format/date";
 import { changeVacancyStatus } from "./actions";
 import { requireAdmin } from "@/lib/auth/session";
-export default async function Vacancies({ searchParams }: { searchParams: Promise<{ status?: string; department?: string }> }) {
+export default async function Vacancies({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string; department?: string }>;
+}) {
   await requireAdmin();
   const filters = await searchParams;
   const [all, apps] = await Promise.all([repository.getVacancies(), repository.getApplications()]);
-  const vacancies = all.filter(v => (!filters.status || v.status === filters.status) && (!filters.department || v.department === filters.department));
-  return <div className="mx-auto max-w-7xl"><div className="flex flex-wrap items-end justify-between gap-4"><div><p className="text-sm font-semibold uppercase tracking-widest text-primary">Manajemen rekrutmen</p><h1 className="mt-2 text-3xl font-bold">Lowongan</h1></div><Link href="/admin/lowongan/baru" className="rounded-control bg-primary px-4 py-3 text-sm font-semibold text-white">+ Buat lowongan</Link></div><form className="admin-card mt-7 flex flex-wrap items-end gap-3"><label className="text-sm font-semibold">Status<select className="control mt-2" name="status" defaultValue={filters.status ?? ""}><option value="">Semua status</option>{VACANCY_STATUSES.map(s => <option key={s} value={s}>{VACANCY_STATUS_LABELS[s]}</option>)}</select></label><label className="text-sm font-semibold">Departemen<select className="control mt-2" name="department" defaultValue={filters.department ?? ""}><option value="">Semua departemen</option>{[...new Set(all.map(v => v.department))].sort().map(d => <option key={d}>{d}</option>)}</select></label><button className="action-button min-h-11">Terapkan</button></form><div className="admin-card mt-5 overflow-x-auto"><table className="admin-table"><thead><tr><th>Lowongan</th><th>Departemen / lokasi</th><th>Jenis</th><th>Status</th><th>Pelamar</th><th>Ditutup</th><th>Tindakan</th></tr></thead><tbody>{vacancies.map(v => <tr key={v.id}><td><Link className="font-semibold text-primary" href={`/admin/lowongan/${v.id}`}>{v.title}</Link></td><td>{v.department}<br />{v.location}</td><td>{EMPLOYMENT_TYPE_LABELS[v.employmentType]}</td><td>{VACANCY_STATUS_LABELS[v.status]}</td><td>{apps.filter(a => a.vacancyId === v.id).length}</td><td>{v.closeAt ? formatDate(v.closeAt) : "—"}</td><td><form action={changeVacancyStatus} className="flex gap-2"><input type="hidden" name="id" value={v.id} /><select name="status" aria-label={`Status ${v.title}`} defaultValue={v.status} className="rounded border border-border p-2">{VACANCY_STATUSES.map((s: VacancyStatus) => <option key={s} value={s}>{VACANCY_STATUS_LABELS[s]}</option>)}</select><button className="text-sm font-semibold text-primary">Simpan</button></form></td></tr>)}</tbody></table>{!vacancies.length && <p className="py-6 text-sm text-muted">Tidak ada lowongan yang sesuai.</p>}</div></div>;
+  const vacancies = all.filter(
+    (v) =>
+      (!filters.status || v.status === filters.status) &&
+      (!filters.department || v.department === filters.department),
+  );
+  return (
+    <div className="mx-auto max-w-7xl">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-widest text-primary">
+            Manajemen rekrutmen
+          </p>
+          <h1 className="mt-2 text-3xl font-bold">Lowongan</h1>
+        </div>
+        <Link
+          href="/admin/lowongan/baru"
+          className="rounded-control bg-primary px-4 py-3 text-sm font-semibold text-white"
+        >
+          + Buat lowongan
+        </Link>
+      </div>
+      <form className="admin-card mt-7 flex flex-wrap items-end gap-3">
+        <label className="text-sm font-semibold">
+          Status
+          <select className="control mt-2" name="status" defaultValue={filters.status ?? ""}>
+            <option value="">Semua status</option>
+            {VACANCY_STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {VACANCY_STATUS_LABELS[s]}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="text-sm font-semibold">
+          Departemen
+          <select
+            className="control mt-2"
+            name="department"
+            defaultValue={filters.department ?? ""}
+          >
+            <option value="">Semua departemen</option>
+            {[...new Set(all.map((v) => v.department))].sort().map((d) => (
+              <option key={d}>{d}</option>
+            ))}
+          </select>
+        </label>
+        <button className="action-button min-h-11">Terapkan</button>
+      </form>
+      <div className="admin-card mt-5 overflow-x-auto">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Lowongan</th>
+              <th>Departemen / lokasi</th>
+              <th>Jenis</th>
+              <th>Status</th>
+              <th>Pelamar</th>
+              <th>Ditutup</th>
+              <th>Tindakan</th>
+            </tr>
+          </thead>
+          <tbody>
+            {vacancies.map((v) => (
+              <tr key={v.id}>
+                <td>
+                  <Link className="font-semibold text-primary" href={`/admin/lowongan/${v.id}`}>
+                    {v.title}
+                  </Link>
+                </td>
+                <td>
+                  {v.department}
+                  <br />
+                  {v.location}
+                </td>
+                <td>{EMPLOYMENT_TYPE_LABELS[v.employmentType]}</td>
+                <td>{VACANCY_STATUS_LABELS[v.status]}</td>
+                <td>{apps.filter((a) => a.vacancyId === v.id).length}</td>
+                <td>{v.closeAt ? formatDate(v.closeAt) : "—"}</td>
+                <td>
+                  <form action={changeVacancyStatus} className="flex gap-2">
+                    <input type="hidden" name="id" value={v.id} />
+                    <select
+                      name="status"
+                      aria-label={`Status ${v.title}`}
+                      defaultValue={v.status}
+                      className="rounded border border-border p-2"
+                    >
+                      {VACANCY_STATUSES.map((s: VacancyStatus) => (
+                        <option key={s} value={s}>
+                          {VACANCY_STATUS_LABELS[s]}
+                        </option>
+                      ))}
+                    </select>
+                    <button className="text-sm font-semibold text-primary">Simpan</button>
+                  </form>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {!vacancies.length && (
+          <p className="py-6 text-sm text-muted">Tidak ada lowongan yang sesuai.</p>
+        )}
+      </div>
+    </div>
+  );
 }

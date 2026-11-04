@@ -4,17 +4,205 @@ import { useRouter } from "next/navigation";
 import { STAGES, STAGE_LABELS, type Stage, type ApplicationStatus } from "@/lib/constants";
 import { updateApplicant } from "@/app/admin/(protected)/pelamar/actions";
 
-export function ApplicantWorkflow({ id, stage, status, messageTemplate }: { id: string; stage: Stage; status: ApplicationStatus; messageTemplate: string }) {
+export function ApplicantWorkflow({
+  id,
+  stage,
+  status,
+  messageTemplate,
+}: {
+  id: string;
+  stage: Stage;
+  status: ApplicationStatus;
+  messageTemplate: string;
+}) {
   const router = useRouter();
-  const [target, setTarget] = useState<Stage>(stage); const [publicNote, setPublicNote] = useState(""); const [reason, setReason] = useState(""); const [note, setNote] = useState(""); const [additional, setAdditional] = useState("");
-  const [notice, setNotice] = useState(""); const [pending, setPending] = useState(false);
+  const [target, setTarget] = useState<Stage>(stage);
+  const [publicNote, setPublicNote] = useState("");
+  const [reason, setReason] = useState("");
+  const [note, setNote] = useState("");
+  const [additional, setAdditional] = useState("");
+  const [notice, setNotice] = useState("");
+  const [pending, setPending] = useState(false);
   async function perform(action: string) {
-    const prompts: Record<string, string> = { move: stage === "hired" ? "Kandidat sudah diterima. Yakin ingin memindahkannya kembali?" : `Pindahkan ke ${STAGE_LABELS[target]}?`, reject: "Tolak lamaran ini? Alasan hanya disimpan sebagai catatan internal.", reopen: "Buka kembali lamaran yang ditolak?", note: "Simpan catatan internal ini?" };
+    const prompts: Record<string, string> = {
+      move:
+        stage === "hired"
+          ? "Kandidat sudah diterima. Yakin ingin memindahkannya kembali?"
+          : `Pindahkan ke ${STAGE_LABELS[target]}?`,
+      reject: "Tolak lamaran ini? Alasan hanya disimpan sebagai catatan internal.",
+      reopen: "Buka kembali lamaran yang ditolak?",
+      note: "Simpan catatan internal ini?",
+    };
     if (!window.confirm(prompts[action])) return;
-    setPending(true); setNotice("");
-    try { const result = await updateApplicant(id, { action, stage: target, note: action === "move" ? publicNote : action === "reject" ? reason : note, confirmed: true }); setNotice(result.message); if (result.ok) { setPublicNote(""); setReason(""); setNote(""); router.refresh(); } }
-    catch { setNotice("Perubahan belum dapat disimpan. Silakan coba lagi."); } finally { setPending(false); }
+    setPending(true);
+    setNotice("");
+    try {
+      const result = await updateApplicant(id, {
+        action,
+        stage: target,
+        note: action === "move" ? publicNote : action === "reject" ? reason : note,
+        confirmed: true,
+      });
+      setNotice(result.message);
+      if (result.ok) {
+        setPublicNote("");
+        setReason("");
+        setNote("");
+        router.refresh();
+      }
+    } catch {
+      setNotice("Perubahan belum dapat disimpan. Silakan coba lagi.");
+    } finally {
+      setPending(false);
+    }
   }
-  async function copy() { try { await navigator.clipboard.writeText(messageTemplate.replaceAll("{pesan_tambahan}", additional)); setNotice("Pesan WhatsApp berhasil disalin."); } catch { setNotice("Gagal menyalin. Pilih dan salin pesan secara manual."); } }
-  return <section className="admin-card mt-6"><h2 className="text-lg font-bold">Tindakan rekrutmen</h2><p className="mt-2 text-sm text-muted">Perubahan tahap memerlukan konfirmasi dan dicatat dalam riwayat.</p>{notice && <p role="status" className="mt-4 rounded-control bg-blue-50 p-3 text-sm">{notice}</p>}<div className="mt-5 grid gap-6 lg:grid-cols-2">{status === "active" && <><div><label className="block text-sm font-semibold">Pindahkan ke tahap<select className="control mt-2 font-normal" value={target} onChange={e => setTarget(e.target.value as Stage)}>{STAGES.map(s => <option key={s} value={s}>{STAGE_LABELS[s]}</option>)}</select></label><label className="mt-4 block text-sm font-semibold">Catatan untuk kandidat (opsional)<textarea className="control mt-2 font-normal" maxLength={1000} value={publicNote} onChange={e => setPublicNote(e.target.value)} /><span className="mt-1 block text-xs font-normal text-muted">Catatan ini dapat dibaca kandidat melalui link lacak.</span></label><button type="button" disabled={pending || target === stage} onClick={() => perform("move")} className="action-button mt-3 disabled:opacity-50">Pindahkan tahap</button></div><div><label className="block text-sm font-semibold">Alasan penolakan (internal)<textarea className="control mt-2 font-normal" maxLength={2000} value={reason} onChange={e => setReason(e.target.value)} /></label><button type="button" disabled={pending || !reason.trim() || stage === "hired"} onClick={() => perform("reject")} className="action-button mt-3 text-danger disabled:opacity-50">Tolak lamaran</button>{stage === "hired" && <p className="mt-2 text-xs text-muted">Pindahkan kandidat dari tahap Diterima sebelum menolak.</p>}</div></>}{status === "rejected" && <div><p className="text-sm text-muted">Lamaran ini ditolak. Buka kembali sebelum memindahkan tahap.</p><button type="button" disabled={pending} onClick={() => perform("reopen")} className="action-button mt-3">Buka kembali lamaran</button></div>}{status === "withdrawn" && <p className="text-sm text-muted">Lamaran yang ditarik tidak dapat diubah melalui portal.</p>}<div><label className="block text-sm font-semibold">Tambah catatan internal<textarea className="control mt-2 font-normal" maxLength={2000} value={note} onChange={e => setNote(e.target.value)} /></label><button type="button" disabled={pending || !note.trim()} onClick={() => perform("note")} className="action-button mt-3 disabled:opacity-50">Simpan catatan</button></div><div><label className="block text-sm font-semibold">Pesan tambahan WhatsApp<textarea className="control mt-2 font-normal" value={additional} onChange={e => setAdditional(e.target.value)} /></label><label className="mt-3 block text-sm font-semibold">Pratinjau pesan<textarea className="control mt-2 min-h-40 font-normal" readOnly value={messageTemplate.replaceAll("{pesan_tambahan}", additional)} /></label><button type="button" onClick={copy} className="action-button mt-3">Salin pesan WhatsApp</button></div></div></section>;
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(
+        messageTemplate.replaceAll("{pesan_tambahan}", additional),
+      );
+      setNotice("Pesan WhatsApp berhasil disalin.");
+    } catch {
+      setNotice("Gagal menyalin. Pilih dan salin pesan secara manual.");
+    }
+  }
+  return (
+    <section className="admin-card mt-6">
+      <h2 className="text-lg font-bold">Tindakan rekrutmen</h2>
+      <p className="mt-2 text-sm text-muted">
+        Perubahan tahap memerlukan konfirmasi dan dicatat dalam riwayat.
+      </p>
+      {notice && (
+        <p role="status" className="mt-4 rounded-control bg-blue-50 p-3 text-sm">
+          {notice}
+        </p>
+      )}
+      <div className="mt-5 grid gap-6 lg:grid-cols-2">
+        {status === "active" && (
+          <>
+            <div>
+              <label className="block text-sm font-semibold">
+                Pindahkan ke tahap
+                <select
+                  className="control mt-2 font-normal"
+                  value={target}
+                  onChange={(e) => setTarget(e.target.value as Stage)}
+                >
+                  {STAGES.map((s) => (
+                    <option key={s} value={s}>
+                      {STAGE_LABELS[s]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="mt-4 block text-sm font-semibold">
+                Catatan untuk kandidat (opsional)
+                <textarea
+                  className="control mt-2 font-normal"
+                  maxLength={1000}
+                  value={publicNote}
+                  onChange={(e) => setPublicNote(e.target.value)}
+                />
+                <span className="mt-1 block text-xs font-normal text-muted">
+                  Catatan ini dapat dibaca kandidat melalui link lacak.
+                </span>
+              </label>
+              <button
+                type="button"
+                disabled={pending || target === stage}
+                onClick={() => perform("move")}
+                className="action-button mt-3 disabled:opacity-50"
+              >
+                Pindahkan tahap
+              </button>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold">
+                Alasan penolakan (internal)
+                <textarea
+                  className="control mt-2 font-normal"
+                  maxLength={2000}
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                />
+              </label>
+              <button
+                type="button"
+                disabled={pending || !reason.trim() || stage === "hired"}
+                onClick={() => perform("reject")}
+                className="action-button mt-3 text-danger disabled:opacity-50"
+              >
+                Tolak lamaran
+              </button>
+              {stage === "hired" && (
+                <p className="mt-2 text-xs text-muted">
+                  Pindahkan kandidat dari tahap Diterima sebelum menolak.
+                </p>
+              )}
+            </div>
+          </>
+        )}
+        {status === "rejected" && (
+          <div>
+            <p className="text-sm text-muted">
+              Lamaran ini ditolak. Buka kembali sebelum memindahkan tahap.
+            </p>
+            <button
+              type="button"
+              disabled={pending}
+              onClick={() => perform("reopen")}
+              className="action-button mt-3"
+            >
+              Buka kembali lamaran
+            </button>
+          </div>
+        )}
+        {status === "withdrawn" && (
+          <p className="text-sm text-muted">
+            Lamaran yang ditarik tidak dapat diubah melalui portal.
+          </p>
+        )}
+        <div>
+          <label className="block text-sm font-semibold">
+            Tambah catatan internal
+            <textarea
+              className="control mt-2 font-normal"
+              maxLength={2000}
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+            />
+          </label>
+          <button
+            type="button"
+            disabled={pending || !note.trim()}
+            onClick={() => perform("note")}
+            className="action-button mt-3 disabled:opacity-50"
+          >
+            Simpan catatan
+          </button>
+        </div>
+        <div>
+          <label className="block text-sm font-semibold">
+            Pesan tambahan WhatsApp
+            <textarea
+              className="control mt-2 font-normal"
+              value={additional}
+              onChange={(e) => setAdditional(e.target.value)}
+            />
+          </label>
+          <label className="mt-3 block text-sm font-semibold">
+            Pratinjau pesan
+            <textarea
+              className="control mt-2 min-h-40 font-normal"
+              readOnly
+              value={messageTemplate.replaceAll("{pesan_tambahan}", additional)}
+            />
+          </label>
+          <button type="button" onClick={copy} className="action-button mt-3">
+            Salin pesan WhatsApp
+          </button>
+        </div>
+      </div>
+    </section>
+  );
 }
