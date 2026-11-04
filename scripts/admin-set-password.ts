@@ -1,7 +1,7 @@
-import nextEnv from "@next/env";
+const { loadEnvConfig } = require("@next/env") as typeof import("@next/env");
 import { hash } from "bcryptjs";
 import { z } from "zod";
-nextEnv.loadEnvConfig(process.cwd());
+loadEnvConfig(process.cwd());
 async function main() {
   const email = z.email().parse(process.env.ADMIN_EMAIL?.trim().toLowerCase());
   const password = process.env.ADMIN_PASSWORD ?? "";

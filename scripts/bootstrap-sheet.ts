@@ -1,7 +1,7 @@
-import nextEnv from "@next/env";
+const { loadEnvConfig } = require("@next/env") as typeof import("@next/env");
 import { google, type sheets_v4 } from "googleapis";
 import { SHEET_HEADERS, type SheetName } from "../lib/sheets/schema";
-nextEnv.loadEnvConfig(process.cwd());
+loadEnvConfig(process.cwd());
 
 async function main() {
   const { getGoogleCredentials, getSpreadsheetId } = await import("../lib/env");
@@ -36,7 +36,10 @@ async function main() {
   const toCells = (values: readonly (string | number | boolean)[]) => ({ values: values.map(value => ({ userEnteredValue: typeof value === "number" ? { numberValue: value } : typeof value === "boolean" ? { boolValue: value } : { stringValue: value } })) });
   for (const name of names) {
     const sheetId = ids.get(name); if (sheetId == null) throw new Error(`Tab ${name} tidak tersedia.`);
-    requests.push({ updateSheetProperties: { properties: { sheetId, gridProperties: { frozenRowCount: 1 } }, fields: "gridProperties.frozenRowCount" } });
+    const grid: sheets_v4.Schema$GridProperties = { frozenRowCount: 1 };
+    // Only empty tabs are resized, so existing data can never be cut off. New tabs default to 26 columns.
+    if (needsHeaders.includes(name)) grid.columnCount = Math.max(26, SHEET_HEADERS[name].length);
+    requests.push({ updateSheetProperties: { properties: { sheetId, gridProperties: grid }, fields: grid.columnCount ? "gridProperties.frozenRowCount,gridProperties.columnCount" : "gridProperties.frozenRowCount" } });
     if (needsHeaders.includes(name)) requests.push({ updateCells: { start: { sheetId, rowIndex: 0, columnIndex: 0 }, rows: [toCells(SHEET_HEADERS[name])], fields: "userEnteredValue" } });
     if (name === "Settings" && settingsEmpty) requests.push({ updateCells: { start: { sheetId, rowIndex: 1, columnIndex: 0 }, rows: settingsToRows(createDefaultSettings()).map(toCells), fields: "userEnteredValue" } });
   }
