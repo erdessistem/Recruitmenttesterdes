@@ -194,6 +194,11 @@ export interface Repository {
   // Vacancies
   getOpenVacancies(now?: Date): Promise<Vacancy[]>;
   /** Open vacancies plus the public company profile in one read (one Sheets load). */
+  /** A vacancy by slug, other open vacancies and the company profile in one read. */
+  getVacancyPageData(
+    slug: string,
+    now?: Date,
+  ): Promise<{ vacancy: Vacancy | null; others: Vacancy[]; companyProfile: CompanyProfile }>;
   getHomePageData(now?: Date): Promise<{ vacancies: Vacancy[]; companyProfile: CompanyProfile }>;
   getVacancies(filters?: VacancyFilters): Promise<Vacancy[]>;
   getVacancyBySlug(slug: string): Promise<Vacancy | null>;

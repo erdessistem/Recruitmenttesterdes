@@ -182,6 +182,16 @@ export class MemoryRepository implements Repository {
     }
   }
 
+  async getVacancyPageData(slug: string, now: Date = this.clock()) {
+    const vacancy = await this.getVacancyBySlug(slug);
+    const open = await this.getOpenVacancies(now);
+    return {
+      vacancy,
+      others: open.filter((item) => item.id !== vacancy?.id),
+      companyProfile: clone(this.settings.companyProfile),
+    };
+  }
+
   async getHomePageData(now: Date = this.clock()) {
     return {
       vacancies: await this.getOpenVacancies(now),

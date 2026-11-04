@@ -166,3 +166,27 @@ export function StageMeter({
     </span>
   );
 }
+
+/** The route with no progress, to show candidates what happens after they apply. */
+export function StageRoute({ className }: { className?: string }) {
+  return (
+    <ol className={cn("relative grid gap-4 sm:grid-cols-6 sm:gap-0", className)}>
+      <div
+        aria-hidden="true"
+        className="absolute bottom-2 left-[6px] top-2 w-1 rounded-full bg-primary-soft sm:inset-x-[8.333%] sm:bottom-auto sm:top-[6px] sm:h-1 sm:w-auto"
+      />
+      {STAGES.map((stage) => (
+        <li
+          key={stage}
+          className="relative flex items-center gap-3 sm:flex-col sm:gap-2 sm:text-center"
+        >
+          <span
+            aria-hidden="true"
+            className="relative z-10 h-4 w-4 shrink-0 rounded-full border-2 border-primary bg-surface"
+          />
+          <span className="text-sm">{STAGE_LABELS[stage]}</span>
+        </li>
+      ))}
+    </ol>
+  );
+}

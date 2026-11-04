@@ -9,7 +9,16 @@ const jakarta = Plus_Jakarta_Sans({
   display: "swap",
 });
 
+function siteUrl() {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000");
+  } catch {
+    return new URL("http://localhost:3000");
+  }
+}
+
 export const metadata: Metadata = {
+  metadataBase: siteUrl(),
   title: { default: "Karier Erdes Group", template: "%s · Karier Erdes Group" },
   description: "Portal rekrutmen Erdes Group",
 };
