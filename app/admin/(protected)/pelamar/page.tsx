@@ -124,14 +124,18 @@ export default async function Applicants({ searchParams }: { searchParams: Promi
               <th>Status</th>
               <th>Tanggal</th>
               <th>WhatsApp</th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
             {apps.slice((page - 1) * size, page * size).map((a) => (
               <tr key={a.id}>
                 <td>
-                  <span className="font-semibold">{a.fullName || a.id}</span>
+                  <Link
+                    className="font-semibold text-primary hover:underline"
+                    href={`/admin/pelamar/${encodeURIComponent(a.id)}`}
+                  >
+                    {a.fullName || a.id}
+                  </Link>
                   {Date.now() - new Date(a.appliedAt).getTime() >= 0 &&
                     Date.now() - new Date(a.appliedAt).getTime() < 7 * 86400000 && (
                       <span className="ml-2 rounded-full bg-blue-50 px-2 py-1 text-xs text-primary">
@@ -146,14 +150,6 @@ export default async function Applicants({ searchParams }: { searchParams: Promi
                 <td>{APPLICATION_STATUS_LABELS[a.status]}</td>
                 <td>{formatDate(a.appliedAt)}</td>
                 <td>{a.whatsapp || "—"}</td>
-                <td>
-                  <Link
-                    className="font-semibold text-primary"
-                    href={`/admin/pelamar/${encodeURIComponent(a.id)}`}
-                  >
-                    Detail →
-                  </Link>
-                </td>
               </tr>
             ))}
           </tbody>
