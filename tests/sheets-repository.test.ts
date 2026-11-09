@@ -45,6 +45,16 @@ describe("Sheets repository", () => {
     expect(application?.lastPosition).toBe("");
     expect(() => validateHeaders("Applications", SHEET_HEADERS.Applications.slice(0, -2))).toThrow();
   });
+  it("saves a bulk update in a single write", async () => {
+    const { client, seed, calls } = fakeSheets();
+    const repo = createSheetsRepository(client, "test");
+    const ids = [seed.applications[0].id, seed.applications[1].id];
+    const result = await repo.bulkUpdateApplications(ids, { type: "move", stage: "offering", note: "" }, "admin@example.com");
+    expect(result.updated).toEqual(ids);
+    expect(calls).toHaveLength(1);
+    const repo2 = createSheetsRepository(client, "test");
+    for (const id of ids) expect((await repo2.getApplicationById(id))?.currentStage).toBe("offering");
+  });
   it("reads seed records, writes literal data, and preserves updates across instances", async () => {
     const { client, seed, calls } = fakeSheets();
     const repo = createSheetsRepository(client, "test");

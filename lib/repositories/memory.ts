@@ -1,6 +1,7 @@
 import "server-only";
 
 import { isRetentionEligible } from "@/lib/admin/retention";
+import { moveStage, rejectApplication } from "@/lib/admin/workflow";
 
 import {
   STAGES,
@@ -21,8 +22,11 @@ import {
 import type {
   AdminUser,
   AnonymizationResult,
+  ApplicantRow,
   Application,
   ApplicationFilters,
+  BulkAction,
+  BulkResult,
   CreateAdminInput,
   CreateVacancyInput,
   DashboardStats,
@@ -628,6 +632,85 @@ export class MemoryRepository implements Repository {
       .filter((note) => note.applicationId === applicationId)
       .sort((a, b) => compareDateDesc(a.createdAt, b.createdAt))
       .map((note) => clone(note));
+  }
+
+  /** The time each application last changed stage or status, from its history. */
+  private stageDates(): Map<string, string> {
+    const dates = new Map<string, string>();
+    for (const entry of this.stageHistory) {
+      const previous = dates.get(entry.applicationId);
+      if (!previous || new Date(entry.changedAt).getTime() >= new Date(previous).getTime()) {
+        dates.set(entry.applicationId, entry.changedAt);
+      }
+    }
+    return dates;
+  }
+
+  private async applicantRows(filters: ApplicationFilters = {}): Promise<ApplicantRow[]> {
+    const dates = this.stageDates();
+    return (await this.getApplications(filters)).map((application) => ({
+      application,
+      stageSince: dates.get(application.id) ?? application.appliedAt,
+    }));
+  }
+
+  async getApplicantList(filters: ApplicationFilters = {}) {
+    return { vacancies: await this.getVacancies(), rows: await this.applicantRows(filters) };
+  }
+
+  async getApplicantWorkspace(id: string, filters: ApplicationFilters = {}) {
+    const application = await this.reconcileApplicationStage(id);
+    if (!application) return null;
+    return {
+      application,
+      vacancy: await this.getVacancyById(application.vacancyId),
+      history: await this.getStageHistory(application.id),
+      notes: await this.getNotes(application.id),
+      settings: await this.getSettings(),
+      rows: await this.applicantRows(filters),
+    };
+  }
+
+  async getDashboardData(now: Date = this.clock()) {
+    await this.reconcileAllApplicationStages();
+    return {
+      stats: await this.getDashboardStats(now),
+      vacancies: await this.getVacancies(),
+      rows: await this.applicantRows(),
+    };
+  }
+
+  async bulkUpdateApplications(ids: string[], action: BulkAction, actor: string): Promise<BulkResult> {
+    const unique = [...new Set(ids)];
+    if (unique.length === 0 || unique.length > 100) {
+      throw new RepositoryError("VALIDATION", "Pilih 1–100 pelamar.");
+    }
+    const result: BulkResult = { updated: [], skipped: [] };
+    for (const id of unique) {
+      const current = await this.getApplicationById(id);
+      if (!current) {
+        result.skipped.push({ id, name: id, reason: "Lamaran tidak ditemukan." });
+        continue;
+      }
+      try {
+        if (action.type === "move") {
+          if (current.status === "active" && current.currentStage === action.stage) {
+            throw new Error("Sudah berada di tahap ini.");
+          }
+          await moveStage(this, id, action.stage, action.note, actor);
+        } else {
+          await rejectApplication(this, id, action.reason, actor);
+        }
+        result.updated.push(id);
+      } catch (error) {
+        result.skipped.push({
+          id,
+          name: current.fullName || id,
+          reason: error instanceof Error ? error.message : "Tidak dapat diperbarui.",
+        });
+      }
+    }
+    return result;
   }
 
   async getDashboardStats(now: Date = this.clock()): Promise<DashboardStats> {

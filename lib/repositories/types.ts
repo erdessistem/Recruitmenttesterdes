@@ -187,6 +187,22 @@ export interface DashboardStats {
   recentApplications: Application[];
 }
 
+/** An application with the time it entered its current stage or status. */
+export interface ApplicantRow {
+  application: Application;
+  /** When the latest stage or status change happened; the application date if none. */
+  stageSince: string;
+}
+
+export type BulkAction =
+  | { type: "move"; stage: Stage; note: string }
+  | { type: "reject"; reason: string };
+
+export interface BulkResult {
+  updated: string[];
+  skipped: Array<{ id: string; name: string; reason: string }>;
+}
+
 export interface AnonymizationResult {
   count: number;
   ids: string[];
@@ -252,6 +268,26 @@ export interface Repository {
     body: string,
   ): Promise<InternalNote>;
   getNotes(applicationId: string): Promise<InternalNote[]>;
+
+  // Admin pages (each is one Sheets load; the reconciling ones may write once)
+  /** Vacancies plus filtered applications with their stage dates. */
+  getApplicantList(filters?: ApplicationFilters): Promise<{ vacancies: Vacancy[]; rows: ApplicantRow[] }>;
+  /** Reconciles one application, then returns everything its admin page needs. */
+  getApplicantWorkspace(
+    id: string,
+    filters?: ApplicationFilters,
+  ): Promise<{
+    application: Application;
+    vacancy: Vacancy | null;
+    history: StageHistoryEntry[];
+    notes: InternalNote[];
+    settings: Settings;
+    rows: ApplicantRow[];
+  } | null>;
+  /** Reconciles all applications, then returns dashboard stats, vacancies and every row. */
+  getDashboardData(now?: Date): Promise<{ stats: DashboardStats; vacancies: Vacancy[]; rows: ApplicantRow[] }>;
+  /** Applies one action to many applications in a single write. Ineligible ones are skipped. */
+  bulkUpdateApplications(ids: string[], action: BulkAction, actor: string): Promise<BulkResult>;
 
   // Dashboard and settings
   getDashboardStats(now?: Date): Promise<DashboardStats>;

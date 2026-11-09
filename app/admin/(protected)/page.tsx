@@ -2,18 +2,23 @@ import Link from "next/link";
 import { repository } from "@/lib/repositories";
 import { APPLICATION_STATUS_LABELS, STAGE_LABELS, STAGES } from "@/lib/constants";
 import { formatDate } from "@/lib/format/date";
+import { attention, daysSince, WAITING_DAYS } from "@/lib/admin/attention";
+import { Badge } from "@/components/ui/badge";
 import { requireAdmin } from "@/lib/auth/session";
 import { StageMeter } from "@/components/ui/stage-line";
 import { EmptyState } from "@/components/ui/empty-state";
 export const metadata = { title: { absolute: "Dashboard · Admin Erdes" } };
 export default async function Dashboard() {
   await requireAdmin();
-  await repository.reconcileAllApplicationStages();
-  const [stats, vacancies] = await Promise.all([
-    repository.getDashboardStats(),
-    repository.getVacancies(),
-  ]);
+  const now = new Date();
+  const { stats, vacancies, rows } = await repository.getDashboardData(now);
   const title = new Map(vacancies.map((v) => [v.id, v.title]));
+  const todo = attention(rows, vacancies, now);
+  const nothingToDo =
+    !todo.unscreened.length &&
+    !todo.waiting.length &&
+    !todo.closingSoon.length &&
+    !todo.quotaFilled.length;
   const cards = [
     ["Lowongan aktif", stats.activeVacancies],
     ["Total pelamar", stats.totalApplicants],
@@ -32,6 +37,73 @@ export default async function Dashboard() {
           </div>
         ))}
       </dl>
+
+      <section className="admin-card mt-6" aria-labelledby="todo-title">
+        <h2 id="todo-title" className="text-lg font-bold">
+          Perlu perhatian
+        </h2>
+        {nothingToDo ? (
+          <p className="mt-2 text-sm text-muted">
+            Tidak ada yang tertunda. Semua pelamar aktif bergerak dalam {WAITING_DAYS} hari
+            terakhir.
+          </p>
+        ) : (
+          <div className="mt-4 grid gap-6 md:grid-cols-2">
+            <AttentionList
+              title="Belum di-screening"
+              empty="Semua lamaran masuk sudah ditinjau."
+              href="/admin/pelamar?stage=applied&status=active"
+              count={todo.unscreened.length}
+              items={todo.unscreened.slice(0, 5).map((row) => ({
+                key: row.application.id,
+                href: `/admin/pelamar/${encodeURIComponent(row.application.id)}?stage=applied&status=active`,
+                label: row.application.fullName || row.application.id,
+                detail: title.get(row.application.vacancyId) ?? "",
+                days: daysSince(row.stageSince, now),
+              }))}
+            />
+            <AttentionList
+              title={`Menunggu lebih dari ${WAITING_DAYS} hari`}
+              empty="Tidak ada kandidat yang tertahan."
+              href="/admin/pelamar?view=menunggu"
+              count={todo.waiting.length}
+              items={todo.waiting.slice(0, 5).map((row) => ({
+                key: row.application.id,
+                href: `/admin/pelamar/${encodeURIComponent(row.application.id)}?view=menunggu`,
+                label: row.application.fullName || row.application.id,
+                detail: `${STAGE_LABELS[row.application.currentStage]}, ${title.get(row.application.vacancyId) ?? ""}`,
+                days: daysSince(row.stageSince, now),
+              }))}
+            />
+            {todo.closingSoon.length > 0 && (
+              <AttentionList
+                title="Lowongan segera ditutup"
+                href="/admin/lowongan"
+                count={todo.closingSoon.length}
+                items={todo.closingSoon.map((v) => ({
+                  key: v.id,
+                  href: `/admin/pelamar?vacancy=${encodeURIComponent(v.id)}`,
+                  label: v.title,
+                  detail: `Ditutup ${formatDate(v.closeAt!)}`,
+                }))}
+              />
+            )}
+            {todo.quotaFilled.length > 0 && (
+              <AttentionList
+                title="Kuota sudah terpenuhi"
+                href="/admin/lowongan"
+                count={todo.quotaFilled.length}
+                items={todo.quotaFilled.map(({ vacancy, hired }) => ({
+                  key: vacancy.id,
+                  href: `/admin/lowongan/${encodeURIComponent(vacancy.id)}`,
+                  label: vacancy.title,
+                  detail: `${hired} dari ${vacancy.quota} diterima. Pertimbangkan menutup lowongan.`,
+                }))}
+              />
+            )}
+          </div>
+        )}
+      </section>
 
       <section className="admin-card mt-6">
         <div className="flex flex-wrap items-baseline justify-between gap-3">
@@ -147,6 +219,62 @@ export default async function Dashboard() {
           </ul>
         </section>
       </div>
+    </div>
+  );
+}
+
+function AttentionList({
+  title,
+  href,
+  count,
+  items,
+  empty,
+}: {
+  title: string;
+  href: string;
+  count: number;
+  items: Array<{ key: string; href: string; label: string; detail: string; days?: number }>;
+  empty?: string;
+}) {
+  return (
+    <div className="min-w-0">
+      <div className="flex items-baseline justify-between gap-3">
+        <h3 className="font-semibold">
+          {title} <span className="tabular text-muted">({count})</span>
+        </h3>
+        {count > 0 && (
+          <Link href={href} className="shrink-0 text-sm font-semibold text-primary hover:underline">
+            Lihat semua
+          </Link>
+        )}
+      </div>
+      {items.length ? (
+        <ul className="mt-2 divide-y divide-border">
+          {items.map((item) => (
+            <li key={item.key}>
+              <Link
+                href={item.href}
+                className="-mx-2 flex items-center justify-between gap-3 rounded-control px-2 py-2.5 hover:bg-paper"
+              >
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-semibold">{item.label}</span>
+                  <span className="block truncate text-xs text-muted">{item.detail}</span>
+                </span>
+                {item.days != null && (
+                  <Badge
+                    tone={item.days >= WAITING_DAYS ? "sinyal" : "neutral"}
+                    className="tabular"
+                  >
+                    {item.days === 0 ? "Hari ini" : `${item.days} hari`}
+                  </Badge>
+                )}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-2 text-sm text-muted">{empty}</p>
+      )}
     </div>
   );
 }
