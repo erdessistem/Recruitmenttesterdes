@@ -7,8 +7,7 @@ import { repository } from "@/lib/repositories";
 import { clearSession, setSession } from "@/lib/auth/session";
 import { isAdminRole } from "@/lib/auth/roles";
 
-const shared = globalThis as typeof globalThis & { __loginFailures?: Map<string, number[]> };
-const failures = (shared.__loginFailures ??= new Map<string, number[]>());
+import { loginFailures } from "@/lib/security/rate-limit";
 const dummyHash = "$2b$12$oJZ2OL5zkL1QpirwS42wTuzv4okjGmm0Kc24fZ.1hCRzdaqLF/V/y";
 export async function login(_previous: string, form: FormData): Promise<string> {
   const email = String(form.get("email") ?? "")
@@ -21,19 +20,14 @@ export async function login(_previous: string, form: FormData): Promise<string> 
     ? (h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown")
     : "local";
   const key = createHash("sha256").update(`${ip}\0${email}`).digest("hex");
-  const now = Date.now();
-  for (const [id, times] of failures)
-    if (!times.some((time) => time > now - 900_000)) failures.delete(id);
-  const attempts = (failures.get(key) ?? []).filter((time) => time > now - 900_000);
-  if (attempts.length >= 5) return "Terlalu banyak percobaan. Coba lagi dalam 15 menit.";
+  if (await loginFailures.blocked(key, 5)) return "Terlalu banyak percobaan. Coba lagi dalam 15 menit.";
   const admin = await repository.getAdminByEmail(email);
   const valid = await compare(password, admin?.passwordHash ?? dummyHash);
   if (!admin || !admin.active || !isAdminRole(admin.role) || !valid) {
-    attempts.push(now);
-    failures.set(key, attempts);
+    await loginFailures.record(key, 900_000);
     return "Email atau password salah.";
   }
-  failures.delete(key);
+  await loginFailures.clear(key);
   await repository.recordAdminLogin(admin.email);
   await setSession(admin.email, admin.sessionVersion);
   redirect("/admin");

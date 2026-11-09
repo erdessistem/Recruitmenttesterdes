@@ -3,6 +3,10 @@ import { randomBytes } from "node:crypto";
 import type { Repository } from "@/lib/repositories/types";
 import { trackingLookupSchema, lostIdRecoverySchema } from "@/lib/validation/tracking";
 import { normalizeApplicantIdForLookup } from "@/lib/format/applicant-id";
+import { withStore } from "@/lib/security/shared-store";
+
+const TICKET_MS = 5 * 60_000;
+const ticketKey = (handle: string) => `recover:${handle}`;
 
 export const LOOKUP_ERROR =
   "Data lamaran tidak ditemukan. Periksa kembali Applicant ID dan nomor WhatsApp.";
@@ -33,30 +37,25 @@ export async function withdrawApplication(repo: Repository, token: string, input
   }
 }
 
-type RecoveryTicket = { applicationId: string; expires: number };
-const shared = globalThis as typeof globalThis & {
-  __recoveryTickets?: Map<string, RecoveryTicket>;
-};
-const tickets = (shared.__recoveryTickets ??= new Map<string, RecoveryTicket>());
 export function maskApplicantId(id: string): string {
   const parts = id.split("-");
   if (parts.length < 3) return "••••••";
   return `${parts[0]}-${parts[1].slice(0, 1)}••••-${parts.at(-1)!.slice(0, 1)}•••••`;
 }
-export async function recoverApplications(repo: Repository, input: unknown, now = Date.now()) {
+export async function recoverApplications(repo: Repository, input: unknown) {
   const parsed = lostIdRecoverySchema.safeParse(input);
   if (!parsed.success) return [];
   const matches = await repo.getApplicationsForRecovery(
     parsed.data.whatsapp,
     parsed.data.full_name,
   );
-  for (const [key, ticket] of tickets) if (ticket.expires <= now) tickets.delete(key);
   return Promise.all(
     matches
       .filter((a) => a.token && !a.anonymizedAt)
       .map(async (application) => {
         const handle = randomBytes(32).toString("base64url");
-        tickets.set(handle, { applicationId: application.id, expires: now + 5 * 60_000 });
+        // Stored where every server instance can read it, and expires on its own.
+        await withStore((store) => store.set(ticketKey(handle), application.id, TICKET_MS));
         const vacancy = await repo.getVacancyById(application.vacancyId);
         return {
           handle,
@@ -71,16 +70,15 @@ export async function recoverApplications(repo: Repository, input: unknown, now 
 export async function revealRecoveredId(
   repo: Repository,
   handle: string,
-  now = Date.now(),
 ): Promise<string | null> {
-  const ticket = tickets.get(handle);
-  tickets.delete(handle);
-  if (!ticket || ticket.expires <= now) return null;
-  const application = await repo.getApplicationById(ticket.applicationId);
+  if (typeof handle !== "string" || !/^[A-Za-z0-9_-]{20,100}$/.test(handle)) return null;
+  const applicationId = await withStore((store) => store.take(ticketKey(handle)));
+  if (!applicationId) return null;
+  const application = await repo.getApplicationById(applicationId);
   return application &&
     application.token &&
     normalizeApplicantIdForLookup(application.id) ===
-      normalizeApplicantIdForLookup(ticket.applicationId)
+      normalizeApplicantIdForLookup(applicationId)
     ? application.id
     : null;
 }

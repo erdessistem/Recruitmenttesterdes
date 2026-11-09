@@ -59,11 +59,7 @@ export async function generateApplicantIdWithRetry(
   const random = options.random ?? randomBytes;
 
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-    const candidate = formatApplicantId(
-      positionCode,
-      fullName,
-      generateUniqueCode(random),
-    );
+    const candidate = formatApplicantId(positionCode, fullName, generateUniqueCode(random));
 
     if (!(await exists(candidate))) return candidate;
   }

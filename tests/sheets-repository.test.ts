@@ -66,6 +66,19 @@ describe("Sheets repository", () => {
     const siti = await repo.getApplicationById(seed.applications[1].id);
     expect(siti?.screeningAnswers[0]).toMatchObject({ answer: "no" });
   });
+  it("keeps both of two simultaneous writes", async () => {
+    const { client, seed } = fakeSheets();
+    const repo = createSheetsRepository(client, "test");
+    const id = seed.applications[0].id;
+    const before = (await repo.getNotes(id)).length;
+    const [first, second] = await Promise.all([
+      repo.addNote(id, "a@example.com", "Catatan pertama"),
+      repo.addNote(id, "b@example.com", "Catatan kedua"),
+    ]);
+    expect(first.id).not.toBe(second.id);
+    const notes = await createSheetsRepository(client, "test").getNotes(id);
+    expect(notes).toHaveLength(before + 2);
+  });
   it("saves a bulk update in a single write", async () => {
     const { client, seed, calls } = fakeSheets();
     const repo = createSheetsRepository(client, "test");

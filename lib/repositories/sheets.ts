@@ -5,6 +5,7 @@ import { getSpreadsheetId } from "@/lib/env";
 import { recordToRow, rowToRecord, rowsToSettings, settingsToRows } from "@/lib/sheets/mappers";
 import { SHEET_HEADERS, acceptsHeaders, type SheetName } from "@/lib/sheets/schema";
 import { MemoryRepository } from "./memory";
+import { withWriteLock } from "@/lib/security/write-lock";
 import type { SeedData } from "./seed";
 import type { Repository } from "./types";
 
@@ -85,13 +86,17 @@ export function createSheetsRepository(client: sheets_v4.Sheets = createSheetsCl
     get(_target, property) {
       if (typeof property !== "string" || property === "then") return undefined;
       return async (...args: unknown[]) => {
-        const before = await load();
-        const memory = new MemoryRepository({ seed: before.data });
-        const method = (memory as unknown as Record<string, (...args: unknown[]) => Promise<unknown>>)[property];
-        if (typeof method !== "function") throw new Error(`Unknown repository operation: ${property}`);
-        const result = await method.apply(memory, args);
-        if (mutationMethods.has(property)) await commit(before, memory.exportSnapshot());
-        return result;
+        const run = async () => {
+          const before = await load();
+          const memory = new MemoryRepository({ seed: before.data });
+          const method = (memory as unknown as Record<string, (...args: unknown[]) => Promise<unknown>>)[property];
+          if (typeof method !== "function") throw new Error(`Unknown repository operation: ${property}`);
+          const result = await method.apply(memory, args);
+          if (mutationMethods.has(property)) await commit(before, memory.exportSnapshot());
+          return result;
+        };
+        // Writes load, change and save under one lock, so a concurrent write cannot be lost.
+        return mutationMethods.has(property) ? withWriteLock(run) : run();
       };
     },
   });
