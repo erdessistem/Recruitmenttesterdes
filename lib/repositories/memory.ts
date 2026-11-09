@@ -812,6 +812,7 @@ export class MemoryRepository implements Repository {
       application.city = "";
       application.major = "";
       application.lastCompany = "";
+      application.lastPosition = "";
       application.lastSalary = 0;
       application.expectedSalary = 0;
       application.cvUrl = "";

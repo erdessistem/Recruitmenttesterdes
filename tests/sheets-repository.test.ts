@@ -36,6 +36,15 @@ describe("Sheets repository", () => {
   it("rejects reordered headers rather than writing to wrong columns", () => {
     expect(() => validateHeaders("Vacancies", [...SHEET_HEADERS.Vacancies].reverse())).toThrow();
   });
+  it("keeps working on a sheet that has not added the last_position header yet", async () => {
+    const { client, grids, seed } = fakeSheets();
+    grids.Applications = grids.Applications.map(row => row.slice(0, -1));
+    const repo = createSheetsRepository(client, "test");
+    const application = await repo.getApplicationById(seed.applications[0].id);
+    expect(application?.fullName).toBe(seed.applications[0].fullName);
+    expect(application?.lastPosition).toBe("");
+    expect(() => validateHeaders("Applications", SHEET_HEADERS.Applications.slice(0, -2))).toThrow();
+  });
   it("reads seed records, writes literal data, and preserves updates across instances", async () => {
     const { client, seed, calls } = fakeSheets();
     const repo = createSheetsRepository(client, "test");

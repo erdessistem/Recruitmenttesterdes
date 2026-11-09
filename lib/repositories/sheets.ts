@@ -3,7 +3,7 @@ import type { sheets_v4 } from "googleapis";
 import { createSheetsClient } from "@/lib/sheets/client";
 import { getSpreadsheetId } from "@/lib/env";
 import { recordToRow, rowToRecord, rowsToSettings, settingsToRows } from "@/lib/sheets/mappers";
-import { SHEET_HEADERS, type SheetName } from "@/lib/sheets/schema";
+import { OPTIONAL_TRAILING_HEADERS, SHEET_HEADERS, type SheetName } from "@/lib/sheets/schema";
 import { MemoryRepository } from "./memory";
 import type { SeedData } from "./seed";
 import type { Repository } from "./types";
@@ -17,7 +17,10 @@ const mutationMethods = new Set(["createVacancy", "updateVacancy", "appendApplic
 
 /** Exact headers prevent writing canonical columns into a reordered sheet. */
 export function validateHeaders(sheet: SheetName, headers: readonly unknown[]) {
-  const expected = SHEET_HEADERS[sheet];
+  const full = SHEET_HEADERS[sheet];
+  const optional = OPTIONAL_TRAILING_HEADERS[sheet];
+  // Before the owner adds an optional trailing header, the sheet ends one column earlier.
+  const expected = optional && headers.length === full.length - 1 && full.at(-1) === optional ? full.slice(0, -1) : full;
   if (headers.length !== expected.length || expected.some((header, index) => headers[index] !== header)) throw new Error(`Header ${sheet} tidak sesuai. Jalankan pemeriksaan skema sebelum melanjutkan.`);
 }
 function cell(value: string | number | boolean): sheets_v4.Schema$CellData {

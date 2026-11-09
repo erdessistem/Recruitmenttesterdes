@@ -53,6 +53,8 @@ export interface Application {
   major: string;
   experienceYears: number;
   lastCompany: string;
+  /** Empty for applications made before the field existed. */
+  lastPosition: string;
   lastSalary: number;
   expectedSalary: number;
   cvUrl: string;

@@ -45,7 +45,7 @@ export const applicationFormSchema = z
     full_name: requiredText("Nama lengkap", 2, 100),
     whatsapp: whatsappField,
     email: optionalEmailField("Email", 150),
-    city: requiredText("Kota domisili", 2, 100),
+    city: requiredText("Alamat domisili", 5, 250),
     last_education: z.enum(EDUCATION_LEVELS, {
       error: "Pilih pendidikan terakhir.",
     }),
@@ -58,6 +58,7 @@ export const applicationFormSchema = z
       maxMessage: "Pengalaman kerja maksimal 60 tahun.",
     }),
     last_company: optionalText("Perusahaan terakhir", 150),
+    last_position: optionalText("Posisi terakhir", 100),
     last_salary: salaryField({
       label: "Gaji terakhir",
       min: 0,

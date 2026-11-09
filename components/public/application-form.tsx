@@ -31,11 +31,12 @@ const LABELS: Record<string, string> = {
   full_name: "Nama lengkap",
   whatsapp: "No. WhatsApp",
   email: "Email",
-  city: "Kota domisili",
+  city: "Alamat domisili",
   last_education: "Pendidikan terakhir",
   major: "Jurusan",
   experience_years: "Pengalaman kerja",
   last_company: "Perusahaan terakhir",
+  last_position: "Posisi terakhir",
   last_salary: "Gaji terakhir",
   expected_salary: "Ekspektasi gaji",
   cv_url: "Link CV/portfolio",
@@ -481,7 +482,12 @@ export function ApplicationForm({ slug }: { slug: string }) {
               hint: "Dipakai untuk melacak lamaran dan dihubungi tim kami.",
             })}
             {input("email", { type: "email", autoComplete: "email", hint: "Opsional." })}
-            {input("city", { required: true, autoComplete: "address-level2" })}
+            {input("city", {
+              required: true,
+              autoComplete: "street-address",
+              hint: "Jalan, kecamatan, dan kota. Contoh: Jl. Melati No. 5, Lowokwaru, Malang.",
+              className: "sm:col-span-2",
+            })}
           </div>,
         )}
         {section(
@@ -489,13 +495,18 @@ export function ApplicationForm({ slug }: { slug: string }) {
           <div className="grid gap-5 sm:grid-cols-2">
             {select("last_education", EDUCATION_LEVEL_LABELS)}
             {input("major")}
+            {input("last_company", { autoComplete: "organization", hint: "Opsional." })}
+            {input("last_position", {
+              autoComplete: "organization-title",
+              hint: "Opsional. Contoh: Staf Admin, Guru Matematika.",
+            })}
             {input("experience_years", {
               type: "number",
               required: true,
               inputMode: "numeric",
               hint: "Dalam tahun. Isi 0 jika belum pernah bekerja.",
+              className: "sm:col-span-2",
             })}
-            {input("last_company", { autoComplete: "organization" })}
             {input("last_salary", {
               required: true,
               hint: "Per bulan. Isi 0 jika belum pernah bekerja.",

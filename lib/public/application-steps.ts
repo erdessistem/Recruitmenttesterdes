@@ -11,6 +11,7 @@ export const APPLICATION_STEPS = [
       "major",
       "experience_years",
       "last_company",
+      "last_position",
       "last_salary",
       "expected_salary",
     ],

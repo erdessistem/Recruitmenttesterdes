@@ -1,6 +1,6 @@
 import "server-only";
 import type { AdminUser, Application, InternalNote, Settings, StageHistoryEntry, Vacancy } from "@/lib/repositories/types";
-import { SHEET_HEADERS } from "./schema";
+import { OPTIONAL_TRAILING_HEADERS, SHEET_HEADERS } from "./schema";
 
 type Records = { Vacancies: Vacancy; Applications: Application; Stage_History: StageHistoryEntry; Notes: InternalNote; Admin_Users: AdminUser };
 type RecordSheet = keyof Records;
@@ -16,6 +16,7 @@ export function rowToRecord<K extends RecordSheet>(sheet: K, headers: readonly s
   for (const header of SHEET_HEADERS[sheet]) {
     const index = headers.indexOf(header);
     if (header === "note_is_public" && index < 0) continue;
+    if (index < 0 && OPTIONAL_TRAILING_HEADERS[sheet] === header) { result[camel(header)] = ""; continue; }
     if (index < 0 || headers.indexOf(header, index + 1) >= 0) throw new Error(`Missing or duplicate ${sheet} header: ${header}`);
     const value = row[index] ?? "";
     if (header === "note_is_public") {

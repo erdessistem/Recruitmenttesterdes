@@ -16,6 +16,7 @@ const valid = {
   major: "",
   experience_years: "2",
   last_company: "",
+  last_position: "",
   last_salary: "0",
   expected_salary: "5.000.000",
   cv_url: "",
