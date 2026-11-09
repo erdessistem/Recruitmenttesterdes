@@ -1,11 +1,11 @@
-import { requireAdmin } from "@/lib/auth/session";
+import { requireRole } from "@/lib/auth/session";
 import { repository } from "@/lib/repositories";
 import { toRepositoryFilters } from "@/lib/admin/filters";
 import { applicantsCsv } from "@/lib/admin/csv";
 import { formatJakartaDateKey } from "@/lib/format/date";
 export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
-  await requireAdmin();
+  await requireRole("hr");
   const query = new URL(request.url).searchParams;
   const filters = Object.fromEntries(
     ["q", "vacancy", "stage", "status", "from", "to"].map((k) => [k, query.get(k) ?? undefined]),

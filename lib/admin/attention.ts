@@ -1,5 +1,6 @@
 import { isVacancyPubliclyOpen } from "@/lib/domain/vacancy";
 import type { ApplicantRow, Vacancy } from "@/lib/repositories/types";
+import { hasMismatch } from "@/lib/public/screening";
 
 /** An active applicant this many days in one stage is "waiting too long". */
 export const WAITING_DAYS = 10;
@@ -33,6 +34,10 @@ export function isNew(row: ApplicantRow, now: Date): boolean {
 export const VIEWS = {
   baru: { label: `Baru (${NEW_DAYS} hari)`, test: isNew },
   menunggu: { label: `Menunggu > ${WAITING_DAYS} hari`, test: isWaiting },
+  "tidak-sesuai": {
+    label: "Jawaban tidak sesuai",
+    test: (row: ApplicantRow) => hasMismatch(row.application.screeningAnswers),
+  },
 } as const;
 export type View = keyof typeof VIEWS;
 

@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { repository } from "@/lib/repositories";
 import { isVacancyPubliclyOpen } from "@/lib/domain/vacancy";
 import { EMPLOYMENT_TYPE_LABELS } from "@/lib/constants";
+import { formatSalaryRange } from "@/lib/format/currency";
 import { formatDate } from "@/lib/format/date";
 import { BackLink } from "@/components/ui/back-link";
 import { ButtonLink } from "@/components/ui/button";
@@ -32,10 +33,14 @@ export default async function VacancyPage({ params }: { params: Promise<{ slug: 
   const { vacancy, others, companyProfile } = await getData((await params).slug);
   if (!vacancy || vacancy.status === "draft" || vacancy.status === "archived") notFound();
   const open = isVacancyPubliclyOpen(vacancy);
+  const salary = vacancy.salaryVisible
+    ? formatSalaryRange(vacancy.salaryMin, vacancy.salaryMax)
+    : null;
   const facts = [
     ["Departemen", vacancy.department],
     ["Lokasi", vacancy.location],
     ["Jenis pekerjaan", EMPLOYMENT_TYPE_LABELS[vacancy.employmentType]],
+    ...(salary ? ([["Gaji", `${salary} per bulan`]] as const) : []),
     ["Kuota", `${vacancy.quota} orang`],
     ["Dibuka", vacancy.openAt ? formatDate(vacancy.openAt) : "—"],
     ["Ditutup", vacancy.closeAt ? formatDate(vacancy.closeAt) : "Tanpa batas waktu"],

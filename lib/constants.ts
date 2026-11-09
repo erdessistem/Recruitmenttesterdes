@@ -214,3 +214,17 @@ export const MAX_APPLICATION_SUBMISSIONS_PER_HOUR = 3;
 export const MAX_TRACKING_LOOKUPS_PER_10_MINUTES = 10;
 export const MAX_RECOVERY_ATTEMPTS_PER_15_MINUTES = 5;
 export const MAX_LOGIN_ATTEMPTS_PER_15_MINUTES = 5;
+
+/** Admin roles, from most to least access. */
+export const ADMIN_ROLES = ["superadmin", "hr", "viewer"] as const;
+export type AdminRole = (typeof ADMIN_ROLES)[number];
+export const ADMIN_ROLE_LABELS: Record<AdminRole, string> = {
+  superadmin: "Superadmin",
+  hr: "HR",
+  viewer: "Viewer",
+};
+export const ADMIN_ROLE_DESCRIPTIONS: Record<AdminRole, string> = {
+  superadmin: "Semua akses, termasuk akun admin, pengaturan, dan retensi data.",
+  hr: "Mengelola lowongan dan pelamar. Tanpa pengaturan dan akun.",
+  viewer: "Hanya melihat dashboard, pelamar, dan laporan.",
+};

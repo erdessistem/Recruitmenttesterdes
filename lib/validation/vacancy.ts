@@ -10,6 +10,20 @@ import {
 } from "@/lib/format/date";
 import { MAX_POSITION_CODE_LENGTH } from "@/lib/format/applicant-id";
 import { requiredText } from "@/lib/validation/fields";
+import { parseRupiahInput } from "@/lib/format/currency";
+import { screeningQuestionsSchema } from "@/lib/public/screening";
+
+function optionalSalary(label: string) {
+  return z.preprocess(
+    (value) => (value === null || value === undefined || value === "" ? null : parseRupiahInput(value) ?? Number.NaN),
+    z
+      .number({ error: `${label} harus berupa angka rupiah.` })
+      .int({ error: `${label} harus berupa angka bulat.` })
+      .min(0, { error: `${label} tidak boleh negatif.` })
+      .max(1_000_000_000, { error: `${label} maksimal Rp1.000.000.000.` })
+      .nullable(),
+  );
+}
 
 export const slugSchema = z
   .string({ error: "Slug wajib diisi." })
@@ -71,6 +85,25 @@ export const vacancyFormSchema = z
     open_at: optionalJakartaDateTime("start"),
     close_at: optionalJakartaDateTime("end"),
     status: z.enum(VACANCY_STATUSES, { error: "Pilih status lowongan." }).default("draft"),
+    salary_min: optionalSalary("Gaji minimum"),
+    salary_max: optionalSalary("Gaji maksimum"),
+    salary_visible: z.preprocess((value) => value === "on" || value === "true" || value === true, z.boolean()),
+    screening_questions: z.preprocess((value) => {
+      if (value === undefined || value === null || value === "") return [];
+      try {
+        return JSON.parse(String(value));
+      } catch {
+        return null;
+      }
+    }, screeningQuestionsSchema),
+  })
+  .refine(
+    (value) => value.salary_min == null || value.salary_max == null || value.salary_max >= value.salary_min,
+    { path: ["salary_max"], error: "Gaji maksimum tidak boleh lebih kecil dari gaji minimum." },
+  )
+  .refine((value) => !value.salary_visible || value.salary_min != null || value.salary_max != null, {
+    path: ["salary_visible"],
+    error: "Isi gaji minimum atau maksimum sebelum menampilkannya ke pelamar.",
   })
   .refine(
     (value) =>

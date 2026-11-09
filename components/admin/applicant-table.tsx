@@ -28,6 +28,8 @@ export type ApplicantTableRow = {
   days: number | null;
   waiting: boolean;
   isNew: boolean;
+  /** A yes/no screening answer differs from the expected one. */
+  mismatch: boolean;
 };
 
 type Result = {
@@ -37,7 +39,16 @@ type Result = {
 };
 
 /** The applicant list with checkboxes; selected rows can be moved or rejected together. */
-export function ApplicantTable({ rows, query }: { rows: ApplicantTableRow[]; query: string }) {
+export function ApplicantTable({
+  rows,
+  query,
+  selectable = true,
+}: {
+  rows: ApplicantTableRow[];
+  query: string;
+  /** False for read-only viewers: no checkboxes and no bulk actions. */
+  selectable?: boolean;
+}) {
   const router = useRouter();
   const [selected, setSelected] = useState<string[]>([]);
   const [stage, setStage] = useState<Stage | "">("");
@@ -118,15 +129,17 @@ export function ApplicantTable({ rows, query }: { rows: ApplicantTableRow[]; que
         <table className="admin-table">
           <thead>
             <tr>
-              <th className="w-12">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 accent-[var(--color-primary)]"
-                  aria-label="Pilih semua di halaman ini"
-                  checked={all}
-                  onChange={() => setSelected(all ? [] : rows.map((row) => row.id))}
-                />
-              </th>
+              {selectable && (
+                <th className="w-12">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 accent-[var(--color-primary)]"
+                    aria-label="Pilih semua di halaman ini"
+                    checked={all}
+                    onChange={() => setSelected(all ? [] : rows.map((row) => row.id))}
+                  />
+                </th>
+              )}
               <th>Nama</th>
               <th>Lowongan</th>
               <th>Tahap</th>
@@ -140,15 +153,17 @@ export function ApplicantTable({ rows, query }: { rows: ApplicantTableRow[]; que
               const checked = chosen.includes(row.id);
               return (
                 <tr key={row.id} className={cn(checked && "bg-primary-soft/50")}>
-                  <td>
-                    <input
-                      type="checkbox"
-                      className="h-4 w-4 accent-[var(--color-primary)]"
-                      aria-label={`Pilih ${row.name}`}
-                      checked={checked}
-                      onChange={() => toggle(row.id)}
-                    />
-                  </td>
+                  {selectable && (
+                    <td>
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 accent-[var(--color-primary)]"
+                        aria-label={`Pilih ${row.name}`}
+                        checked={checked}
+                        onChange={() => toggle(row.id)}
+                      />
+                    </td>
+                  )}
                   <td>
                     <Link
                       className="font-semibold text-primary hover:underline"
@@ -156,6 +171,11 @@ export function ApplicantTable({ rows, query }: { rows: ApplicantTableRow[]; que
                     >
                       {row.name}
                     </Link>
+                    {row.mismatch && (
+                      <Badge tone="danger" className="ml-2">
+                        Tidak sesuai
+                      </Badge>
+                    )}
                     {row.isNew && (
                       <Badge tone="sinyal" className="ml-2">
                         Baru

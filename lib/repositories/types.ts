@@ -1,6 +1,8 @@
 import "server-only";
 
+import type { ScreeningAnswer, ScreeningQuestion } from "@/lib/public/screening";
 import type {
+  AdminRole,
   ApplicationSource,
   ApplicationStatus,
   Availability,
@@ -38,6 +40,12 @@ export interface Vacancy {
   status: VacancyStatus;
   createdAt: string;
   updatedAt: string;
+  /** Monthly salary range in rupiah; null when not set. */
+  salaryMin: number | null;
+  salaryMax: number | null;
+  /** Whether candidates see the salary range. */
+  salaryVisible: boolean;
+  screeningQuestions: ScreeningQuestion[];
 }
 
 export interface Application {
@@ -55,6 +63,8 @@ export interface Application {
   lastCompany: string;
   /** Empty for applications made before the field existed. */
   lastPosition: string;
+  /** Answers to the screening questions; empty for older applications. */
+  screeningAnswers: ScreeningAnswer[];
   lastSalary: number;
   expectedSalary: number;
   cvUrl: string;
@@ -100,7 +110,7 @@ export interface AdminUser {
   email: string;
   name: string;
   passwordHash: string;
-  role: "superadmin";
+  role: AdminRole;
   active: boolean;
   sessionVersion: number;
   createdAt: string;
@@ -148,6 +158,10 @@ export interface CreateVacancyInput {
   openAt: string | null;
   closeAt: string | null;
   status: VacancyStatus;
+  salaryMin?: number | null;
+  salaryMax?: number | null;
+  salaryVisible?: boolean;
+  screeningQuestions?: ScreeningQuestion[];
 }
 
 export type UpdateVacancyInput = Partial<CreateVacancyInput>;
@@ -156,7 +170,13 @@ export interface CreateAdminInput {
   email: string;
   name: string;
   passwordHash: string;
-  role?: "superadmin";
+  role?: AdminRole;
+}
+
+export interface UpdateAdminInput {
+  role?: AdminRole;
+  active?: boolean;
+  passwordHash?: string;
 }
 
 export interface NewStageHistoryEvent {
@@ -289,6 +309,9 @@ export interface Repository {
   /** Applies one action to many applications in a single write. Ineligible ones are skipped. */
   bulkUpdateApplications(ids: string[], action: BulkAction, actor: string): Promise<BulkResult>;
 
+  /** Everything the reports page needs, in one read. */
+  getReportData(): Promise<{ vacancies: Vacancy[]; applications: Application[]; history: StageHistoryEntry[] }>;
+
   // Dashboard and settings
   getDashboardStats(now?: Date): Promise<DashboardStats>;
   getSettings(): Promise<Settings>;
@@ -298,6 +321,11 @@ export interface Repository {
   getAdminByEmail(email: string): Promise<AdminUser | null>;
   createAdmin(input: CreateAdminInput): Promise<AdminUser>;
   updateAdminPassword(email: string, passwordHash: string): Promise<AdminUser>;
+  getAdmins(): Promise<AdminUser[]>;
+  /** Adds another admin account (createAdmin only creates the very first one). */
+  addAdmin(input: CreateAdminInput): Promise<AdminUser>;
+  /** Changes role, active state or password. Signs the account out everywhere. */
+  updateAdmin(id: string, input: UpdateAdminInput): Promise<AdminUser>;
   recordAdminLogin(email: string, at?: string): Promise<AdminUser>;
 
   // Retention

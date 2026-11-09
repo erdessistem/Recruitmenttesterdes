@@ -1,5 +1,6 @@
 import "server-only";
 import type { AdminUser, Application, InternalNote, Settings, StageHistoryEntry, Vacancy } from "@/lib/repositories/types";
+import { screeningAnswersSchema, screeningQuestionsSchema } from "@/lib/public/screening";
 import { OPTIONAL_TRAILING_HEADERS, SHEET_HEADERS } from "./schema";
 
 type Records = { Vacancies: Vacancy; Applications: Application; Stage_History: StageHistoryEntry; Notes: InternalNote; Admin_Users: AdminUser };
@@ -8,6 +9,10 @@ type Cell = string | number | boolean;
 const nullable = new Set(["open_at", "close_at", "closed_at", "anonymized_at", "from_stage", "from_status", "last_login_at"]);
 const numeric = new Set(["quota", "experience_years", "last_salary", "expected_salary", "session_version"]);
 const boolean = new Set(["consent", "active"]);
+const nullableNumeric = new Set(["salary_min", "salary_max"]);
+const json = { screening_questions: screeningQuestionsSchema, screening_answers: screeningAnswersSchema } as const;
+/** Values for optional columns a sheet has not added yet (and for their empty cells). */
+const optionalDefaults: Record<string, unknown> = { last_position: "", salary_min: null, salary_max: null, salary_visible: false, screening_questions: [], screening_answers: [] };
 const camel = (name: string) => name.replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
 
 /** Reads rows by header name so column order can change without corrupting data. */
@@ -16,7 +21,7 @@ export function rowToRecord<K extends RecordSheet>(sheet: K, headers: readonly s
   for (const header of SHEET_HEADERS[sheet]) {
     const index = headers.indexOf(header);
     if (header === "note_is_public" && index < 0) continue;
-    if (index < 0 && OPTIONAL_TRAILING_HEADERS[sheet] === header) { result[camel(header)] = ""; continue; }
+    if (index < 0 && OPTIONAL_TRAILING_HEADERS[sheet]?.includes(header)) { result[camel(header)] = structuredClone(optionalDefaults[header]); continue; }
     if (index < 0 || headers.indexOf(header, index + 1) >= 0) throw new Error(`Missing or duplicate ${sheet} header: ${header}`);
     const value = row[index] ?? "";
     if (header === "note_is_public") {
@@ -24,7 +29,18 @@ export function rowToRecord<K extends RecordSheet>(sheet: K, headers: readonly s
       else if (value !== false && value !== "FALSE" && value !== "") throw new Error(`Invalid boolean in ${sheet}.${header}`);
       continue;
     }
-    if (nullable.has(header) && value === "") result[camel(header)] = null;
+    if (header in json) {
+      // A hand-edited cell that is not valid JSON reads as empty rather than breaking every page.
+      let parsed: unknown = [];
+      try { parsed = value === "" ? [] : JSON.parse(String(value)); } catch { parsed = []; }
+      const checked = json[header as keyof typeof json].safeParse(parsed);
+      result[camel(header)] = checked.success ? checked.data : [];
+    } else if (nullableNumeric.has(header)) {
+      if (value === "") result[camel(header)] = null;
+      else if (!Number.isSafeInteger(Number(value))) throw new Error(`Invalid number in ${sheet}.${header}`);
+      else result[camel(header)] = Number(value);
+    } else if (header === "salary_visible") result[camel(header)] = value === true || value === "TRUE";
+    else if (nullable.has(header) && value === "") result[camel(header)] = null;
     else if (numeric.has(header)) {
       if (value === "" || !Number.isSafeInteger(Number(value))) throw new Error(`Invalid number in ${sheet}.${header}`);
       result[camel(header)] = Number(value);
@@ -43,6 +59,7 @@ export function recordToRow<K extends RecordSheet>(sheet: K, record: Records[K])
     const value = values[camel(header)];
     if (value === null || value === undefined) return "";
     if (typeof value === "boolean") return value ? "TRUE" : "FALSE";
+    if (Array.isArray(value)) return value.length ? JSON.stringify(value) : "";
     if (typeof value === "string" || typeof value === "number") return value;
     throw new Error(`Invalid value in ${sheet}.${header}`);
   });

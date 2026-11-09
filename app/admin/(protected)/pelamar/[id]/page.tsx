@@ -13,9 +13,17 @@ import {
   type Stage,
 } from "@/lib/constants";
 import { formatDate, formatDateTime } from "@/lib/format/date";
-import { formatRupiah } from "@/lib/format/currency";
+import { compareToRange, formatRupiah, formatSalaryRange } from "@/lib/format/currency";
+import { answerLabel, isMismatch } from "@/lib/public/screening";
+
+const FIT_LABELS = {
+  below: "Di bawah rentang",
+  within: "Sesuai rentang",
+  above: "Di atas rentang",
+} as const;
 import { formatWhatsAppDisplay, toWhatsAppUrl } from "@/lib/format/phone";
 import { requireAdmin } from "@/lib/auth/session";
+import { canEdit } from "@/lib/auth/roles";
 import { createWhatsAppMessage } from "@/lib/admin/templates";
 import { applyView, daysSince, neighbours, WAITING_DAYS } from "@/lib/admin/attention";
 import { listQuery, toRepositoryFilters, type ApplicantFilters } from "@/lib/admin/filters";
@@ -53,7 +61,7 @@ export default async function ApplicantDetail({
   params: Promise<{ id: string }>;
   searchParams: Promise<ApplicantFilters>;
 }) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const [{ id }, filters] = await Promise.all([params, searchParams]);
   const data = await repository.getApplicantWorkspace(id, toRepositoryFilters(filters));
   if (!data) notFound();
@@ -91,6 +99,12 @@ export default async function ApplicantDetail({
       : `${application.experienceYears} tahun`;
   const lastJob = [application.lastPosition, application.lastCompany].filter(Boolean).join(" di ");
 
+  const salaryRange = vacancy ? formatSalaryRange(vacancy.salaryMin, vacancy.salaryMax) : null;
+  const fit = vacancy
+    ? compareToRange(application.expectedSalary, vacancy.salaryMin, vacancy.salaryMax)
+    : null;
+  const answers = application.screeningAnswers;
+
   const summary: Array<[string, React.ReactNode]> = [
     [
       "Pendidikan",
@@ -104,6 +118,13 @@ export default async function ApplicantDetail({
       <>
         {formatRupiah(application.lastSalary)} terakhir,{" "}
         <span className="font-semibold">{formatRupiah(application.expectedSalary)}</span> diharapkan
+        {salaryRange && fit && (
+          <span className="mt-1 flex flex-wrap items-center gap-2 text-muted">
+            <Badge tone={fit === "within" ? "rel" : "sinyal"}>{FIT_LABELS[fit]}</Badge>
+            Rentang lowongan {salaryRange}
+            {!vacancy?.salaryVisible && " (tidak ditampilkan ke pelamar)"}
+          </span>
+        )}
       </>,
     ],
     ["Mulai kerja", AVAILABILITY_LABELS[application.availability]],
@@ -282,6 +303,37 @@ export default async function ApplicantDetail({
             )}
           </section>
 
+          {answers.length > 0 && (
+            <section className="admin-card">
+              <h2 className="text-lg font-bold">Jawaban screening</h2>
+              <dl className="mt-3 divide-y divide-border">
+                {answers.map((answer) => {
+                  const mismatch = isMismatch(answer);
+                  return (
+                    <div key={answer.questionId} className="py-3">
+                      <dt className="text-sm text-muted">{answer.question}</dt>
+                      <dd className="mt-1 flex flex-wrap items-center gap-2 text-sm">
+                        <span
+                          className={cn(
+                            "whitespace-pre-line break-words",
+                            mismatch && "font-semibold",
+                          )}
+                        >
+                          {answerLabel(answer)}
+                        </span>
+                        {mismatch && (
+                          <Badge tone="danger">
+                            Tidak sesuai, diharapkan {answer.expected === "yes" ? "Ya" : "Tidak"}
+                          </Badge>
+                        )}
+                      </dd>
+                    </div>
+                  );
+                })}
+              </dl>
+            </section>
+          )}
+
           <section className="admin-card">
             <h2 className="text-lg font-bold">Kontak dan data lain</h2>
             <dl className="mt-3 divide-y divide-border">
@@ -348,14 +400,24 @@ export default async function ApplicantDetail({
           </section>
         </div>
 
-        <ActionPanel
-          id={application.id}
-          name={application.fullName}
-          stage={application.currentStage}
-          status={application.status}
-          whatsapp={application.whatsapp}
-          messages={messages}
-        />
+        {canEdit(admin.role) ? (
+          <ActionPanel
+            id={application.id}
+            name={application.fullName}
+            stage={application.currentStage}
+            status={application.status}
+            whatsapp={application.whatsapp}
+            messages={messages}
+          />
+        ) : (
+          <aside className="admin-card text-sm text-muted lg:sticky lg:top-6">
+            <h2 className="text-lg font-bold text-foreground">Mode lihat saja</h2>
+            <p className="mt-2">
+              Akun Viewer dapat melihat data pelamar, tetapi tidak dapat memindahkan tahap, menolak,
+              atau menambah catatan. Hubungi HR untuk perubahan.
+            </p>
+          </aside>
+        )}
       </div>
     </div>
   );

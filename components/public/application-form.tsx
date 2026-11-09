@@ -23,6 +23,13 @@ import { buttonClass } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { cn } from "@/lib/utils";
 import { apply } from "@/app/(public)/lowongan/[slug]/lamar/actions";
+import {
+  answerLabel,
+  fieldName,
+  isScreeningField,
+  screeningErrors,
+  type PublicQuestion,
+} from "@/lib/public/screening";
 
 type Values = Record<string, string>;
 const LAST_STEP = APPLICATION_STEPS.length - 1;
@@ -61,7 +68,14 @@ function storage(): Storage | null {
  * survives a reload or going back, but not closing the tab, which matters on
  * shared or warnet computers.
  */
-export function ApplicationForm({ slug }: { slug: string }) {
+export function ApplicationForm({
+  slug,
+  questions = [],
+}: {
+  slug: string;
+  /** The vacancy's screening questions, without expected answers. */
+  questions?: PublicQuestion[];
+}) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const headingRefs = useRef<(HTMLHeadingElement | null)[]>([]);
@@ -72,6 +86,20 @@ export function ApplicationForm({ slug }: { slug: string }) {
   const previousStep = useRef(0);
   const errorSummary = useRef<HTMLDivElement>(null);
   const draftKey = `erdes-lamaran-draft:${slug}`;
+  const questionFields = questions.map((question) => fieldName(question.id));
+  const draftFields = [...DRAFT_FIELDS, ...questionFields];
+
+  /** The main form's errors plus the screening questions', limited to the given fields. */
+  function allErrors(data: Record<string, unknown>, fields: readonly string[]): FieldErrors {
+    const screening = screeningErrors(questions, data);
+    return {
+      ...errorsFor(
+        data,
+        fields.filter((name) => !isScreeningField(name)),
+      ),
+      ...Object.fromEntries(Object.entries(screening).filter(([name]) => fields.includes(name))),
+    };
+  }
 
   const [step, setStep] = useState(0);
   const [pending, setPending] = useState(false);
@@ -104,13 +132,14 @@ export function ApplicationForm({ slug }: { slug: string }) {
     try {
       const draft = JSON.parse(raw) as Values;
       let any = false;
-      for (const name of DRAFT_FIELDS) {
+      for (const name of draftFields) {
         const element = formRef.current.elements.namedItem(name);
         if (
           draft[name] &&
           (element instanceof HTMLInputElement ||
             element instanceof HTMLSelectElement ||
-            element instanceof HTMLTextAreaElement)
+            element instanceof HTMLTextAreaElement ||
+            element instanceof RadioNodeList)
         ) {
           element.value = draft[name];
           any = true;
@@ -124,6 +153,7 @@ export function ApplicationForm({ slug }: { slug: string }) {
     } catch {
       storage()?.removeItem(draftKey);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- questions do not change while the form is open
   }, [draftKey]);
 
   // Warn before leaving a half-filled form.
@@ -152,7 +182,7 @@ export function ApplicationForm({ slug }: { slug: string }) {
     dirty.current = true;
     const values = collect();
     const draft: Values = {};
-    for (const name of DRAFT_FIELDS) if (values[name]) draft[name] = String(values[name]);
+    for (const name of draftFields) if (values[name]) draft[name] = String(values[name]);
     try {
       storage()?.setItem(draftKey, JSON.stringify(draft));
     } catch {
@@ -171,7 +201,7 @@ export function ApplicationForm({ slug }: { slug: string }) {
   }
 
   function validateField(name: string) {
-    const fieldErrors = errorsFor(collect(), [name]);
+    const fieldErrors = allErrors(collect(), [name]);
     setErrors((previous) => {
       const next = { ...previous };
       delete next[name];
@@ -195,7 +225,11 @@ export function ApplicationForm({ slug }: { slug: string }) {
   }
 
   function next() {
-    const found = stepErrors(collect(), step);
+    const data = collect();
+    const found = {
+      ...stepErrors(data, step),
+      ...(step === 2 ? screeningErrors(questions, data) : {}),
+    };
     if (Object.keys(found).length) {
       setErrors((previous) => ({ ...previous, ...found }));
       setTimeout(() => focusFirstError(found), 0);
@@ -209,10 +243,10 @@ export function ApplicationForm({ slug }: { slug: string }) {
     if (pending) return;
     if (step < LAST_STEP) return next();
     const data = collect();
-    const found = errorsFor(
-      data,
-      APPLICATION_STEPS.flatMap((s) => s.fields),
-    );
+    const found = allErrors(data, [
+      ...APPLICATION_STEPS.flatMap((s) => s.fields),
+      ...questionFields,
+    ]);
     if (Object.keys(found).length) {
       setErrors(found);
       const target = firstStepWithError(found);
@@ -540,6 +574,76 @@ export function ApplicationForm({ slug }: { slug: string }) {
             {select("availability", AVAILABILITY_LABELS)}
             {select("source", APPLICATION_SOURCE_LABELS)}
             {source === SOURCE_OTHER && input("source_other", { required: true })}
+            {questions.length > 0 && (
+              <fieldset className="space-y-5 border-t border-border pt-5 sm:col-span-2">
+                <legend className="float-left mb-1 w-full font-semibold">
+                  Pertanyaan dari tim rekrutmen
+                </legend>
+                {questions.map((question) => {
+                  const name = fieldName(question.id);
+                  const error = errors[name]?.[0];
+                  return question.type === "yes_no" ? (
+                    <div
+                      key={question.id}
+                      role="radiogroup"
+                      aria-labelledby={`${name}-label`}
+                      aria-required={question.required}
+                      aria-invalid={!!error}
+                      aria-describedby={error ? `${name}-error` : undefined}
+                      className="clear-both"
+                    >
+                      <p id={`${name}-label`} className="text-sm font-semibold">
+                        {question.text}
+                        {question.required ? (
+                          <span className="text-muted"> *</span>
+                        ) : (
+                          <span className="font-normal text-muted"> (opsional)</span>
+                        )}
+                      </p>
+                      <div className="mt-2 flex gap-3">
+                        {(
+                          [
+                            ["yes", "Ya"],
+                            ["no", "Tidak"],
+                          ] as const
+                        ).map(([value, label], index) => (
+                          <label
+                            key={value}
+                            className="flex min-h-11 flex-1 cursor-pointer items-center gap-2.5 rounded-control border border-border-strong bg-surface px-4 text-sm has-[:checked]:border-primary has-[:checked]:bg-primary-soft sm:flex-none"
+                          >
+                            <input
+                              type="radio"
+                              id={index === 0 ? name : undefined}
+                              name={name}
+                              value={value}
+                              className="h-4 w-4 accent-primary"
+                              onChange={() => errors[name] && validateField(name)}
+                            />
+                            {label}
+                          </label>
+                        ))}
+                      </div>
+                      {error && (
+                        <p id={`${name}-error`} className="mt-2 text-sm text-danger">
+                          {error}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <Field
+                      key={question.id}
+                      label={question.text}
+                      required={question.required}
+                      hint={question.required ? undefined : "Opsional."}
+                      error={error}
+                      className="clear-both"
+                    >
+                      <input className="control" id={name} name={name} maxLength={500} />
+                    </Field>
+                  );
+                })}
+              </fieldset>
+            )}
           </div>,
         )}
         {section(
@@ -586,6 +690,34 @@ export function ApplicationForm({ slug }: { slug: string }) {
                   </div>
                 </div>
               ))}
+              {questions.length > 0 && (
+                <div className="rounded-panel border border-border">
+                  <div className="flex items-center justify-between gap-4 border-b border-border px-4 py-3">
+                    <p className="font-semibold">Pertanyaan dari tim rekrutmen</p>
+                    <button
+                      type="button"
+                      onClick={() => goTo(2)}
+                      className="text-sm font-semibold text-primary hover:underline"
+                    >
+                      Ubah<span className="sr-only"> jawaban pertanyaan</span>
+                    </button>
+                  </div>
+                  {questions.map((question) => (
+                    <div
+                      key={question.id}
+                      className="border-b border-border px-4 py-2.5 last:border-b-0"
+                    >
+                      <dt className="text-xs text-muted">{question.text}</dt>
+                      <dd className="mt-0.5 whitespace-pre-line break-words text-sm">
+                        {answerLabel({
+                          type: question.type,
+                          answer: review[fieldName(question.id)] ?? "",
+                        })}
+                      </dd>
+                    </div>
+                  ))}
+                </div>
+              )}
             </dl>
             <p className="mt-4 rounded-panel bg-sinyal-soft p-4 text-sm text-sinyal-ink">
               Pastikan nomor WhatsApp di atas benar. Nomor ini dipakai untuk melacak lamaran dan

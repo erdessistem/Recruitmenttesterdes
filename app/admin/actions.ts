@@ -5,6 +5,7 @@ import { compare } from "bcryptjs";
 import { createHash } from "node:crypto";
 import { repository } from "@/lib/repositories";
 import { clearSession, setSession } from "@/lib/auth/session";
+import { isAdminRole } from "@/lib/auth/roles";
 
 const shared = globalThis as typeof globalThis & { __loginFailures?: Map<string, number[]> };
 const failures = (shared.__loginFailures ??= new Map<string, number[]>());
@@ -27,7 +28,7 @@ export async function login(_previous: string, form: FormData): Promise<string> 
   if (attempts.length >= 5) return "Terlalu banyak percobaan. Coba lagi dalam 15 menit.";
   const admin = await repository.getAdminByEmail(email);
   const valid = await compare(password, admin?.passwordHash ?? dummyHash);
-  if (!admin || !admin.active || admin.role !== "superadmin" || !valid) {
+  if (!admin || !admin.active || !isAdminRole(admin.role) || !valid) {
     attempts.push(now);
     failures.set(key, attempts);
     return "Email atau password salah.";

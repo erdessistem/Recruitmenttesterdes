@@ -1,6 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { requireAdmin } from "@/lib/auth/session";
+import { requireActionRole } from "@/lib/auth/session";
 import { repository } from "@/lib/repositories";
 import { moveStage, rejectApplication, reopenApplication } from "@/lib/admin/workflow";
 import { STAGES, type Stage } from "@/lib/constants";
@@ -16,7 +16,7 @@ export async function updateApplicant(
   id: string,
   input: { action: string; stage?: string; note?: string; confirmed?: boolean },
 ) {
-  const admin = await requireAdmin();
+  const admin = await requireActionRole("hr");
   if (input.confirmed !== true)
     return { ok: false, message: "Konfirmasi tindakan terlebih dahulu." };
   try {
@@ -45,7 +45,7 @@ export async function bulkUpdateApplicants(
   ids: string[],
   input: { action: "move" | "reject"; stage?: string; note?: string },
 ) {
-  const admin = await requireAdmin();
+  const admin = await requireActionRole("hr");
   const list = Array.isArray(ids) ? ids.filter((id) => typeof id === "string" && id) : [];
   if (list.length === 0) return { ok: false, message: "Pilih pelamar terlebih dahulu." };
   const note = (input.note ?? "").trim();

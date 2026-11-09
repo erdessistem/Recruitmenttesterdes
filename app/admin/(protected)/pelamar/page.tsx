@@ -2,11 +2,13 @@ import Link from "next/link";
 import { Download } from "lucide-react";
 import { repository } from "@/lib/repositories";
 import { requireAdmin } from "@/lib/auth/session";
+import { canEdit } from "@/lib/auth/roles";
 import { listQuery, toRepositoryFilters, type ApplicantFilters } from "@/lib/admin/filters";
 import { VIEWS, applyView, daysSince, isNew, isView, isWaiting } from "@/lib/admin/attention";
 import { ApplicantFilters as FilterBar } from "@/components/admin/applicant-filters";
 import { ApplicantTable } from "@/components/admin/applicant-table";
 import { EmptyState } from "@/components/ui/empty-state";
+import { hasMismatch } from "@/lib/public/screening";
 import { buttonClass } from "@/components/ui/button";
 
 export const metadata = { title: "Pelamar" };
@@ -18,7 +20,8 @@ export default async function Applicants({
 }: {
   searchParams: Promise<ApplicantFilters>;
 }) {
-  await requireAdmin();
+  const admin = await requireAdmin();
+  const editor = canEdit(admin.role);
   const f = await searchParams;
   const now = new Date();
   const { vacancies, rows: base } = await repository.getApplicantList(toRepositoryFilters(f));
@@ -47,6 +50,7 @@ export default async function Applicants({
       days: active ? daysSince(row.stageSince, now) : null,
       waiting: isWaiting(row, now),
       isNew: isNew(row, now),
+      mismatch: hasMismatch(a.screeningAnswers),
     };
   });
 
@@ -54,13 +58,15 @@ export default async function Applicants({
     <div className="mx-auto max-w-7xl">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <h1 className="text-3xl font-bold tracking-tight">Pelamar</h1>
-        <a
-          href={`/admin/pelamar/export${listQuery({ ...f, view: undefined })}`}
-          className={buttonClass("secondary")}
-        >
-          <Download aria-hidden="true" className="h-4 w-4" />
-          Ekspor CSV
-        </a>
+        {editor && (
+          <a
+            href={`/admin/pelamar/export${listQuery({ ...f, view: undefined })}`}
+            className={buttonClass("secondary")}
+          >
+            <Download aria-hidden="true" className="h-4 w-4" />
+            Ekspor CSV
+          </a>
+        )}
       </div>
 
       <FilterBar
@@ -86,9 +92,10 @@ export default async function Applicants({
 
       <p className="mb-3 mt-4 text-sm text-muted" aria-live="polite">
         {rows.length} pelamar{filtering ? " sesuai filter" : ""}.
-        {isView(f.view)
-          ? " Ekspor CSV memakai filter di atas, tanpa tampilan cepat."
-          : " Ekspor CSV mengikuti filter ini."}
+        {editor &&
+          (isView(f.view)
+            ? " Ekspor CSV memakai filter di atas, tanpa tampilan cepat."
+            : " Ekspor CSV mengikuti filter ini.")}
       </p>
 
       {rows.length === 0 ? (
@@ -107,7 +114,7 @@ export default async function Applicants({
             : "Lamaran yang masuk akan muncul di sini."}
         </EmptyState>
       ) : (
-        <ApplicantTable rows={tableRows} query={query} />
+        <ApplicantTable rows={tableRows} query={query} selectable={editor} />
       )}
 
       {pages > 1 && (

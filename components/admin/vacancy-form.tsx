@@ -6,6 +6,8 @@ import { EMPLOYMENT_TYPE_LABELS, VACANCY_STATUS_LABELS } from "@/lib/constants";
 import { slugify } from "@/lib/format/text";
 import { sanitizePositionCode } from "@/lib/format/applicant-id";
 import { formatJakartaDateKey } from "@/lib/format/date";
+import { formatRupiahInput } from "@/lib/format/currency";
+import { ScreeningEditor } from "./screening-editor";
 export function VacancyForm({ vacancy }: { vacancy?: Vacancy }) {
   const [result, setResult] = useState<FormResult>({ message: "" });
   const [pending, setPending] = useState(false);
@@ -156,6 +158,62 @@ export function VacancyForm({ vacancy }: { vacancy?: Vacancy }) {
           {err(name)}
         </label>
       ))}
+      <fieldset className="space-y-4 border-t border-border pt-6">
+        <legend className="text-lg font-bold">Gaji</legend>
+        <p className="text-sm text-muted">
+          Opsional, per bulan. Isi salah satu atau keduanya. Selalu terlihat oleh admin untuk
+          dibandingkan dengan ekspektasi gaji pelamar.
+        </p>
+        <div className="grid gap-5 sm:grid-cols-2">
+          {(
+            [
+              ["salary_min", "Gaji minimum", vacancy?.salaryMin],
+              ["salary_max", "Gaji maksimum", vacancy?.salaryMax],
+            ] as const
+          ).map(([name, label, value]) => (
+            <label key={name} className="block text-sm font-semibold">
+              {label}
+              <span className="relative mt-2 block">
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-normal text-muted">
+                  Rp
+                </span>
+                <input
+                  className="control pl-10 font-normal"
+                  name={name}
+                  inputMode="numeric"
+                  defaultValue={value != null ? formatRupiahInput(String(value)) : ""}
+                  aria-invalid={!!result.errors?.[name]}
+                  onChange={(e) => {
+                    e.currentTarget.value = formatRupiahInput(e.currentTarget.value);
+                  }}
+                />
+              </span>
+              {err(name)}
+            </label>
+          ))}
+        </div>
+        <label className="flex items-start gap-3 text-sm">
+          <input
+            type="checkbox"
+            name="salary_visible"
+            defaultChecked={vacancy?.salaryVisible ?? false}
+            className="mt-0.5 h-4 w-4 accent-primary"
+          />
+          <span>
+            <span className="font-semibold">Tampilkan ke pelamar</span>
+            <span className="block text-muted">
+              Rentang gaji muncul di daftar lowongan dan halaman lowongan.
+            </span>
+          </span>
+        </label>
+        {err("salary_visible")}
+      </fieldset>
+      <div className="border-t border-border pt-6">
+        <ScreeningEditor
+          initial={vacancy?.screeningQuestions ?? []}
+          error={result.errors?.screening_questions}
+        />
+      </div>
       <button
         disabled={pending}
         className="rounded-control bg-primary px-5 py-3 font-semibold text-white disabled:opacity-50"

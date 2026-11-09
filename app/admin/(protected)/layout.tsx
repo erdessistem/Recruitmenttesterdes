@@ -3,6 +3,7 @@ import { LogOut } from "lucide-react";
 import { requireAdmin } from "@/lib/auth/session";
 import { logout } from "@/app/admin/actions";
 import { AdminNav } from "@/components/admin/admin-nav";
+import { ADMIN_ROLE_LABELS } from "@/lib/constants";
 export const dynamic = "force-dynamic";
 export const metadata = {
   title: { default: "Admin", template: "%s · Admin Erdes" },
@@ -23,9 +24,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             Erdes Group <span className="font-medium text-white/60">Admin</span>
           </span>
         </Link>
-        <AdminNav />
+        <AdminNav role={admin.role} />
         <div className="mt-6 border-t border-white/10 px-3 pt-4 text-sm text-white/70 md:mt-auto">
           <p className="break-all">{admin.name}</p>
+          <p className="text-xs text-white/50">{ADMIN_ROLE_LABELS[admin.role]}</p>
           <form action={logout}>
             <button className="mt-2 inline-flex items-center gap-2 rounded-control py-1 font-medium hover:text-white">
               <LogOut aria-hidden="true" className="h-4 w-4" />

@@ -38,12 +38,33 @@ describe("Sheets repository", () => {
   });
   it("keeps working on a sheet that has not added the last_position header yet", async () => {
     const { client, grids, seed } = fakeSheets();
-    grids.Applications = grids.Applications.map(row => row.slice(0, -1));
+    grids.Applications = grids.Applications.map(row => row.slice(0, -2));
     const repo = createSheetsRepository(client, "test");
     const application = await repo.getApplicationById(seed.applications[0].id);
     expect(application?.fullName).toBe(seed.applications[0].fullName);
     expect(application?.lastPosition).toBe("");
-    expect(() => validateHeaders("Applications", SHEET_HEADERS.Applications.slice(0, -2))).toThrow();
+    expect(() => validateHeaders("Applications", SHEET_HEADERS.Applications.slice(0, -3))).toThrow();
+  });
+  it("loads and writes sheets that have not added the newest optional columns", async () => {
+    const { client, grids, seed, calls } = fakeSheets();
+    grids.Vacancies = grids.Vacancies.map(row => row.slice(0, -4));
+    grids.Applications = grids.Applications.map(row => row.slice(0, -2));
+    const repo = createSheetsRepository(client, "test");
+    const vacancy = await repo.getVacancyById(seed.vacancies[1].id);
+    expect(vacancy).toMatchObject({ salaryMin: null, salaryVisible: false, screeningQuestions: [] });
+    await repo.updateVacancy(seed.vacancies[1].id, { title: "Guru Matematika SMA" });
+    const written = calls.flat().find(request => request.updateCells)?.updateCells?.rows?.[0].values ?? [];
+    expect(written).toHaveLength(SHEET_HEADERS.Vacancies.length - 4);
+    expect(() => validateHeaders("Vacancies", SHEET_HEADERS.Vacancies.slice(0, -5))).toThrow();
+  });
+  it("round-trips salary and screening JSON when the headers exist", async () => {
+    const { client, seed } = fakeSheets();
+    const repo = createSheetsRepository(client, "test");
+    const vacancy = await repo.getVacancyById(seed.vacancies[1].id);
+    expect(vacancy?.salaryMin).toBe(5_000_000);
+    expect(vacancy?.screeningQuestions[0]).toMatchObject({ id: "penempatan", expected: "yes" });
+    const siti = await repo.getApplicationById(seed.applications[1].id);
+    expect(siti?.screeningAnswers[0]).toMatchObject({ answer: "no" });
   });
   it("saves a bulk update in a single write", async () => {
     const { client, seed, calls } = fakeSheets();

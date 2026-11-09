@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { repository } from "@/lib/repositories";
 import { isVacancyPubliclyOpen } from "@/lib/domain/vacancy";
 import { ApplicationForm } from "@/components/public/application-form";
+import { toPublicQuestions } from "@/lib/public/screening";
 import { BackLink } from "@/components/ui/back-link";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Formulir lamaran" };
@@ -16,7 +17,10 @@ export default async function ApplyPage({ params }: { params: Promise<{ slug: st
         Isi data berikut dengan benar. Kolom bertanda * wajib diisi.
       </p>
       {isVacancyPubliclyOpen(vacancy) ? (
-        <ApplicationForm slug={vacancy.slug} />
+        <ApplicationForm
+          slug={vacancy.slug}
+          questions={toPublicQuestions(vacancy.screeningQuestions)}
+        />
       ) : (
         <p className="mt-8 rounded-panel border border-border bg-surface p-6">
           Lowongan ini sedang tidak menerima lamaran.

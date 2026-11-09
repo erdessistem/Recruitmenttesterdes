@@ -9,6 +9,7 @@ import {
 import { formatDate } from "@/lib/format/date";
 import { changeVacancyStatus } from "./actions";
 import { requireAdmin } from "@/lib/auth/session";
+import { canEdit } from "@/lib/auth/roles";
 import { Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -19,7 +20,8 @@ export default async function Vacancies({
 }: {
   searchParams: Promise<{ status?: string; department?: string }>;
 }) {
-  await requireAdmin();
+  const admin = await requireAdmin();
+  const editor = canEdit(admin.role);
   const filters = await searchParams;
   const [all, apps] = await Promise.all([repository.getVacancies(), repository.getApplications()]);
   const vacancies = all.filter(
@@ -31,10 +33,12 @@ export default async function Vacancies({
     <div className="mx-auto max-w-7xl">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <h1 className="text-3xl font-bold tracking-tight">Lowongan</h1>
-        <Link href="/admin/lowongan/baru" className={buttonClass("primary")}>
-          <Plus aria-hidden="true" className="h-4 w-4" />
-          Buat lowongan
-        </Link>
+        {editor && (
+          <Link href="/admin/lowongan/baru" className={buttonClass("primary")}>
+            <Plus aria-hidden="true" className="h-4 w-4" />
+            Buat lowongan
+          </Link>
+        )}
       </div>
       <form className="admin-card mt-6 flex flex-wrap items-end gap-3">
         <label className="text-sm font-semibold">
@@ -73,7 +77,7 @@ export default async function Vacancies({
               <th>Status</th>
               <th>Pelamar</th>
               <th>Ditutup</th>
-              <th>Tindakan</th>
+              {editor && <th>Tindakan</th>}
             </tr>
           </thead>
           <tbody>
@@ -82,7 +86,11 @@ export default async function Vacancies({
                 <td>
                   <Link
                     className="font-semibold text-primary hover:underline"
-                    href={`/admin/lowongan/${v.id}`}
+                    href={
+                      editor
+                        ? `/admin/lowongan/${v.id}`
+                        : `/admin/pelamar?vacancy=${encodeURIComponent(v.id)}`
+                    }
                   >
                     {v.title}
                   </Link>
@@ -109,24 +117,28 @@ export default async function Vacancies({
                   </Link>
                 </td>
                 <td className="tabular text-muted">{v.closeAt ? formatDate(v.closeAt) : "—"}</td>
-                <td>
-                  <form action={changeVacancyStatus} className="flex gap-2">
-                    <input type="hidden" name="id" value={v.id} />
-                    <select
-                      name="status"
-                      aria-label={`Status ${v.title}`}
-                      defaultValue={v.status}
-                      className="control min-h-9 w-auto py-1.5"
-                    >
-                      {VACANCY_STATUSES.map((s: VacancyStatus) => (
-                        <option key={s} value={s}>
-                          {VACANCY_STATUS_LABELS[s]}
-                        </option>
-                      ))}
-                    </select>
-                    <button className={buttonClass("ghost", "min-h-9 text-primary")}>Simpan</button>
-                  </form>
-                </td>
+                {editor && (
+                  <td>
+                    <form action={changeVacancyStatus} className="flex gap-2">
+                      <input type="hidden" name="id" value={v.id} />
+                      <select
+                        name="status"
+                        aria-label={`Status ${v.title}`}
+                        defaultValue={v.status}
+                        className="control min-h-9 w-auto py-1.5"
+                      >
+                        {VACANCY_STATUSES.map((s: VacancyStatus) => (
+                          <option key={s} value={s}>
+                            {VACANCY_STATUS_LABELS[s]}
+                          </option>
+                        ))}
+                      </select>
+                      <button className={buttonClass("ghost", "min-h-9 text-primary")}>
+                        Simpan
+                      </button>
+                    </form>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

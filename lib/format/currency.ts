@@ -40,3 +40,25 @@ export function formatRupiahInput(value: unknown): string {
   const parsed = parseRupiahInput(value);
   return parsed === null ? "" : formatRupiah(parsed);
 }
+
+/** "Rp4.500.000 – Rp6.000.000", "Mulai Rp4.500.000", "Hingga Rp6.000.000", or null when unset. */
+export function formatSalaryRange(min: number | null, max: number | null): string | null {
+  if (min != null && max != null) {
+    return min === max ? formatRupiah(min) : `${formatRupiah(min)} – ${formatRupiah(max)}`;
+  }
+  if (min != null) return `Mulai ${formatRupiah(min)}`;
+  if (max != null) return `Hingga ${formatRupiah(max)}`;
+  return null;
+}
+
+/** Where an expected salary sits against a range: below, within or above. Null when there is no range. */
+export function compareToRange(
+  value: number,
+  min: number | null,
+  max: number | null,
+): "below" | "within" | "above" | null {
+  if (min == null && max == null) return null;
+  if (min != null && value < min) return "below";
+  if (max != null && value > max) return "above";
+  return "within";
+}

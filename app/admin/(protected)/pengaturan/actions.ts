@@ -1,5 +1,5 @@
 "use server";
-import { requireAdmin } from "@/lib/auth/session";
+import { requireActionRole, requireAdmin } from "@/lib/auth/session";
 import { repository } from "@/lib/repositories";
 import { STAGES, type Stage } from "@/lib/constants";
 import { revalidatePath } from "next/cache";
@@ -8,7 +8,7 @@ import { z } from "zod";
 import { normalizeWhatsApp } from "@/lib/format/phone";
 import { setSession } from "@/lib/auth/session";
 export async function saveTemplates(form: FormData) {
-  await requireAdmin();
+  await requireActionRole("superadmin");
   const defaultTemplate = String(form.get("default") ?? "").trim();
   if (!defaultTemplate || defaultTemplate.length > 4000)
     return { ok: false, message: "Template utama wajib diisi (maksimal 4.000 karakter)." };
@@ -25,7 +25,7 @@ export async function saveTemplates(form: FormData) {
   return { ok: true, message: "Template WhatsApp disimpan." };
 }
 export async function saveCompany(form: FormData) {
-  await requireAdmin();
+  await requireActionRole("superadmin");
   const parsed = z
     .object({
       name: z.string().trim().min(2).max(150),
@@ -67,7 +67,7 @@ export async function changePassword(form: FormData) {
   return { ok: true, message: "Password diubah. Sesi lama telah dinonaktifkan." };
 }
 export async function runRetention(confirmation: string) {
-  await requireAdmin();
+  await requireActionRole("superadmin");
   if (confirmation !== "ANONIMKAN")
     return { ok: false, message: "Ketik ANONIMKAN untuk mengonfirmasi." };
   try {

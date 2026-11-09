@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { CalendarDays, ChevronRight, MapPin, Search } from "lucide-react";
+import { CalendarDays, ChevronRight, MapPin, Search, Wallet } from "lucide-react";
 import { EMPLOYMENT_TYPE_LABELS, type EmploymentType } from "@/lib/constants";
 import { formatDate } from "@/lib/format/date";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,8 @@ export type VacancyListItem = {
   location: string;
   employmentType: EmploymentType;
   closeAt: string | null;
+  /** Formatted salary range, only when the vacancy shows it to candidates. */
+  salary: string | null;
 };
 type Filters = { q: string; department: string; location: string; type: string };
 type FilterKey = Exclude<keyof Filters, "q">;
@@ -191,6 +193,12 @@ export function VacancyBrowser({
                         <MapPin aria-hidden="true" className="h-4 w-4" />
                         {v.location}
                       </span>
+                      {v.salary && (
+                        <span className="inline-flex items-center gap-1.5">
+                          <Wallet aria-hidden="true" className="h-4 w-4" />
+                          {v.salary}
+                        </span>
+                      )}
                       <span className="inline-flex items-center gap-1.5">
                         <CalendarDays aria-hidden="true" className="h-4 w-4" />
                         {v.closeAt ? `Ditutup ${formatDate(v.closeAt)}` : "Tanpa batas waktu"}

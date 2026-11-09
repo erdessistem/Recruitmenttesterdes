@@ -3,25 +3,22 @@ import type { sheets_v4 } from "googleapis";
 import { createSheetsClient } from "@/lib/sheets/client";
 import { getSpreadsheetId } from "@/lib/env";
 import { recordToRow, rowToRecord, rowsToSettings, settingsToRows } from "@/lib/sheets/mappers";
-import { OPTIONAL_TRAILING_HEADERS, SHEET_HEADERS, type SheetName } from "@/lib/sheets/schema";
+import { SHEET_HEADERS, acceptsHeaders, type SheetName } from "@/lib/sheets/schema";
 import { MemoryRepository } from "./memory";
 import type { SeedData } from "./seed";
 import type { Repository } from "./types";
 
 type DataSheet = Exclude<SheetName, "Settings">;
 type Item = { id: string };
-type Snapshot = { data: SeedData; rowIndexes: Record<SheetName, number[]>; sheetIds: Record<SheetName, number> };
+/** widths: how many header columns each tab has, so optional columns without a header are never written. */
+type Snapshot = { data: SeedData; rowIndexes: Record<SheetName, number[]>; sheetIds: Record<SheetName, number>; widths: Record<SheetName, number> };
 const names = Object.keys(SHEET_HEADERS) as SheetName[];
 const properties = { Vacancies: "vacancies", Applications: "applications", Stage_History: "stageHistory", Notes: "notes", Admin_Users: "adminUsers" } as const;
-const mutationMethods = new Set(["createVacancy", "updateVacancy", "appendApplication", "updateApplicationStage", "appendStageHistory", "reconcileApplicationStage", "reconcileAllApplicationStages", "addNote", "updateSettings", "createAdmin", "updateAdminPassword", "recordAdminLogin", "anonymizeExpiredApplications", "getApplicantWorkspace", "getDashboardData", "bulkUpdateApplications"]);
+const mutationMethods = new Set(["createVacancy", "updateVacancy", "appendApplication", "updateApplicationStage", "appendStageHistory", "reconcileApplicationStage", "reconcileAllApplicationStages", "addNote", "updateSettings", "createAdmin", "updateAdminPassword", "recordAdminLogin", "anonymizeExpiredApplications", "getApplicantWorkspace", "getDashboardData", "bulkUpdateApplications", "addAdmin", "updateAdmin"]);
 
 /** Exact headers prevent writing canonical columns into a reordered sheet. */
 export function validateHeaders(sheet: SheetName, headers: readonly unknown[]) {
-  const full = SHEET_HEADERS[sheet];
-  const optional = OPTIONAL_TRAILING_HEADERS[sheet];
-  // Before the owner adds an optional trailing header, the sheet ends one column earlier.
-  const expected = optional && headers.length === full.length - 1 && full.at(-1) === optional ? full.slice(0, -1) : full;
-  if (headers.length !== expected.length || expected.some((header, index) => headers[index] !== header)) throw new Error(`Header ${sheet} tidak sesuai. Jalankan pemeriksaan skema sebelum melanjutkan.`);
+  if (!acceptsHeaders(sheet, headers)) throw new Error(`Header ${sheet} tidak sesuai. Jalankan pemeriksaan skema sebelum melanjutkan.`);
 }
 function cell(value: string | number | boolean): sheets_v4.Schema$CellData {
   return { userEnteredValue: typeof value === "number" ? { numberValue: value } : typeof value === "boolean" ? { boolValue: value } : { stringValue: value } };
@@ -38,6 +35,7 @@ export function createSheetsRepository(client: sheets_v4.Sheets = createSheetsCl
     ]);
     const sheetIds = {} as Record<SheetName, number>;
     const rowIndexes = {} as Record<SheetName, number[]>;
+    const widths = {} as Record<SheetName, number>;
     const records: Partial<Record<DataSheet, unknown[]>> = {};
     let settings: SeedData["settings"] | undefined;
     for (let index = 0; index < names.length; index++) {
@@ -47,6 +45,7 @@ export function createSheetsRepository(client: sheets_v4.Sheets = createSheetsCl
       sheetIds[name] = sheet.properties.sheetId;
       const rows = response.data.valueRanges?.[index]?.values ?? [];
       validateHeaders(name, rows[0] ?? []);
+      widths[name] = (rows[0] ?? []).length;
       const present = rows.slice(1).map((values, offset) => ({ values, rowIndex: offset + 1 })).filter(item => item.values[0] !== "" && item.values[0] != null);
       rowIndexes[name] = present.map(item => item.rowIndex);
       if (name === "Settings") {
@@ -57,7 +56,7 @@ export function createSheetsRepository(client: sheets_v4.Sheets = createSheetsCl
       else records[name] = present.map(item => rowToRecord(name, rows[0] as string[], item.values));
     }
     if (!settings) throw new Error("Pengaturan belum diinisialisasi.");
-    return { data: { vacancies: records.Vacancies as SeedData["vacancies"], applications: records.Applications as SeedData["applications"], stageHistory: records.Stage_History as SeedData["stageHistory"], notes: records.Notes as SeedData["notes"], adminUsers: records.Admin_Users as SeedData["adminUsers"], settings }, rowIndexes, sheetIds };
+    return { data: { vacancies: records.Vacancies as SeedData["vacancies"], applications: records.Applications as SeedData["applications"], stageHistory: records.Stage_History as SeedData["stageHistory"], notes: records.Notes as SeedData["notes"], adminUsers: records.Admin_Users as SeedData["adminUsers"], settings }, rowIndexes, sheetIds, widths };
   }
   async function commit(before: Snapshot, after: SeedData) {
     const requests: sheets_v4.Schema$Request[] = [];
@@ -70,11 +69,11 @@ export function createSheetsRepository(client: sheets_v4.Sheets = createSheetsCl
       oldItems.forEach((old, index) => {
         const current = remainingNotes ? remainingNotes.get(old.id) : newItems[index];
         if (JSON.stringify(old) === JSON.stringify(current)) return;
-        const values = current ? valuesFor(name, current) : SHEET_HEADERS[name].map(() => "");
+        const values = (current ? valuesFor(name, current) : SHEET_HEADERS[name].map(() => "")).slice(0, before.widths[name]);
         requests.push({ updateCells: { start: { sheetId: before.sheetIds[name], rowIndex: before.rowIndexes[name][index], columnIndex: 0 }, rows: [row(values)], fields: "userEnteredValue" } });
       });
       const appended = remainingNotes ? newItems.filter(item => !oldItems.some(old => old.id === item.id)) : newItems.slice(oldItems.length);
-      if (appended.length) requests.push({ appendCells: { sheetId: before.sheetIds[name], rows: appended.map(item => row(valuesFor(name, item))), fields: "userEnteredValue" } });
+      if (appended.length) requests.push({ appendCells: { sheetId: before.sheetIds[name], rows: appended.map(item => row(valuesFor(name, item).slice(0, before.widths[name]))), fields: "userEnteredValue" } });
     }
     const oldSettings = settingsToRows(before.data.settings), newSettings = settingsToRows(after.settings);
     oldSettings.forEach((old, index) => {

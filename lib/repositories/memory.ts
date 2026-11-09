@@ -30,6 +30,7 @@ import type {
   CreateAdminInput,
   CreateVacancyInput,
   DashboardStats,
+  UpdateAdminInput,
   InternalNote,
   NewStageHistoryEvent,
   Repository,
@@ -254,6 +255,10 @@ export class MemoryRepository implements Repository {
     const now = this.nowIso();
     const vacancy: Vacancy = {
       id: this.nextVacancyId(),
+      salaryMin: null,
+      salaryMax: null,
+      salaryVisible: false,
+      screeningQuestions: [],
       ...clone(input),
       createdAt: now,
       updatedAt: now,
@@ -713,6 +718,14 @@ export class MemoryRepository implements Repository {
     return result;
   }
 
+  async getReportData() {
+    return {
+      vacancies: clone(this.vacancies),
+      applications: clone(this.applications),
+      history: clone(this.stageHistory),
+    };
+  }
+
   async getDashboardStats(now: Date = this.clock()): Promise<DashboardStats> {
     const nowIso = now.toISOString();
     const monthRange = getJakartaMonthRangeUtc(now);
@@ -851,6 +864,54 @@ export class MemoryRepository implements Repository {
     return clone(admin);
   }
 
+  async getAdmins(): Promise<AdminUser[]> {
+    return clone(this.adminUsers).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  }
+
+  async addAdmin(input: CreateAdminInput): Promise<AdminUser> {
+    const email = input.email.trim().toLowerCase();
+    if (this.adminUsers.some((user) => user.email.toLowerCase() === email)) {
+      throw conflict("Email admin sudah digunakan.");
+    }
+    const highestId = this.adminUsers.reduce((highest, user) => {
+      const match = /^ADM-(\d+)$/.exec(user.id);
+      return match ? Math.max(highest, Number(match[1])) : highest;
+    }, 0);
+    const admin: AdminUser = {
+      id: `ADM-${pad(highestId + 1, 4)}`,
+      email,
+      name: input.name.trim(),
+      passwordHash: input.passwordHash,
+      role: input.role ?? "viewer",
+      active: true,
+      sessionVersion: 1,
+      createdAt: this.nowIso(),
+      lastLoginAt: null,
+    };
+    this.adminUsers.push(admin);
+    return clone(admin);
+  }
+
+  async updateAdmin(id: string, input: UpdateAdminInput): Promise<AdminUser> {
+    const admin = this.adminUsers.find((user) => user.id === id);
+    if (!admin) throw notFound("Akun admin tidak ditemukan.");
+    const role = input.role ?? admin.role;
+    const active = input.active ?? admin.active;
+    const losesSuperadmin = admin.role === "superadmin" && admin.active && (role !== "superadmin" || !active);
+    if (losesSuperadmin) {
+      const others = this.adminUsers.filter(
+        (user) => user.id !== id && user.role === "superadmin" && user.active,
+      );
+      if (others.length === 0) throw conflict("Harus ada minimal satu superadmin aktif.");
+    }
+    admin.role = role;
+    admin.active = active;
+    if (input.passwordHash) admin.passwordHash = input.passwordHash;
+    // Any change signs the account out, so a new role or a deactivation applies immediately.
+    admin.sessionVersion += 1;
+    return clone(admin);
+  }
+
   async recordAdminLogin(
     email: string,
     at: string = this.nowIso(),
@@ -896,6 +957,7 @@ export class MemoryRepository implements Repository {
       application.major = "";
       application.lastCompany = "";
       application.lastPosition = "";
+      application.screeningAnswers = [];
       application.lastSalary = 0;
       application.expectedSalary = 0;
       application.cvUrl = "";

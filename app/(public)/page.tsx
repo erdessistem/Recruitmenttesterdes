@@ -5,6 +5,7 @@ import { about, faq } from "@/lib/content/careers";
 import { buttonClass } from "@/components/ui/button";
 import { ScamNotice } from "@/components/public/scam-notice";
 import { VacancyBrowser } from "@/components/public/vacancy-browser";
+import { formatSalaryRange } from "@/lib/format/currency";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +75,7 @@ export default async function Home({
             location: v.location,
             employmentType: v.employmentType,
             closeAt: v.closeAt,
+            salary: v.salaryVisible ? formatSalaryRange(v.salaryMin, v.salaryMax) : null,
           }))}
           initial={{
             q: filters.q ?? "",

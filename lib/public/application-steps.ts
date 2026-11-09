@@ -47,6 +47,13 @@ export function stepErrors(data: Record<string, unknown>, step: number): FieldEr
 /** The first step that contains any of the given errors, or null when there are none. */
 export function firstStepWithError(errors: FieldErrors): number | null {
   const names = Object.keys(errors);
+  // Screening question answers live in the Lamaran step.
+  if (names.some((name) => name.startsWith("q_"))) {
+    const own = APPLICATION_STEPS.findIndex((step) =>
+      step.fields.some((field) => names.includes(field)),
+    );
+    return own >= 0 && own < 2 ? own : 2;
+  }
   const index = APPLICATION_STEPS.findIndex((step) =>
     step.fields.some((field) => names.includes(field)),
   );
