@@ -38,12 +38,12 @@ describe("Sheets repository", () => {
   });
   it("keeps working on a sheet that has not added the last_position header yet", async () => {
     const { client, grids, seed } = fakeSheets();
-    grids.Applications = grids.Applications.map(row => row.slice(0, -2));
+    grids.Applications = grids.Applications.map(row => row.slice(0, -7));
     const repo = createSheetsRepository(client, "test");
     const application = await repo.getApplicationById(seed.applications[0].id);
     expect(application?.fullName).toBe(seed.applications[0].fullName);
     expect(application?.lastPosition).toBe("");
-    expect(() => validateHeaders("Applications", SHEET_HEADERS.Applications.slice(0, -3))).toThrow();
+    expect(() => validateHeaders("Applications", SHEET_HEADERS.Applications.slice(0, -8))).toThrow();
   });
   it("loads and writes sheets that have not added the newest optional columns", async () => {
     const { client, grids, seed, calls } = fakeSheets();

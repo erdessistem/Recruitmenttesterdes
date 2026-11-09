@@ -958,6 +958,11 @@ export class MemoryRepository implements Repository {
       application.lastCompany = "";
       application.lastPosition = "";
       application.screeningAnswers = [];
+      application.referenceName = "";
+      application.referencePhone = "";
+      application.emergencyName = "";
+      application.emergencyRelation = "";
+      application.emergencyPhone = "";
       application.lastSalary = 0;
       application.expectedSalary = 0;
       application.cvUrl = "";

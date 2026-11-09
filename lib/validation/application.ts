@@ -13,15 +13,12 @@ import {
   optionalEmailField,
   optionalHttpsUrl,
   optionalText,
+  phoneField,
   requiredText,
   whatsappField,
 } from "@/lib/validation/fields";
 
-function salaryField(options: {
-  label: string;
-  min: number;
-  minMessage: string;
-}) {
+function salaryField(options: { label: string; min: number; minMessage: string }) {
   return z.preprocess(
     (value) => {
       if (value === null || value === undefined || value === "") return undefined;
@@ -59,6 +56,11 @@ export const applicationFormSchema = z
     }),
     last_company: optionalText("Perusahaan terakhir", 150),
     last_position: optionalText("Posisi terakhir", 100),
+    reference_name: requiredText("Nama referensi", 2, 100),
+    reference_phone: phoneField("Nomor referensi"),
+    emergency_name: requiredText("Nama kontak darurat", 2, 100),
+    emergency_relation: requiredText("Hubungan", 2, 50),
+    emergency_phone: phoneField("Nomor darurat"),
     last_salary: salaryField({
       label: "Gaji terakhir",
       min: 0,
@@ -91,6 +93,16 @@ export const applicationFormSchema = z
     form_started_at: z.union([z.number(), z.string()]).optional(),
   })
   .superRefine((value, context) => {
+    // These numbers are for reaching someone else, so they cannot be the applicant's own.
+    for (const name of ["emergency_phone", "reference_phone"] as const) {
+      if (value[name] === value.whatsapp) {
+        context.addIssue({
+          code: "custom",
+          path: [name],
+          message: "Nomor ini harus berbeda dari nomor WhatsApp Anda.",
+        });
+      }
+    }
     if (value.source === SOURCE_OTHER && value.source_other.length === 0) {
       context.addIssue({
         code: "custom",

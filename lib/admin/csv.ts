@@ -23,6 +23,11 @@ export function applicantsCsv(applications: Application[], vacancies: Vacancy[])
     ["Pengalaman tahun", (a) => a.experienceYears],
     ["Perusahaan terakhir", (a) => a.lastCompany],
     ["Posisi terakhir", (a) => a.lastPosition],
+    ["Nama referensi", (a) => a.referenceName],
+    ["Nomor referensi", (a) => a.referencePhone],
+    ["Kontak darurat", (a) => a.emergencyName],
+    ["Hubungan kontak darurat", (a) => a.emergencyRelation],
+    ["Nomor darurat", (a) => a.emergencyPhone],
     [
       "Jawaban screening",
       (a) => a.screeningAnswers.map((x) => `${x.question}: ${answerLabel(x)}`).join(" | "),

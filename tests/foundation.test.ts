@@ -25,7 +25,7 @@ describe("foundation", () => {
     expect(vacancyFormSchema.safeParse({ ...form, close_at: "2026-02-30" }).success).toBe(false);
   });
   it("validates application conditional fields and anti-spam timing", () => {
-    const form = { full_name: "Budi Santoso", whatsapp: "081234567890", city: "Jakarta", last_education: "s1", experience_years: "0", last_salary: "0", expected_salary: "5.000.000", motivation: "Saya ingin bergabung dan berkembang bersama perusahaan.", availability: "immediately", source: "other", consent: true };
+    const form = { full_name: "Budi Santoso", whatsapp: "081234567890", city: "Jakarta", reference_name: "Hendra Wijaya", reference_phone: "081300000999", emergency_name: "Sri Rahayu", emergency_relation: "Ibu", emergency_phone: "081900000999", last_education: "s1", experience_years: "0", last_salary: "0", expected_salary: "5.000.000", motivation: "Saya ingin bergabung dan berkembang bersama perusahaan.", availability: "immediately", source: "other", consent: true };
     expect(applicationFormSchema.safeParse(form).success).toBe(false);
     expect(applicationFormSchema.parse({ ...form, source_other: "Acara" }).whatsapp).toBe("6281234567890");
     expect(isFormTooFast(1000, 3999)).toBe(true);

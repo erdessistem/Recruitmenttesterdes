@@ -65,6 +65,13 @@ export interface Application {
   lastPosition: string;
   /** Answers to the screening questions; empty for older applications. */
   screeningAnswers: ScreeningAnswer[];
+  /** Previous supervisor as a reference; empty for older applications. */
+  referenceName: string;
+  referencePhone: string;
+  /** Emergency contact; empty for older applications. */
+  emergencyName: string;
+  emergencyRelation: string;
+  emergencyPhone: string;
   lastSalary: number;
   expectedSalary: number;
   cvUrl: string;

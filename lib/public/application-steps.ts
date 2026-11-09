@@ -2,7 +2,19 @@ import { applicationFormSchema } from "@/lib/validation/application";
 
 /** The four steps of the application form, in order. Field names match the form inputs. */
 export const APPLICATION_STEPS = [
-  { title: "Data diri", short: "Data diri", fields: ["full_name", "whatsapp", "email", "city"] },
+  {
+    title: "Data diri",
+    short: "Data diri",
+    fields: [
+      "full_name",
+      "whatsapp",
+      "email",
+      "city",
+      "emergency_name",
+      "emergency_relation",
+      "emergency_phone",
+    ],
+  },
   {
     title: "Pendidikan dan pengalaman",
     short: "Pengalaman",
@@ -12,6 +24,8 @@ export const APPLICATION_STEPS = [
       "experience_years",
       "last_company",
       "last_position",
+      "reference_name",
+      "reference_phone",
       "last_salary",
       "expected_salary",
     ],

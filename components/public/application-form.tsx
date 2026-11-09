@@ -44,6 +44,11 @@ const LABELS: Record<string, string> = {
   experience_years: "Pengalaman kerja",
   last_company: "Perusahaan terakhir",
   last_position: "Posisi terakhir",
+  reference_name: "Nama atasan sebelumnya",
+  reference_phone: "Nomor referensi (nomor atasan sebelumnya)",
+  emergency_name: "Nama kontak darurat",
+  emergency_relation: "Hubungan",
+  emergency_phone: "Nomor darurat",
   last_salary: "Gaji terakhir",
   expected_salary: "Ekspektasi gaji",
   cv_url: "Link CV/portfolio",
@@ -376,6 +381,8 @@ export function ApplicationForm({
     if (name === "source")
       return APPLICATION_SOURCE_LABELS[value as keyof typeof APPLICATION_SOURCE_LABELS] ?? value;
     if (name === "experience_years") return `${value} tahun`;
+    if (name === "reference_phone" || name === "emergency_phone")
+      return normalizeWhatsApp(value) ? formatWhatsAppDisplay(value) : value;
     if (name === "last_salary" || name === "expected_salary") return `Rp${value}`;
     return value;
   };
@@ -522,6 +529,25 @@ export function ApplicationForm({
               hint: "Jalan, kecamatan, dan kota. Contoh: Jl. Melati No. 5, Lowokwaru, Malang.",
               className: "sm:col-span-2",
             })}
+            <div className="border-t border-border pt-5 sm:col-span-2">
+              <p className="font-semibold">Kontak darurat</p>
+              <p className="mt-1 text-sm text-muted">
+                Orang yang dapat kami hubungi jika terjadi keadaan darurat.
+              </p>
+            </div>
+            {input("emergency_name", { required: true, autoComplete: "off" })}
+            {input("emergency_relation", {
+              required: true,
+              autoComplete: "off",
+              hint: "Contoh: Ibu, Suami, Kakak.",
+            })}
+            {input("emergency_phone", {
+              type: "tel",
+              required: true,
+              autoComplete: "off",
+              inputMode: "tel",
+              hint: "Harus berbeda dari nomor WhatsApp Anda.",
+            })}
           </div>,
         )}
         {section(
@@ -546,6 +572,20 @@ export function ApplicationForm({
               hint: "Per bulan. Isi 0 jika belum pernah bekerja.",
             })}
             {input("expected_salary", { required: true, hint: "Per bulan." })}
+            <div className="border-t border-border pt-5 sm:col-span-2">
+              <p className="font-semibold">Referensi</p>
+              <p className="mt-1 text-sm text-muted">
+                Atasan di tempat kerja sebelumnya yang dapat kami hubungi. Jika belum pernah
+                bekerja, isi dosen, guru, atau pembimbing organisasi.
+              </p>
+            </div>
+            {input("reference_name", { required: true, autoComplete: "off" })}
+            {input("reference_phone", {
+              type: "tel",
+              required: true,
+              autoComplete: "off",
+              inputMode: "tel",
+            })}
           </div>,
         )}
         {section(

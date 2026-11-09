@@ -4,7 +4,7 @@ import { createSeedData } from "@/lib/repositories/seed";
 import { submitApplication } from "@/lib/public/submit-application";
 
 const now = new Date("2026-11-03T00:00:00Z");
-const input = { full_name: "Ani Putri", whatsapp: "081234567899", city: "Jakarta", last_education: "s1", experience_years: "0", last_salary: "0", expected_salary: "5.000.000", motivation: "Saya ingin bergabung dan berkembang bersama perusahaan.", availability: "immediately", source: "website", consent: true, form_started_at: now.getTime() - 5000 };
+const input = { full_name: "Ani Putri", whatsapp: "081234567899", city: "Jakarta", reference_name: "Hendra Wijaya", reference_phone: "081300000999", emergency_name: "Sri Rahayu", emergency_relation: "Ibu", emergency_phone: "081900000999", last_education: "s1", experience_years: "0", last_salary: "0", expected_salary: "5.000.000", motivation: "Saya ingin bergabung dan berkembang bersama perusahaan.", availability: "immediately", source: "website", consent: true, form_started_at: now.getTime() - 5000 };
 const key = "12345678-1234-4234-8234-123456789abc";
 describe("application submissions", () => {
   it("creates a unique application and history, and retries return the same token", async () => {

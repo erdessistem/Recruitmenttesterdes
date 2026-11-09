@@ -11,8 +11,7 @@ export const whatsappField = z
     if (!normalizeWhatsApp(value)) {
       context.addIssue({
         code: "custom",
-        message:
-          "Masukkan nomor WhatsApp Indonesia yang valid, misalnya 0812 3456 7890.",
+        message: "Masukkan nomor WhatsApp Indonesia yang valid, misalnya 0812 3456 7890.",
       });
     }
   })
@@ -58,8 +57,7 @@ export function optionalHttpsUrl(label: string, max: number) {
       .max(max, { error: `${label} maksimal ${max} karakter.` })
       .refine(
         (value) =>
-          value === "" ||
-          (value.startsWith("https://") && z.url().safeParse(value).success),
+          value === "" || (value.startsWith("https://") && z.url().safeParse(value).success),
         { error: `${label} harus berupa URL valid yang diawali https://.` },
       ),
   );
@@ -72,26 +70,41 @@ export function integerField(options: {
   minMessage?: string;
   maxMessage?: string;
 }) {
-  return z.preprocess((value) => {
-    if (value === null || value === undefined || value === "") return undefined;
-    if (typeof value === "string") {
-      const parsed = Number(value.trim());
-      return Number.isFinite(parsed) ? parsed : value;
-    }
-    return value;
-  }, z
-    .number({
-      error: `${options.label} wajib diisi dengan angka bulat.`,
+  return z.preprocess(
+    (value) => {
+      if (value === null || value === undefined || value === "") return undefined;
+      if (typeof value === "string") {
+        const parsed = Number(value.trim());
+        return Number.isFinite(parsed) ? parsed : value;
+      }
+      return value;
+    },
+    z
+      .number({
+        error: `${options.label} wajib diisi dengan angka bulat.`,
+      })
+      .int({ error: `${options.label} harus berupa angka bulat.` })
+      .min(options.min, {
+        error: options.minMessage ?? `${options.label} minimal ${options.min}.`,
+      })
+      .max(options.max, {
+        error: options.maxMessage ?? `${options.label} maksimal ${options.max}.`,
+      }),
+  );
+}
+
+/** Any Indonesian phone number (mobile or landline), stored normalized like WhatsApp numbers. */
+export function phoneField(label: string) {
+  return z
+    .string({ error: `${label} wajib diisi.` })
+    .trim()
+    .superRefine((value, context) => {
+      if (!normalizeWhatsApp(value)) {
+        context.addIssue({
+          code: "custom",
+          message: `${label} tidak valid. Contoh: 0812 3456 7890.`,
+        });
+      }
     })
-    .int({ error: `${options.label} harus berupa angka bulat.` })
-    .min(options.min, {
-      error:
-        options.minMessage ??
-        `${options.label} minimal ${options.min}.`,
-    })
-    .max(options.max, {
-      error:
-        options.maxMessage ??
-        `${options.label} maksimal ${options.max}.`,
-    }));
+    .transform((value) => normalizeWhatsApp(value) as string);
 }

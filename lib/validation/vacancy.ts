@@ -1,13 +1,7 @@
 import { z } from "zod";
 
-import {
-  EMPLOYMENT_TYPES,
-  VACANCY_STATUSES,
-} from "@/lib/constants";
-import {
-  isDateOnlyString,
-  jakartaDateOnlyToUtc,
-} from "@/lib/format/date";
+import { EMPLOYMENT_TYPES, VACANCY_STATUSES } from "@/lib/constants";
+import { isDateOnlyString, jakartaDateOnlyToUtc } from "@/lib/format/date";
 import { MAX_POSITION_CODE_LENGTH } from "@/lib/format/applicant-id";
 import { requiredText } from "@/lib/validation/fields";
 import { parseRupiahInput } from "@/lib/format/currency";
@@ -15,7 +9,10 @@ import { screeningQuestionsSchema } from "@/lib/public/screening";
 
 function optionalSalary(label: string) {
   return z.preprocess(
-    (value) => (value === null || value === undefined || value === "" ? null : parseRupiahInput(value) ?? Number.NaN),
+    (value) =>
+      value === null || value === undefined || value === ""
+        ? null
+        : (parseRupiahInput(value) ?? Number.NaN),
     z
       .number({ error: `${label} harus berupa angka rupiah.` })
       .int({ error: `${label} harus berupa angka bulat.` })
@@ -38,7 +35,9 @@ export const positionCodeSchema = z
   .string({ error: "Kode posisi wajib diisi." })
   .trim()
   .min(1, { error: "Kode posisi wajib diisi." })
-  .max(MAX_POSITION_CODE_LENGTH, { error: `Kode posisi maksimal ${MAX_POSITION_CODE_LENGTH} karakter.` })
+  .max(MAX_POSITION_CODE_LENGTH, {
+    error: `Kode posisi maksimal ${MAX_POSITION_CODE_LENGTH} karakter.`,
+  })
   .regex(/^[A-Za-z0-9]+$/, { error: "Kode posisi hanya boleh berisi huruf dan angka." });
 
 function optionalJakartaDateTime(edge: "start" | "end") {
@@ -75,7 +74,12 @@ export const vacancyFormSchema = z
     description: requiredText("Deskripsi", 10, 10_000),
     requirements: requiredText("Persyaratan", 10, 10_000),
     quota: z.preprocess(
-      (value) => (value === null || value === undefined || value === "" ? 0 : typeof value === "string" && value.trim() ? Number(value) : value),
+      (value) =>
+        value === null || value === undefined || value === ""
+          ? 0
+          : typeof value === "string" && value.trim()
+            ? Number(value)
+            : value,
       z
         .number({ error: "Kuota harus berupa angka bulat 0–10.000." })
         .int({ error: "Kuota harus berupa angka bulat." })
@@ -87,7 +91,10 @@ export const vacancyFormSchema = z
     status: z.enum(VACANCY_STATUSES, { error: "Pilih status lowongan." }).default("draft"),
     salary_min: optionalSalary("Gaji minimum"),
     salary_max: optionalSalary("Gaji maksimum"),
-    salary_visible: z.preprocess((value) => value === "on" || value === "true" || value === true, z.boolean()),
+    salary_visible: z.preprocess(
+      (value) => value === "on" || value === "true" || value === true,
+      z.boolean(),
+    ),
     screening_questions: z.preprocess((value) => {
       if (value === undefined || value === null || value === "") return [];
       try {
@@ -98,13 +105,17 @@ export const vacancyFormSchema = z
     }, screeningQuestionsSchema),
   })
   .refine(
-    (value) => value.salary_min == null || value.salary_max == null || value.salary_max >= value.salary_min,
+    (value) =>
+      value.salary_min == null || value.salary_max == null || value.salary_max >= value.salary_min,
     { path: ["salary_max"], error: "Gaji maksimum tidak boleh lebih kecil dari gaji minimum." },
   )
-  .refine((value) => !value.salary_visible || value.salary_min != null || value.salary_max != null, {
-    path: ["salary_visible"],
-    error: "Isi gaji minimum atau maksimum sebelum menampilkannya ke pelamar.",
-  })
+  .refine(
+    (value) => !value.salary_visible || value.salary_min != null || value.salary_max != null,
+    {
+      path: ["salary_visible"],
+      error: "Isi gaji minimum atau maksimum sebelum menampilkannya ke pelamar.",
+    },
+  )
   .refine(
     (value) =>
       !value.open_at ||

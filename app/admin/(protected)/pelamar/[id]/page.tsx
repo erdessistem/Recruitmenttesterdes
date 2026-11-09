@@ -157,6 +157,23 @@ export default async function ApplicantDetail({
         "—"
       ),
     ],
+    [
+      "Referensi (atasan sebelumnya)",
+      <PersonContact
+        key="reference"
+        name={application.referenceName}
+        phone={application.referencePhone}
+      />,
+    ],
+    [
+      "Kontak darurat",
+      <PersonContact
+        key="emergency"
+        name={application.emergencyName}
+        detail={application.emergencyRelation}
+        phone={application.emergencyPhone}
+      />,
+    ],
   ];
 
   const timeline = [
@@ -420,5 +437,34 @@ export default async function ApplicantDetail({
         )}
       </div>
     </div>
+  );
+}
+
+/** A name with an optional detail (such as the relationship) and a click-to-chat number. */
+function PersonContact({ name, detail, phone }: { name: string; detail?: string; phone: string }) {
+  if (!name && !phone) return <>—</>;
+  const url = toWhatsAppUrl(phone);
+  return (
+    <>
+      {name || "—"}
+      {detail && <span className="text-muted"> ({detail})</span>}
+      {phone && (
+        <>
+          {", "}
+          {url ? (
+            <a
+              className="text-primary hover:underline"
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {formatWhatsAppDisplay(phone)}
+            </a>
+          ) : (
+            phone
+          )}
+        </>
+      )}
+    </>
   );
 }

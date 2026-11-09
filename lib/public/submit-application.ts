@@ -85,7 +85,7 @@ export async function submitApplication(
     experienceYears: data.experience_years,
     lastCompany: data.last_company,
     lastPosition: data.last_position,
-    screeningAnswers: collectAnswers(vacancy.screeningQuestions, input),
+    screeningAnswers: collectAnswers(vacancy.screeningQuestions, input), referenceName: data.reference_name, referencePhone: data.reference_phone, emergencyName: data.emergency_name, emergencyRelation: data.emergency_relation, emergencyPhone: data.emergency_phone,
     lastSalary: data.last_salary,
     expectedSalary: data.expected_salary,
     cvUrl: data.cv_url,
