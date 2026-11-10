@@ -4,6 +4,10 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   serverExternalPackages: ["googleapis", "bcryptjs"],
+  // The applicant PDF reads its font files at runtime; make sure they ship with the route.
+  outputFileTracingIncludes: {
+    "/admin/pelamar/*/pdf": ["./node_modules/@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-*-normal.woff"],
+  },
   async headers() {
     const sensitiveHeaders = [
       { key: "Referrer-Policy", value: "no-referrer" },

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, ExternalLink } from "lucide-react";
 import { repository } from "@/lib/repositories";
 import {
   APPLICATION_SOURCE_LABELS,
@@ -257,7 +257,17 @@ export default async function ApplicantDetail({
                 </p>
                 <p className="tabular mt-1 break-words text-sm">{application.id}</p>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                {canEdit(admin.role) && (
+                  <a
+                    href={`/admin/pelamar/${encodeURIComponent(application.id)}/pdf`}
+                    download
+                    className={buttonClass("secondary", "min-h-9 px-3 text-sm")}
+                  >
+                    <Download aria-hidden="true" className="h-4 w-4" />
+                    Unduh PDF
+                  </a>
+                )}
                 {application.status !== "active" && (
                   <Badge tone={application.status === "rejected" ? "danger" : "neutral"}>
                     {APPLICATION_STATUS_LABELS[application.status]}
