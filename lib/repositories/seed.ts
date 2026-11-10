@@ -19,6 +19,40 @@ export const SEED_ADMIN_PASSWORD = "ErdesAdmin#2026";
 const SEED_ADMIN_PASSWORD_HASH =
   "$2b$12$oJZ2OL5zkL1QpirwS42wTuzv4okjGmm0Kc24fZ.1hCRzdaqLF/V/y";
 
+/** Optional profile answers left blank in seed applications. */
+const blankProfile: Pick<
+  Application,
+  | "birthPlace"
+  | "birthDate"
+  | "gender"
+  | "maritalStatus"
+  | "religion"
+  | "childrenCount"
+  | "leaveReason"
+  | "parentName"
+  | "parentAge"
+  | "parentOccupation"
+  | "parentAddress"
+  | "hobbies"
+  | "achievements"
+  | "otherNotes"
+> = {
+  birthPlace: "",
+  birthDate: "",
+  gender: "",
+  maritalStatus: "",
+  religion: "",
+  childrenCount: "",
+  leaveReason: "",
+  parentName: "",
+  parentAge: "",
+  parentOccupation: "",
+  parentAddress: "",
+  hobbies: "",
+  achievements: "",
+  otherNotes: "",
+};
+
 export interface SeedData {
   vacancies: Vacancy[];
   applications: Application[];
@@ -198,6 +232,7 @@ export function createSeedData(now: Date = new Date()): SeedData {
       major: "Manajemen",
       experienceYears: 3,
       lastCompany: "PT Sinar Nusantara",
+      ...blankProfile,
       lastPosition: "Staf Administrasi",
       screeningAnswers: [],
       referenceName: "Hendra Wijaya",
@@ -237,6 +272,7 @@ export function createSeedData(now: Date = new Date()): SeedData {
       major: "Pendidikan Matematika",
       experienceYears: 5,
       lastCompany: "SMA Harapan Bangsa",
+      ...blankProfile,
       lastPosition: "Guru Matematika",
       screeningAnswers: [
         { questionId: "penempatan", question: "Bersedia ditempatkan di Depok?", type: "yes_no", answer: "no", expected: "yes" },
@@ -279,6 +315,7 @@ export function createSeedData(now: Date = new Date()): SeedData {
       major: "Administrasi Perkantoran",
       experienceYears: 1,
       lastCompany: "CV Maju Bersama",
+      ...blankProfile,
       lastPosition: "Staf Keuangan",
       screeningAnswers: [],
       referenceName: "Hendra Wijaya",
@@ -318,6 +355,7 @@ export function createSeedData(now: Date = new Date()): SeedData {
       major: "Pendidikan Matematika",
       experienceYears: 7,
       lastCompany: "SMP Labschool",
+      ...blankProfile,
       lastPosition: "Guru Bahasa Inggris",
       screeningAnswers: [],
       referenceName: "Hendra Wijaya",
@@ -357,6 +395,7 @@ export function createSeedData(now: Date = new Date()): SeedData {
       major: "",
       experienceYears: 2,
       lastCompany: "PT Karya Abadi",
+      ...blankProfile,
       lastPosition: "Desainer Grafis",
       screeningAnswers: [],
       referenceName: "Hendra Wijaya",

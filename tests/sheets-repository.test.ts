@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { sheets_v4 } from "googleapis";
 import { createSheetsRepository, validateHeaders } from "@/lib/repositories/sheets";
-import { SHEET_HEADERS, type SheetName } from "@/lib/sheets/schema";
+import { OPTIONAL_TRAILING_HEADERS, SHEET_HEADERS, type SheetName } from "@/lib/sheets/schema";
 import { recordToRow, settingsToRows } from "@/lib/sheets/mappers";
 import { createSeedData } from "@/lib/repositories/seed";
 
@@ -38,12 +38,13 @@ describe("Sheets repository", () => {
   });
   it("keeps working on a sheet that has not added the last_position header yet", async () => {
     const { client, grids, seed } = fakeSheets();
-    grids.Applications = grids.Applications.map(row => row.slice(0, -7));
+    const optional = OPTIONAL_TRAILING_HEADERS.Applications?.length ?? 0;
+    grids.Applications = grids.Applications.map(row => row.slice(0, -optional));
     const repo = createSheetsRepository(client, "test");
     const application = await repo.getApplicationById(seed.applications[0].id);
     expect(application?.fullName).toBe(seed.applications[0].fullName);
     expect(application?.lastPosition).toBe("");
-    expect(() => validateHeaders("Applications", SHEET_HEADERS.Applications.slice(0, -8))).toThrow();
+    expect(() => validateHeaders("Applications", SHEET_HEADERS.Applications.slice(0, -(optional + 1)))).toThrow();
   });
   it("loads and writes sheets that have not added the newest optional columns", async () => {
     const { client, grids, seed, calls } = fakeSheets();

@@ -136,6 +136,20 @@ export const APPLICATION_SOURCE_LABELS: Record<ApplicationSource, string> = {
 
 export const SOURCE_OTHER = "other" satisfies ApplicationSource;
 
+export const GENDERS = ["male", "female"] as const;
+export type Gender = (typeof GENDERS)[number];
+export const GENDER_LABELS: Record<Gender, string> = {
+  male: "Laki-laki",
+  female: "Perempuan",
+};
+
+export const MARITAL_STATUSES = ["single", "married"] as const;
+export type MaritalStatus = (typeof MARITAL_STATUSES)[number];
+export const MARITAL_STATUS_LABELS: Record<MaritalStatus, string> = {
+  single: "Belum menikah",
+  married: "Sudah menikah",
+};
+
 /** Statuses that leave the active recruitment funnel. */
 export const CLOSED_APPLICATION_STATUSES = ["rejected", "withdrawn"] as const;
 

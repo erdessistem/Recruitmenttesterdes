@@ -8,6 +8,8 @@ import type {
   Availability,
   EducationLevel,
   EmploymentType,
+  Gender,
+  MaritalStatus,
   Stage,
   VacancyStatus,
 } from "@/lib/constants";
@@ -57,12 +59,21 @@ export interface Application {
   whatsapp: string;
   email: string;
   city: string;
+  /** Personal details; empty when not answered or for older applications. */
+  birthPlace: string;
+  /** YYYY-MM-DD, or empty. */
+  birthDate: string;
+  gender: Gender | "";
+  maritalStatus: MaritalStatus | "";
+  religion: string;
+  childrenCount: string;
   lastEducation: EducationLevel;
   major: string;
   experienceYears: number;
   lastCompany: string;
   /** Empty for applications made before the field existed. */
   lastPosition: string;
+  leaveReason: string;
   /** Answers to the screening questions; empty for older applications. */
   screeningAnswers: ScreeningAnswer[];
   /** Previous supervisor as a reference; empty for older applications. */
@@ -72,11 +83,19 @@ export interface Application {
   emergencyName: string;
   emergencyRelation: string;
   emergencyPhone: string;
+  /** Parents' details; empty when not answered. */
+  parentName: string;
+  parentAge: string;
+  parentOccupation: string;
+  parentAddress: string;
   lastSalary: number;
   expectedSalary: number;
   cvUrl: string;
   linkedinUrl: string;
   motivation: string;
+  hobbies: string;
+  achievements: string;
+  otherNotes: string;
   availability: Availability;
   source: ApplicationSource;
   sourceOther: string;

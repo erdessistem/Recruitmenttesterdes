@@ -12,7 +12,7 @@ const boolean = new Set(["consent", "active"]);
 const nullableNumeric = new Set(["salary_min", "salary_max"]);
 const json = { screening_questions: screeningQuestionsSchema, screening_answers: screeningAnswersSchema } as const;
 /** Values for optional columns a sheet has not added yet (and for their empty cells). */
-const optionalDefaults: Record<string, unknown> = { last_position: "", salary_min: null, salary_max: null, salary_visible: false, screening_questions: [], screening_answers: [], reference_name: "", reference_phone: "", emergency_name: "", emergency_relation: "", emergency_phone: "" };
+const optionalDefaults: Record<string, unknown> = { last_position: "", salary_min: null, salary_max: null, salary_visible: false, screening_questions: [], screening_answers: [], reference_name: "", reference_phone: "", emergency_name: "", emergency_relation: "", emergency_phone: "", birth_place: "", birth_date: "", gender: "", marital_status: "", religion: "", children_count: "", leave_reason: "", parent_name: "", parent_age: "", parent_occupation: "", parent_address: "", hobbies: "", achievements: "", other_notes: "" };
 const camel = (name: string) => name.replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
 
 /** Reads rows by header name so column order can change without corrupting data. */

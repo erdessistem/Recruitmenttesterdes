@@ -7,6 +7,8 @@ import {
   APPLICATION_SOURCE_LABELS,
   AVAILABILITY_LABELS,
   EDUCATION_LEVEL_LABELS,
+  GENDER_LABELS,
+  MARITAL_STATUS_LABELS,
   SOURCE_OTHER,
 } from "@/lib/constants";
 import { formatRupiahInput } from "@/lib/format/currency";
@@ -57,6 +59,20 @@ const LABELS: Record<string, string> = {
   availability: "Ketersediaan mulai kerja",
   source: "Sumber informasi",
   source_other: "Sumber informasi lainnya",
+  birth_place: "Tempat lahir",
+  birth_date: "Tanggal lahir",
+  gender: "Jenis kelamin",
+  marital_status: "Status pernikahan",
+  religion: "Agama",
+  children_count: "Jumlah anak",
+  leave_reason: "Alasan berhenti bekerja",
+  parent_name: "Nama orang tua (ayah/ibu)",
+  parent_age: "Umur orang tua",
+  parent_occupation: "Pekerjaan orang tua",
+  parent_address: "Alamat orang tua",
+  hobbies: "Hobi / keahlian",
+  achievements: "Prestasi / kejuaraan",
+  other_notes: "Keterangan lain",
 };
 
 function storage(): Storage | null {
@@ -324,9 +340,27 @@ export function ApplicationForm({
     );
   }
 
-  function select(name: string, options: Record<string, string>) {
+  function textarea(name: string, options: { hint?: ReactNode; maxLength: number }) {
     return (
-      <Field label={LABELS[name]} required error={errors[name]?.[0]}>
+      <Field
+        label={LABELS[name]}
+        hint={options.hint}
+        error={errors[name]?.[0]}
+        className="sm:col-span-2"
+      >
+        <textarea
+          className="control min-h-24"
+          id={name}
+          name={name}
+          maxLength={options.maxLength}
+        />
+      </Field>
+    );
+  }
+
+  function select(name: string, options: Record<string, string>, required = true) {
+    return (
+      <Field label={LABELS[name]} required={required} error={errors[name]?.[0]}>
         <select
           className="control"
           id={name}
@@ -380,6 +414,10 @@ export function ApplicationForm({
       return AVAILABILITY_LABELS[value as keyof typeof AVAILABILITY_LABELS] ?? value;
     if (name === "source")
       return APPLICATION_SOURCE_LABELS[value as keyof typeof APPLICATION_SOURCE_LABELS] ?? value;
+    if (name === "gender")
+      return GENDER_LABELS[value as keyof typeof GENDER_LABELS] ?? value;
+    if (name === "marital_status")
+      return MARITAL_STATUS_LABELS[value as keyof typeof MARITAL_STATUS_LABELS] ?? value;
     if (name === "experience_years") return `${value} tahun`;
     if (name === "reference_phone" || name === "emergency_phone")
       return normalizeWhatsApp(value) ? formatWhatsAppDisplay(value) : value;
@@ -529,6 +567,27 @@ export function ApplicationForm({
               hint: "Jalan, kecamatan, dan kota. Contoh: Jl. Melati No. 5, Lowokwaru, Malang.",
               className: "sm:col-span-2",
             })}
+            {input("birth_place", { autoComplete: "off", hint: "Opsional. Contoh: Cilacap." })}
+            {input("birth_date", { type: "date", autoComplete: "bday", hint: "Opsional." })}
+            {select("gender", GENDER_LABELS, false)}
+            {select("marital_status", MARITAL_STATUS_LABELS, false)}
+            {input("religion", { autoComplete: "off", hint: "Opsional." })}
+            {input("children_count", {
+              autoComplete: "off",
+              inputMode: "numeric",
+              hint: "Opsional. Isi 0 jika belum punya anak.",
+            })}
+            <div className="border-t border-border pt-5 sm:col-span-2">
+              <p className="font-semibold">Data orang tua</p>
+              <p className="mt-1 text-sm text-muted">Opsional.</p>
+            </div>
+            {input("parent_name", {
+              autoComplete: "off",
+              hint: "Contoh: Budi (ayah), Siti (ibu).",
+            })}
+            {input("parent_age", { autoComplete: "off", hint: "Contoh: Ayah 55, Ibu 52." })}
+            {input("parent_occupation", { autoComplete: "off" })}
+            {input("parent_address", { autoComplete: "off" })}
             <div className="border-t border-border pt-5 sm:col-span-2">
               <p className="font-semibold">Kontak darurat</p>
               <p className="mt-1 text-sm text-muted">
@@ -560,6 +619,7 @@ export function ApplicationForm({
               autoComplete: "organization-title",
               hint: "Opsional. Contoh: Staf Admin, Guru Matematika.",
             })}
+            {textarea("leave_reason", { hint: "Opsional.", maxLength: 500 })}
             {input("experience_years", {
               type: "number",
               required: true,
@@ -611,6 +671,16 @@ export function ApplicationForm({
                 maxLength={1000}
               />
             </Field>
+            {input("hobbies", {
+              autoComplete: "off",
+              hint: "Opsional. Contoh: Fotografi, Microsoft Excel.",
+              className: "sm:col-span-2",
+            })}
+            {textarea("achievements", { hint: "Opsional.", maxLength: 500 })}
+            {textarea("other_notes", {
+              hint: "Opsional. Hal lain yang perlu kami ketahui.",
+              maxLength: 1000,
+            })}
             {select("availability", AVAILABILITY_LABELS)}
             {select("source", APPLICATION_SOURCE_LABELS)}
             {source === SOURCE_OTHER && input("source_other", { required: true })}

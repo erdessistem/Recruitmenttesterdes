@@ -35,6 +35,38 @@ export function optionalText(label: string, max: number) {
   );
 }
 
+/** Optional choice from a fixed list; an empty answer is stored as "". */
+export function optionalChoice<const T extends readonly [string, ...string[]]>(
+  values: T,
+  label: string,
+) {
+  return z.preprocess(
+    (value) => (value === null || value === undefined ? "" : value),
+    z.union([z.literal(""), z.enum(values)], { error: `${label} tidak valid.` }),
+  );
+}
+
+/** Optional date as YYYY-MM-DD that is a real calendar date and not in the future. */
+export function optionalDateField(label: string) {
+  return z.preprocess(
+    (value) => (value === null || value === undefined ? "" : value),
+    z
+      .string({ error: `${label} tidak valid.` })
+      .trim()
+      .refine(
+        (value) => {
+          if (value === "") return true;
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+          const time = Date.parse(`${value}T00:00:00Z`);
+          if (!Number.isFinite(time)) return false;
+          if (new Date(time).toISOString().slice(0, 10) !== value) return false;
+          return value <= new Date().toISOString().slice(0, 10);
+        },
+        { error: `${label} tidak valid.` },
+      ),
+  );
+}
+
 export function optionalEmailField(label: string, max = 150) {
   return z.preprocess(
     (value) => (value === null || value === undefined ? "" : value),

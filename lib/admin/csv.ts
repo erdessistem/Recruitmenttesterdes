@@ -1,6 +1,11 @@
 import "server-only";
 import type { Application, Vacancy } from "@/lib/repositories/types";
-import { APPLICATION_STATUS_LABELS, STAGE_LABELS } from "@/lib/constants";
+import {
+  APPLICATION_STATUS_LABELS,
+  GENDER_LABELS,
+  MARITAL_STATUS_LABELS,
+  STAGE_LABELS,
+} from "@/lib/constants";
 import { answerLabel, hasMismatch } from "@/lib/public/screening";
 
 /** Escape formula prefixes, including dangerous characters after leading whitespace. */
@@ -18,16 +23,27 @@ export function applicantsCsv(applications: Application[], vacancies: Vacancy[])
     ["WhatsApp", (a) => a.whatsapp],
     ["Email", (a) => a.email],
     ["Alamat domisili", (a) => a.city],
+    ["Tempat lahir", (a) => a.birthPlace],
+    ["Tanggal lahir", (a) => a.birthDate],
+    ["Jenis kelamin", (a) => (a.gender ? GENDER_LABELS[a.gender] : "")],
+    ["Status pernikahan", (a) => (a.maritalStatus ? MARITAL_STATUS_LABELS[a.maritalStatus] : "")],
+    ["Agama", (a) => a.religion],
+    ["Jumlah anak", (a) => a.childrenCount],
     ["Pendidikan", (a) => a.lastEducation],
     ["Jurusan", (a) => a.major],
     ["Pengalaman tahun", (a) => a.experienceYears],
     ["Perusahaan terakhir", (a) => a.lastCompany],
     ["Posisi terakhir", (a) => a.lastPosition],
+    ["Alasan berhenti bekerja", (a) => a.leaveReason],
     ["Nama referensi", (a) => a.referenceName],
     ["Nomor referensi", (a) => a.referencePhone],
     ["Kontak darurat", (a) => a.emergencyName],
     ["Hubungan kontak darurat", (a) => a.emergencyRelation],
     ["Nomor darurat", (a) => a.emergencyPhone],
+    ["Nama orang tua", (a) => a.parentName],
+    ["Umur orang tua", (a) => a.parentAge],
+    ["Pekerjaan orang tua", (a) => a.parentOccupation],
+    ["Alamat orang tua", (a) => a.parentAddress],
     [
       "Jawaban screening",
       (a) => a.screeningAnswers.map((x) => `${x.question}: ${answerLabel(x)}`).join(" | "),
@@ -38,6 +54,9 @@ export function applicantsCsv(applications: Application[], vacancies: Vacancy[])
     ["CV", (a) => a.cvUrl],
     ["LinkedIn", (a) => a.linkedinUrl],
     ["Motivasi", (a) => a.motivation],
+    ["Hobi / keahlian", (a) => a.hobbies],
+    ["Prestasi / kejuaraan", (a) => a.achievements],
+    ["Keterangan lain", (a) => a.otherNotes],
     ["Ketersediaan", (a) => a.availability],
     ["Sumber", (a) => a.source],
     ["Sumber lainnya", (a) => a.sourceOther],

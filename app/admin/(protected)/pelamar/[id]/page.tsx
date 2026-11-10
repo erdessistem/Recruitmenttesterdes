@@ -7,6 +7,8 @@ import {
   APPLICATION_STATUS_LABELS,
   AVAILABILITY_LABELS,
   EDUCATION_LEVEL_LABELS,
+  GENDER_LABELS,
+  MARITAL_STATUS_LABELS,
   STAGES,
   STAGE_LABELS,
   getTimelineLabel,
@@ -113,6 +115,7 @@ export default async function ApplicantDetail({
         .join(", "),
     ],
     ["Pengalaman", lastJob ? `${experience}. Terakhir ${lastJob}` : experience],
+    ["Alasan berhenti", application.leaveReason || "—"],
     [
       "Gaji",
       <>
@@ -129,6 +132,29 @@ export default async function ApplicantDetail({
     ],
     ["Mulai kerja", AVAILABILITY_LABELS[application.availability]],
     ["Alamat domisili", application.city || "—"],
+  ];
+
+  const profile: Array<[string, string]> = [
+    [
+      "Tempat, tanggal lahir",
+      [application.birthPlace, application.birthDate ? formatDate(application.birthDate) : ""]
+        .filter(Boolean)
+        .join(", "),
+    ],
+    ["Jenis kelamin", application.gender ? GENDER_LABELS[application.gender] : ""],
+    [
+      "Status pernikahan",
+      application.maritalStatus ? MARITAL_STATUS_LABELS[application.maritalStatus] : "",
+    ],
+    ["Jumlah anak", application.childrenCount],
+    ["Agama", application.religion],
+    ["Nama orang tua", application.parentName],
+    ["Umur orang tua", application.parentAge],
+    ["Pekerjaan orang tua", application.parentOccupation],
+    ["Alamat orang tua", application.parentAddress],
+    ["Hobi / keahlian", application.hobbies],
+    ["Prestasi / kejuaraan", application.achievements],
+    ["Keterangan lain", application.otherNotes],
   ];
 
   const contact: Array<[string, React.ReactNode]> = [
@@ -328,6 +354,18 @@ export default async function ApplicantDetail({
                 )}
               </div>
             )}
+          </section>
+
+          <section className="admin-card">
+            <h2 className="text-lg font-bold">Data pribadi dan keluarga</h2>
+            <dl className="mt-3 divide-y divide-border">
+              {profile.map(([label, value]) => (
+                <div key={label} className="grid gap-1 py-3 sm:grid-cols-[9rem_1fr] sm:gap-4">
+                  <dt className="text-sm text-muted">{label}</dt>
+                  <dd className="whitespace-pre-line break-words text-sm">{value || "—"}</dd>
+                </div>
+              ))}
+            </dl>
           </section>
 
           {answers.length > 0 && (

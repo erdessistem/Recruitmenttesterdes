@@ -3,6 +3,8 @@ import {
   APPLICATION_STATUS_LABELS,
   AVAILABILITY_LABELS,
   EDUCATION_LEVEL_LABELS,
+  GENDER_LABELS,
+  MARITAL_STATUS_LABELS,
   STAGE_LABELS,
   getTimelineLabel,
 } from "@/lib/constants";
@@ -91,6 +93,28 @@ export function applicantPdfModel(input: {
         { label: "Email", value: dash(a.email) },
         { label: "Mulai bekerja", value: AVAILABILITY_LABELS[a.availability] ?? "—" },
         { label: "Alamat domisili", value: dash(a.city), wide: true },
+        {
+          label: "Tempat, tanggal lahir",
+          value: dash(
+            [a.birthPlace, a.birthDate ? formatDate(a.birthDate) : ""].filter(Boolean).join(", "),
+          ),
+        },
+        { label: "Jenis kelamin", value: a.gender ? GENDER_LABELS[a.gender] : "—" },
+        {
+          label: "Status pernikahan",
+          value: a.maritalStatus ? MARITAL_STATUS_LABELS[a.maritalStatus] : "—",
+        },
+        { label: "Jumlah anak", value: dash(a.childrenCount) },
+        { label: "Agama", value: dash(a.religion) },
+      ],
+    },
+    {
+      title: "Data orang tua",
+      fields: [
+        { label: "Nama orang tua", value: dash(a.parentName) },
+        { label: "Umur orang tua", value: dash(a.parentAge) },
+        { label: "Pekerjaan orang tua", value: dash(a.parentOccupation) },
+        { label: "Alamat orang tua", value: dash(a.parentAddress), wide: true },
       ],
     },
     {
@@ -101,6 +125,7 @@ export function applicantPdfModel(input: {
         { label: "Perusahaan terakhir", value: dash(a.lastCompany) },
         { label: "Posisi terakhir", value: dash(a.lastPosition) },
         { label: "Pengalaman kerja", value: experience },
+        { label: "Alasan berhenti bekerja", value: dash(a.leaveReason), wide: true },
       ],
     },
     {
@@ -137,6 +162,14 @@ export function applicantPdfModel(input: {
               : (APPLICATION_SOURCE_LABELS[a.source] ?? "—"),
           wide: true,
         },
+      ],
+    },
+    {
+      title: "Lain-lain",
+      fields: [
+        { label: "Hobi / keahlian", value: dash(a.hobbies), wide: true },
+        { label: "Prestasi / kejuaraan", value: dash(a.achievements), wide: true },
+        { label: "Keterangan lain", value: dash(a.otherNotes), wide: true },
       ],
     },
   ];
