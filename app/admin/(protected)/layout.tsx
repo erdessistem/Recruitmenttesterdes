@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { LogOut } from "lucide-react";
 import { requireAdmin } from "@/lib/auth/session";
@@ -14,15 +15,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="min-h-screen md:flex">
       <aside className="no-print flex flex-col bg-ink px-4 py-5 text-white md:sticky md:top-0 md:h-screen md:w-60 md:shrink-0">
-        <Link href="/admin" className="flex items-center gap-2.5 px-3 font-bold tracking-tight">
-          <span aria-hidden="true" className="flex items-center gap-[3px]">
-            <span className="h-2.5 w-2.5 rounded-full bg-sinyal" />
-            <span className="h-1 w-3 rounded-full bg-white/60" />
-            <span className="h-2.5 w-2.5 rounded-full border-2 border-white/60" />
-          </span>
-          <span>
-            Erdes Group <span className="font-medium text-white/60">Admin</span>
-          </span>
+        <Link href="/admin" className="flex items-center gap-2.5 px-3" aria-label="PT. Erdes, Admin">
+          <Image src="/logo.png" alt="PT. Erdes" width={852} height={624} className="h-12 w-auto rounded-md bg-white" />
+          <span className="text-sm font-medium text-white/60">Admin</span>
         </Link>
         <AdminNav role={admin.role} />
         <div className="mt-6 border-t border-white/10 px-3 pt-4 text-sm text-white/70 md:mt-auto">
