@@ -26,7 +26,7 @@ const valid = {
   expected_salary: "5.000.000",
   cv_url: "",
   linkedin_url: "",
-  motivation: "Saya ingin mengajar dan berkembang bersama tim Erdes Group.",
+  motivation: "Saya ingin mengajar dan berkembang bersama tim PT Erdes Desa Maju Bersama.",
   availability: "immediately",
   source: "instagram",
   source_other: "",

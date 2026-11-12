@@ -12,7 +12,7 @@ export function ScamNotice({ whatsapp, className }: { whatsapp?: string; classNa
     >
       <ShieldCheck aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-navy" />
       <p>
-        <span className="font-semibold">Rekrutmen Erdes Group tidak dipungut biaya.</span> Kami
+        <span className="font-semibold">Rekrutmen PT Erdes Desa Maju Bersama tidak dipungut biaya.</span> Kami
         tidak pernah meminta transfer uang
         {number ? (
           <>

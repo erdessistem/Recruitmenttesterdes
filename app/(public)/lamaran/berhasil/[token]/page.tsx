@@ -20,7 +20,7 @@ export default async function Success({ params }: { params: Promise<{ token: str
   return (
     <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
       <div className="print-card rounded-panel border border-border bg-surface p-6 sm:p-10">
-        <p className="hidden text-sm font-semibold print:block">Erdes Group, bukti lamaran</p>
+        <p className="hidden text-sm font-semibold print:block">PT Erdes Desa Maju Bersama, bukti lamaran</p>
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-6">
           <Mascot animation="celebrate" size={112} label="" className="no-print" />
           <div>

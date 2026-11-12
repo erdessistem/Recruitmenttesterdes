@@ -34,7 +34,7 @@ export default async function Home({
             Langkah berikutnya <span className="block text-terracotta">dimulai di sini.</span>
           </h1>
           <p className="mt-6 max-w-md text-lg leading-relaxed text-muted">
-            Temukan kesempatan untuk bertumbuh dan berkarya bersama Erdes Group.
+            Temukan kesempatan untuk bertumbuh dan berkarya bersama PT Erdes Desa Maju Bersama.
           </p>
           <a href="#lowongan" className={buttonClass("primary", "mt-8")}>
             Lihat {vacancies.length} lowongan terbuka
@@ -101,7 +101,7 @@ export default async function Home({
       {showAbout && (
         <section className="bg-sand">
           <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-            <h2 className="text-h1">Tentang Erdes Group</h2>
+            <h2 className="text-h1">Tentang PT Erdes Desa Maju Bersama</h2>
             {about.intro && (
               <p className="mt-4 max-w-[65ch] text-lg leading-relaxed">{about.intro}</p>
             )}

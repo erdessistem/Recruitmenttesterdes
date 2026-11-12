@@ -70,7 +70,7 @@ function daysFromNow(now: Date, days: number): string {
   return new Date(now.getTime() + days * 24 * 60 * 60 * 1_000).toISOString();
 }
 
-const DEFAULT_WA_TEMPLATE = `Halo {nama}, terima kasih telah melamar posisi {posisi} di Erdes Group.
+const DEFAULT_WA_TEMPLATE = `Halo {nama}, terima kasih telah melamar posisi {posisi} di PT Erdes Desa Maju Bersama.
 
 Status lamaran Anda saat ini: {tahap}.
 {pesan_tambahan}
@@ -245,7 +245,7 @@ export function createSeedData(now: Date = new Date()): SeedData {
       cvUrl: "https://example.com/cv/budi-santoso",
       linkedinUrl: "https://linkedin.com/in/budisantoso",
       motivation:
-        "Saya tertarik bergabung dengan Erdes Group karena ingin mengembangkan kemampuan administrasi dan berkontribusi pada proses operasional yang rapi dan efisien.",
+        "Saya tertarik bergabung dengan PT Erdes Desa Maju Bersama karena ingin mengembangkan kemampuan administrasi dan berkontribusi pada proses operasional yang rapi dan efisien.",
       availability: "two_weeks",
       source: "linkedin",
       sourceOther: "",
@@ -328,7 +328,7 @@ export function createSeedData(now: Date = new Date()): SeedData {
       cvUrl: "https://example.com/cv/rizky-pratama",
       linkedinUrl: "",
       motivation:
-        "Saya ingin memperoleh pengalaman kerja yang lebih luas di bidang administrasi dan siap belajar dengan cepat di Erdes Group.",
+        "Saya ingin memperoleh pengalaman kerja yang lebih luas di bidang administrasi dan siap belajar dengan cepat di PT Erdes Desa Maju Bersama.",
       availability: "immediately",
       source: "job_portal",
       sourceOther: "",
@@ -368,7 +368,7 @@ export function createSeedData(now: Date = new Date()): SeedData {
       cvUrl: "https://example.com/cv/dewi-lestari",
       linkedinUrl: "https://linkedin.com/in/dewilestari",
       motivation:
-        "Saya ingin membawa pengalaman mengajar dan pengembangan kurikulum saya untuk mendukung kualitas pendidikan di Erdes Group.",
+        "Saya ingin membawa pengalaman mengajar dan pengembangan kurikulum saya untuk mendukung kualitas pendidikan di PT Erdes Desa Maju Bersama.",
       availability: "two_weeks",
       source: "instagram",
       sourceOther: "",

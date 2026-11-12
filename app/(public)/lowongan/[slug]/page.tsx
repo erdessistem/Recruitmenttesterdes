@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: vacancy.title,
     description,
-    openGraph: { title: `${vacancy.title} · Erdes Group`, description, type: "website" },
+    openGraph: { title: `${vacancy.title} · PT Erdes Desa Maju Bersama`, description, type: "website" },
   };
 }
 export default async function VacancyPage({ params }: { params: Promise<{ slug: string }> }) {

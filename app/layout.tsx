@@ -26,8 +26,8 @@ function siteUrl() {
 
 export const metadata: Metadata = {
   metadataBase: siteUrl(),
-  title: { default: "Karier Erdes Group", template: "%s · Karier Erdes Group" },
-  description: "Portal rekrutmen Erdes Group",
+  title: { default: "Karier PT Erdes Desa Maju Bersama", template: "%s · Karier PT Erdes Desa Maju Bersama" },
+  description: "Portal rekrutmen PT Erdes Desa Maju Bersama",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

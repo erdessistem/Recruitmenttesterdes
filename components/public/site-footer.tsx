@@ -7,7 +7,7 @@ export function SiteFooter() {
   return (
     <footer className="on-dark no-print mt-auto bg-navy text-white">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 text-sm sm:px-6">
-        <span>© Erdes Group</span>
+        <span>© PT Erdes Desa Maju Bersama</span>
         <nav aria-label="Tautan footer" className="flex flex-wrap gap-x-6 gap-y-2 font-medium">
           <Link href="/lacak" className={link}>
             Lacak lamaran

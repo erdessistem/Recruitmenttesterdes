@@ -5,8 +5,8 @@
  * may be changed during a redesign without touching stored data.
  */
 
-export const COMPANY_NAME = "Erdes Group";
-export const APP_NAME = "Karier Erdes Group";
+export const COMPANY_NAME = "PT Erdes Desa Maju Bersama";
+export const APP_NAME = "Karier PT Erdes Desa Maju Bersama";
 export const PRIVACY_VERSION = "2026-11-02";
 export const TIME_ZONE = "Asia/Jakarta";
 
@@ -172,7 +172,7 @@ export const NEXT_STEP_MESSAGES: Record<Stage, string> = {
 /** Status-specific guidance overrides the stage guidance when present. */
 export const STATUS_NEXT_STEP_MESSAGES: Partial<Record<ApplicationStatus, string>> = {
   rejected:
-    "Lamaran Anda belum dapat dilanjutkan pada proses ini. Terima kasih atas waktu dan minat Anda kepada Erdes Group.",
+    "Lamaran Anda belum dapat dilanjutkan pada proses ini. Terima kasih atas waktu dan minat Anda kepada PT Erdes Desa Maju Bersama.",
   withdrawn:
     "Anda telah mengundurkan diri dari proses rekrutmen ini. Tidak ada tindakan lanjutan yang diperlukan.",
 };

@@ -12,7 +12,7 @@ export default async function Privacy() {
         <p className="mt-2 text-sm text-muted">Versi {settings.privacyVersion}</p>
         <div className="mt-8 max-w-[70ch] space-y-5 leading-7">
           <p>
-            Erdes Group menggunakan data yang Anda berikan untuk menilai lamaran, menghubungi Anda,
+            PT Erdes Desa Maju Bersama menggunakan data yang Anda berikan untuk menilai lamaran, menghubungi Anda,
             dan menjalankan proses rekrutmen. Email dan tautan CV bersifat opsional.
           </p>
           <p>

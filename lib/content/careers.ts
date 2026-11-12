@@ -18,9 +18,9 @@ export type FaqItem = {
 /** Answers describe how this portal actually works. Keep them in sync with the app. */
 export const faq: FaqItem[] = [
   {
-    question: "Apakah melamar di Erdes Group dipungut biaya?",
+    question: "Apakah melamar di PT Erdes Desa Maju Bersama dipungut biaya?",
     answer:
-      "Tidak. Seluruh proses rekrutmen Erdes Group tidak dipungut biaya. Jika ada pihak yang meminta uang atas nama kami, abaikan dan hubungi kontak resmi kami.",
+      "Tidak. Seluruh proses rekrutmen PT Erdes Desa Maju Bersama tidak dipungut biaya. Jika ada pihak yang meminta uang atas nama kami, abaikan dan hubungi kontak resmi kami.",
   },
   {
     question: "Apakah saya perlu membuat akun?",

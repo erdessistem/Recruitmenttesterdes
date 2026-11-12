@@ -4,7 +4,7 @@ import { ImageResponse } from "next/og";
 import { repository } from "@/lib/repositories";
 import { EMPLOYMENT_TYPE_LABELS } from "@/lib/constants";
 
-export const alt = "Lowongan di Erdes Group";
+export const alt = "Lowongan di PT Erdes Desa Maju Bersama";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -23,7 +23,7 @@ const logoSrc = `data:image/png;base64,${await readFile(join(process.cwd(), "pub
  */
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const vacancy = await repository.getVacancyBySlug((await params).slug);
-  const title = vacancy && vacancy.status === "open" ? vacancy.title : "Karier Erdes Group";
+  const title = vacancy && vacancy.status === "open" ? vacancy.title : "Karier PT Erdes Desa Maju Bersama";
   const meta = vacancy
     ? [vacancy.department, vacancy.location, EMPLOYMENT_TYPE_LABELS[vacancy.employmentType]]
     : ["Lowongan terbuka"];
@@ -63,7 +63,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
               style={{ position: "absolute", left: -22, top: 4 }}
             />
           </div>
-          <div style={{ display: "flex", fontWeight: 600 }}>Erdes Group Karier</div>
+          <div style={{ display: "flex", fontWeight: 600 }}>Karier PT Erdes Desa Maju Bersama</div>
         </div>
         <div
           style={{

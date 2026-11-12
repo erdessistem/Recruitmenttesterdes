@@ -16,7 +16,7 @@ export function ShareVacancy({ title }: { title: string }) {
     const timer = setTimeout(() => setCopied(false), 2000);
     return () => clearTimeout(timer);
   }, [copied]);
-  const text = `Lowongan ${title} di Erdes Group`;
+  const text = `Lowongan ${title} di PT Erdes Desa Maju Bersama`;
   async function copy() {
     try {
       await navigator.clipboard.writeText(url);

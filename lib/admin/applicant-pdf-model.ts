@@ -175,7 +175,7 @@ export function applicantPdfModel(input: {
   ];
 
   return {
-    company: settings.companyProfile.name || "Erdes Group",
+    company: settings.companyProfile.name || "PT Erdes Desa Maju Bersama",
     fileName: pdfFileName(a.id),
     name: a.fullName || a.id,
     position: vacancy?.title ?? "Lowongan tidak ditemukan",
