@@ -11,7 +11,7 @@ export function TableHead({ className, ...props }: ComponentProps<"th">) {
   return (
     <th
       scope="col"
-      className={cn("border-b border-border px-4 py-3 font-semibold", className)}
+      className={cn("border-b border-border bg-sand px-4 py-3 font-semibold", className)}
       {...props}
     />
   );

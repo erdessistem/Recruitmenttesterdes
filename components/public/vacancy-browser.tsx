@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { CalendarDays, ChevronRight, MapPin, Search, Wallet } from "lucide-react";
+import { ChevronRight, Search } from "lucide-react";
 import { EMPLOYMENT_TYPE_LABELS, type EmploymentType } from "@/lib/constants";
 import { formatDate } from "@/lib/format/date";
 import { Badge } from "@/components/ui/badge";
@@ -141,10 +141,10 @@ export function VacancyBrowser({
                       update(next);
                     }}
                     className={cn(
-                      "inline-flex min-h-9 items-center rounded-full border px-3.5 text-sm font-medium transition-colors motion-reduce:transition-none",
+                      "inline-flex min-h-9 items-center rounded-full px-4 text-sm font-semibold transition-colors motion-reduce:transition-none",
                       active
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-surface hover:border-border-strong",
+                        ? "bg-navy text-white"
+                        : "bg-white ring-1 ring-inset ring-line hover:bg-sand",
                     )}
                   >
                     {option.label}
@@ -175,11 +175,14 @@ export function VacancyBrowser({
             const closesSoon =
               closeTime != null && closeTime - now >= 0 && closeTime - now <= 7 * DAY;
             return (
-              <li key={v.id} className="group relative transition-colors hover:bg-paper">
+              <li
+                key={v.id}
+                className="group relative transition-colors hover:bg-cream motion-reduce:transition-none"
+              >
                 <div className="flex items-center gap-4 px-5 py-5 sm:px-6">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                      <h3 className="text-lg font-semibold">
+                      <h3 className="text-h3">
                         <Link href={`/lowongan/${v.slug}`} className="after:absolute after:inset-0">
                           {v.title}
                         </Link>
@@ -189,18 +192,9 @@ export function VacancyBrowser({
                     </div>
                     <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted">
                       <span>{v.department}</span>
-                      <span className="inline-flex items-center gap-1.5">
-                        <MapPin aria-hidden="true" className="h-4 w-4" />
-                        {v.location}
-                      </span>
-                      {v.salary && (
-                        <span className="inline-flex items-center gap-1.5">
-                          <Wallet aria-hidden="true" className="h-4 w-4" />
-                          {v.salary}
-                        </span>
-                      )}
-                      <span className="inline-flex items-center gap-1.5">
-                        <CalendarDays aria-hidden="true" className="h-4 w-4" />
+                      <span>{v.location}</span>
+                      {v.salary && <span className="tabular">{v.salary}</span>}
+                      <span>
                         {v.closeAt ? `Ditutup ${formatDate(v.closeAt)}` : "Tanpa batas waktu"}
                       </span>
                     </div>

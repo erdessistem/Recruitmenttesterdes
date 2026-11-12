@@ -12,7 +12,7 @@ export const metadata = { title: "Laporan" };
 const percent = (part: number, whole: number) => (whole ? Math.round((part / whole) * 100) : 0);
 const days = (value: number | null) =>
   value == null
-    ? "—"
+    ? "-"
     : value < 1
       ? "< 1 hari"
       : `${value.toLocaleString("id-ID", { maximumFractionDigits: 1 })} hari`;
@@ -22,7 +22,7 @@ function Bar({ value, max, label }: { value: number; max: number; label: string 
   const width = max > 0 ? Math.max((value / max) * 100, value > 0 ? 2 : 0) : 0;
   return (
     <div className="h-2.5 w-full rounded-full bg-paper" title={label} role="presentation">
-      <div className="h-full rounded-full bg-primary" style={{ width: `${width}%` }} />
+      <div className="h-full rounded-full bg-navy" style={{ width: `${width}%` }} />
     </div>
   );
 }
@@ -54,7 +54,7 @@ export default async function ReportsPage({
 
   return (
     <div className="mx-auto max-w-6xl">
-      <h1 className="text-3xl font-bold tracking-tight">Laporan</h1>
+      <h1 className="text-h2">Laporan</h1>
       <p className="mt-2 text-muted">
         Berdasarkan tanggal melamar. Diterima dihitung dari pelamar aktif di tahap Diterima.
       </p>
@@ -69,7 +69,7 @@ export default async function ReportsPage({
               className={cn(
                 "inline-flex min-h-10 items-center rounded-full border px-4 text-sm font-semibold",
                 value === period
-                  ? "border-ink bg-ink text-white"
+                  ? "border-navy bg-navy text-white"
                   : "border-border bg-surface hover:border-border-strong",
               )}
             >
@@ -110,7 +110,7 @@ export default async function ReportsPage({
         ).map(([label, value]) => (
           <div key={label} className="bg-surface px-5 py-4">
             <dt className="text-sm text-muted">{label}</dt>
-            <dd className="tabular mt-1 text-3xl font-bold">{value}</dd>
+            <dd className="tabular mt-1 font-display text-3xl font-bold">{value}</dd>
           </div>
         ))}
       </dl>
@@ -122,7 +122,7 @@ export default async function ReportsPage({
       ) : (
         <>
           <section className="admin-card mt-6">
-            <h2 className="text-lg font-bold">Sumber pelamar</h2>
+            <h2 className="text-h3">Sumber pelamar</h2>
             <p className="mt-1 text-sm text-muted">
               Dari mana pelamar tahu lowongan, dan berapa yang sampai interview atau diterima.
             </p>
@@ -162,7 +162,7 @@ export default async function ReportsPage({
           </section>
 
           <section className="admin-card mt-6">
-            <h2 className="text-lg font-bold">Corong tahapan</h2>
+            <h2 className="text-h3">Corong tahapan</h2>
             <p className="mt-1 text-sm text-muted">
               Berapa pelamar yang pernah mencapai setiap tahap, termasuk yang kemudian ditolak atau
               mundur. Persentase dari total pelamar.
@@ -222,10 +222,10 @@ export default async function ReportsPage({
 
           <section className="admin-card mt-6">
             <div className="flex flex-wrap items-baseline justify-between gap-3">
-              <h2 className="text-lg font-bold">Kecepatan proses</h2>
+              <h2 className="text-h3">Kecepatan proses</h2>
               <p className="text-sm">
                 Rata-rata melamar sampai diterima:{" "}
-                <span className="tabular font-bold">{days(report.timeToHire.days)}</span>
+                <span className="tabular font-semibold">{days(report.timeToHire.days)}</span>
                 {report.timeToHire.samples > 0 && (
                   <span className="text-muted"> (dari {report.timeToHire.samples} kandidat)</span>
                 )}

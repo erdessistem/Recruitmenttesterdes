@@ -3,10 +3,11 @@ import { cn } from "@/lib/utils";
 
 type Tone = "neutral" | "rel" | "sinyal" | "danger";
 
+/** Kit tags: navy text on sand or marigold. Terracotta is never text on sand. */
 const tones: Record<Tone, string> = {
-  neutral: "bg-paper text-muted ring-1 ring-inset ring-border",
-  rel: "bg-primary-soft text-primary",
-  sinyal: "bg-sinyal-soft text-sinyal-ink",
+  neutral: "bg-cream text-muted ring-1 ring-inset ring-line",
+  rel: "bg-sand text-navy",
+  sinyal: "bg-marigold text-navy",
   danger: "bg-danger-soft text-danger",
 };
 
@@ -18,7 +19,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold leading-5",
+        "inline-flex items-center whitespace-nowrap rounded-control px-2.5 py-0.5 text-xs font-semibold leading-5",
         tones[tone],
         className,
       )}

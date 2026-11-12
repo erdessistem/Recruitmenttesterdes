@@ -83,7 +83,7 @@ export function ApplicantFilters({
               className={cn(
                 "inline-flex min-h-10 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition-colors duration-150 motion-reduce:transition-none",
                 active
-                  ? "border-ink bg-ink text-white"
+                  ? "border-navy bg-navy text-white"
                   : "border-border bg-surface text-foreground hover:border-border-strong",
               )}
             >
@@ -92,7 +92,7 @@ export function ApplicantFilters({
                 <span
                   className={cn(
                     "tabular rounded-full px-1.5 text-xs",
-                    active ? "bg-white/20" : "bg-paper text-muted",
+                    active ? "bg-white/20" : "bg-sand text-navy",
                   )}
                 >
                   {view.count}

@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { repository } from "@/lib/repositories";
 import { EMPLOYMENT_TYPE_LABELS } from "@/lib/constants";
@@ -6,18 +8,26 @@ export const alt = "Lowongan di Erdes Group";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const INK = "#18222d";
-const MUTED = "#5b6673";
-const REL = "#0f6e56";
-const SINYAL = "#ef9f27";
+/* Brand kit values (app/globals.css). ImageResponse cannot read CSS variables. */
+const TERRACOTTA = "#b3441d";
+const WHITE = "#ffffff";
+const MARIGOLD_LIGHT = "#ffd98a";
 
-/** Link preview shown when a vacancy is shared on WhatsApp and other apps. */
+/* The logo symbol on a white tile: the same crop as `.logo-tile`, at twice the size. */
+const logoSrc = `data:image/png;base64,${await readFile(join(process.cwd(), "public/logo.png"), "base64")}`;
+
+/**
+ * Link preview shown when a vacancy is shared on WhatsApp and other apps.
+ * Follows the kit's title slide: terracotta ground, logo tile at the top left,
+ * a two-part headline with the second half in light marigold, a footer line.
+ */
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const vacancy = await repository.getVacancyBySlug((await params).slug);
   const title = vacancy && vacancy.status === "open" ? vacancy.title : "Karier Erdes Group";
   const meta = vacancy
-    ? `${vacancy.department}  ·  ${vacancy.location}  ·  ${EMPLOYMENT_TYPE_LABELS[vacancy.employmentType]}`
-    : "Lowongan terbuka";
+    ? [vacancy.department, vacancy.location, EMPLOYMENT_TYPE_LABELS[vacancy.employmentType]]
+    : ["Lowongan terbuka"];
+  const headline = title.length > 24 ? 62 : 84;
   return new ImageResponse(
     (
       <div
@@ -27,73 +37,56 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#f4f6f5",
-          padding: "72px 80px",
-          color: INK,
+          background: TERRACOTTA,
+          padding: "60px 78px",
+          color: WHITE,
         }}
       >
-        <div
-          style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 34, fontWeight: 700 }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <div style={{ width: 22, height: 22, borderRadius: 11, background: REL }} />
-            <div style={{ width: 30, height: 8, borderRadius: 4, background: REL }} />
-            <div style={{ width: 22, height: 22, borderRadius: 11, border: `5px solid ${REL}` }} />
-          </div>
-          <div style={{ display: "flex" }}>Erdes Group Karier</div>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ display: "flex", fontSize: 30, color: REL, fontWeight: 600 }}>
-            Kami sedang mencari
-          </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 22, fontSize: 30 }}>
           <div
             style={{
               display: "flex",
-              marginTop: 12,
-              fontSize: title.length > 28 ? 64 : 84,
-              fontWeight: 700,
-              lineHeight: 1.05,
+              position: "relative",
+              width: 112,
+              height: 80,
+              borderRadius: 20,
+              overflow: "hidden",
+              background: WHITE,
             }}
           >
-            {title}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={logoSrc}
+              alt=""
+              width={157}
+              height={116}
+              style={{ position: "absolute", left: -22, top: 4 }}
+            />
           </div>
-          <div style={{ display: "flex", marginTop: 20, fontSize: 32, color: MUTED }}>{meta}</div>
+          <div style={{ display: "flex", fontWeight: 600 }}>Erdes Group Karier</div>
         </div>
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <div
-            style={{
-              width: 34,
-              height: 34,
-              borderRadius: 17,
-              background: SINYAL,
-              border: "5px solid #633806",
-            }}
-          />
-          <div style={{ flexGrow: 1, height: 8, background: REL, opacity: 0.25 }} />
-          <div
-            style={{
-              width: 24,
-              height: 24,
-              borderRadius: 12,
-              border: `5px solid ${REL}`,
-              background: "#fff",
-            }}
-          />
-          <div style={{ flexGrow: 1, height: 8, background: REL, opacity: 0.25 }} />
-          <div
-            style={{
-              width: 24,
-              height: 24,
-              borderRadius: 12,
-              border: `5px solid ${REL}`,
-              background: "#fff",
-            }}
-          />
-          <div
-            style={{ display: "flex", marginLeft: 28, fontSize: 30, fontWeight: 700, color: REL }}
-          >
-            Lamar sekarang
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            fontSize: headline,
+            fontWeight: 700,
+            lineHeight: 1.04,
+            letterSpacing: "-0.025em",
+          }}
+        >
+          <div style={{ display: "flex" }}>Kami sedang mencari</div>
+          <div style={{ display: "flex", color: MARIGOLD_LIGHT }}>{title}</div>
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", gap: 40, fontSize: 28 }}>
+          <div style={{ display: "flex", gap: 40 }}>
+            {meta.map((item) => (
+              <div key={item} style={{ display: "flex" }}>
+                {item}
+              </div>
+            ))}
           </div>
+          <div style={{ display: "flex", fontWeight: 700 }}>Lamar sekarang</div>
         </div>
       </div>
     ),

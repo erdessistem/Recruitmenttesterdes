@@ -407,7 +407,7 @@ export function ApplicationForm({
   const whatsappNormalized = normalizeWhatsApp(review.whatsapp);
   const reviewValue = (name: string): string => {
     const value = review[name] ?? "";
-    if (!value) return "—";
+    if (!value) return "-";
     if (name === "last_education")
       return EDUCATION_LEVEL_LABELS[value as keyof typeof EDUCATION_LEVEL_LABELS] ?? value;
     if (name === "availability")
@@ -447,11 +447,11 @@ export function ApplicationForm({
       <ol className="relative mb-6 grid grid-cols-4" aria-label="Langkah pengisian">
         <li
           aria-hidden="true"
-          className="absolute inset-x-[12.5%] top-[10px] h-1 rounded-full bg-border"
+          className="absolute inset-x-[12.5%] top-[10px] h-1 overflow-hidden rounded-full bg-sand"
         >
           <div
-            className="h-full rounded-full bg-primary transition-[width] duration-300 ease-out motion-reduce:transition-none"
-            style={{ width: `${(step / LAST_STEP) * 100}%` }}
+            className="h-full origin-left bg-navy transition-transform duration-300 ease-out motion-reduce:transition-none"
+            style={{ transform: `scaleX(${step / LAST_STEP})` }}
           />
         </li>
         {APPLICATION_STEPS.map((item, index) => {
@@ -465,7 +465,7 @@ export function ApplicationForm({
                   className={cn(
                     "relative z-10 flex items-center justify-center rounded-full border-2",
                     current ? "h-6 w-6 border-sinyal-ink bg-sinyal" : "h-5 w-5",
-                    done && "border-primary bg-primary text-primary-foreground",
+                    done && "border-navy bg-navy text-white",
                     !done && !current && "border-border-strong bg-surface",
                   )}
                 >
@@ -511,7 +511,7 @@ export function ApplicationForm({
           <button
             type="button"
             onClick={clearDraft}
-            className="inline-flex items-center gap-1.5 font-semibold text-primary hover:underline"
+            className="inline-flex items-center gap-1.5 font-semibold underline-offset-4 hover:underline"
           >
             <RotateCcw aria-hidden="true" className="h-4 w-4" />
             Mulai dari awal
@@ -719,14 +719,14 @@ export function ApplicationForm({
                         ).map(([value, label], index) => (
                           <label
                             key={value}
-                            className="flex min-h-11 flex-1 cursor-pointer items-center gap-2.5 rounded-control border border-border-strong bg-surface px-4 text-sm has-[:checked]:border-primary has-[:checked]:bg-primary-soft sm:flex-none"
+                            className="flex min-h-11 flex-1 cursor-pointer items-center gap-2.5 rounded-control border border-border-strong bg-surface px-4 text-sm has-[:checked]:border-navy has-[:checked]:bg-sand sm:flex-none"
                           >
                             <input
                               type="radio"
                               id={index === 0 ? name : undefined}
                               name={name}
                               value={value}
-                              className="h-4 w-4 accent-primary"
+                              className="h-4 w-4 accent-navy"
                               onChange={() => errors[name] && validateField(name)}
                             />
                             {label}
@@ -761,7 +761,7 @@ export function ApplicationForm({
           <>
             <dl className="space-y-6">
               {APPLICATION_STEPS.slice(0, 3).map((item, index) => (
-                <div key={item.title} className="rounded-panel border border-border">
+                <div key={item.title} className="overflow-hidden rounded-chip bg-cream">
                   <div className="flex items-center justify-between gap-4 border-b border-border px-4 py-3">
                     <p className="font-semibold">{item.title}</p>
                     <button
@@ -789,7 +789,7 @@ export function ApplicationForm({
                               <span className="tabular font-semibold">
                                 {whatsappNormalized
                                   ? formatWhatsAppDisplay(review.whatsapp)
-                                  : review.whatsapp || "—"}
+                                  : review.whatsapp || "-"}
                               </span>
                             ) : (
                               reviewValue(name)
@@ -801,7 +801,7 @@ export function ApplicationForm({
                 </div>
               ))}
               {questions.length > 0 && (
-                <div className="rounded-panel border border-border">
+                <div className="overflow-hidden rounded-chip bg-cream">
                   <div className="flex items-center justify-between gap-4 border-b border-border px-4 py-3">
                     <p className="font-semibold">Pertanyaan dari tim rekrutmen</p>
                     <button
@@ -836,7 +836,7 @@ export function ApplicationForm({
             <div className="mt-6">
               <label className="flex items-start gap-3 text-sm">
                 <input
-                  className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+                  className="mt-0.5 h-4 w-4 shrink-0 accent-navy"
                   type="checkbox"
                   id="consent"
                   name="consent"

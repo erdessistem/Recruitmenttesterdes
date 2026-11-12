@@ -11,7 +11,7 @@ export default async function EditVacancy({ params }: { params: Promise<{ id: st
   return (
     <div className="mx-auto max-w-4xl">
       <BackLink href="/admin/lowongan">Semua lowongan</BackLink>
-      <h1 className="mt-4 text-3xl font-bold tracking-tight">Ubah lowongan</h1>
+      <h1 className="mt-4 text-h2">Ubah lowongan</h1>
       <p className="mt-2 text-sm text-muted">{vacancy.id}</p>
       <VacancyForm vacancy={vacancy} />
     </div>

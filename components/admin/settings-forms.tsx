@@ -8,7 +8,7 @@ import {
 } from "@/app/admin/(protected)/pengaturan/actions";
 import { useRouter } from "next/navigation";
 
-const button = "rounded-control bg-primary px-5 py-3 font-semibold text-white disabled:opacity-50";
+const button = "inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-45 motion-reduce:transition-none";
 export function CompanyForm({ profile }: { profile: CompanyProfile }) {
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
@@ -26,7 +26,7 @@ export function CompanyForm({ profile }: { profile: CompanyProfile }) {
   }
   return (
     <form method="post" onSubmit={submit} className="admin-card mt-6 space-y-4">
-      <h2 className="text-lg font-bold">Profil perusahaan</h2>
+      <h2 className="text-h3">Profil perusahaan</h2>
       {(
         [
           ["name", "Nama perusahaan", profile.name],
@@ -76,7 +76,7 @@ export function PasswordForm() {
   }
   return (
     <form method="post" onSubmit={submit} className="admin-card mt-6 space-y-4">
-      <h2 className="text-lg font-bold">Ubah password</h2>
+      <h2 className="text-h3">Ubah password</h2>
       {(
         [
           ["current", "Password saat ini", "current-password"],
@@ -129,7 +129,7 @@ export function RetentionForm({ eligible, months }: { eligible: number; months: 
   }
   return (
     <form method="post" onSubmit={submit} className="admin-card mt-6 space-y-4">
-      <h2 className="text-lg font-bold">Pembersihan retensi</h2>
+      <h2 className="text-h3">Pembersihan retensi</h2>
       <p className="text-sm text-muted">
         {eligible} lamaran ditolak atau ditarik telah ditutup lebih dari {months} bulan dan siap
         dianonimkan. Pembersihan menghapus data identitas dan catatan; riwayat versi dan cadangan

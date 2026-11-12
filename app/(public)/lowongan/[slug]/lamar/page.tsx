@@ -12,7 +12,7 @@ export default async function ApplyPage({ params }: { params: Promise<{ slug: st
   return (
     <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
       <BackLink href={`/lowongan/${vacancy.slug}`}>Detail lowongan</BackLink>
-      <h1 className="mt-6 text-3xl font-bold tracking-tight">Lamar {vacancy.title}</h1>
+      <h1 className="mt-6 text-h1">Lamar {vacancy.title}</h1>
       <p className="mt-3 text-muted">
         Isi data berikut dengan benar. Kolom bertanda * wajib diisi.
       </p>

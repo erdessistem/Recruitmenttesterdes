@@ -164,7 +164,7 @@ export function AdminAccounts({ accounts }: { accounts: AccountRow[] }) {
                     <div className="flex flex-wrap gap-1">
                       <Button
                         variant="ghost"
-                        className="min-h-9 text-primary"
+                        className="min-h-9 px-4"
                         disabled={pending}
                         onClick={() => {
                           setResetPassword(randomPassword());
@@ -205,7 +205,7 @@ export function AdminAccounts({ accounts }: { accounts: AccountRow[] }) {
       </div>
 
       <form method="post" onSubmit={add} className="admin-card space-y-4">
-        <h2 className="flex items-center gap-2 text-lg font-bold">
+        <h2 className="flex items-center gap-2 text-h3">
           <UserPlus aria-hidden="true" className="h-5 w-5" />
           Tambah akun
         </h2>
@@ -231,14 +231,14 @@ export function AdminAccounts({ accounts }: { accounts: AccountRow[] }) {
             {ADMIN_ROLES.map((role) => (
               <label
                 key={role}
-                className="flex cursor-pointer gap-3 rounded-control border border-border-strong p-3 text-sm has-[:checked]:border-primary has-[:checked]:bg-primary-soft"
+                className="flex cursor-pointer gap-3 rounded-control border border-border-strong p-3 text-sm has-[:checked]:border-navy has-[:checked]:bg-sand"
               >
                 <input
                   type="radio"
                   name="role"
                   value={role}
                   defaultChecked={role === "hr"}
-                  className="mt-0.5 h-4 w-4 accent-primary"
+                  className="mt-0.5 h-4 w-4 accent-navy"
                 />
                 <span>
                   <span className="block font-semibold">{ADMIN_ROLE_LABELS[role]}</span>

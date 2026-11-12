@@ -30,7 +30,7 @@ export function SuccessActions({ id, token }: { id: string; token: string }) {
     );
   return (
     <div className="no-print mt-10 border-t border-border pt-8">
-      <h2 className="text-lg font-bold">Simpan bukti lamaran</h2>
+      <h2 className="text-h3">Simpan bukti lamaran</h2>
       <div className="mt-4 flex flex-wrap gap-3">
         <button type="button" className={buttonClass("primary")} onClick={() => copy(id, "id")}>
           {copyIcon(copied === "id")}
@@ -69,7 +69,7 @@ export function SuccessActions({ id, token }: { id: string; token: string }) {
       <p className="mt-2 text-xs text-muted">
         Link ini membuka status lamaran Anda tanpa login. Jangan bagikan kepada orang lain.
       </p>
-      <a href={`/lacak/${token}`} className={buttonClass("ghost", "-ml-4 mt-4 text-primary")}>
+      <a href={`/lacak/${token}`} className="mt-5 inline-block text-sm font-semibold text-primary underline-offset-4 hover:underline">
         Buka halaman lacak
       </a>
       <p className="sr-only" role="status" aria-live="polite">

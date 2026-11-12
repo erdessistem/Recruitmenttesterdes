@@ -7,7 +7,7 @@ export default function TrackingPage() {
     <main className="mx-auto max-w-xl px-4 py-8 sm:px-6 sm:py-12">
       <BackLink href="/">Beranda karier</BackLink>
       <div className="mt-6 rounded-panel border border-border bg-surface p-6 sm:p-10">
-        <h1 className="text-3xl font-bold tracking-tight">Lacak lamaran</h1>
+        <h1 className="text-h1">Lacak lamaran</h1>
         <p className="mt-3 text-muted">
           Masukkan Applicant ID dan nomor WhatsApp yang digunakan saat melamar.
         </p>

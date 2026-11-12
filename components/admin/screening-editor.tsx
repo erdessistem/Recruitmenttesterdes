@@ -42,7 +42,7 @@ export function ScreeningEditor({
 
   return (
     <fieldset className="space-y-4">
-      <legend className="text-lg font-bold">Pertanyaan screening</legend>
+      <legend className="text-h3">Pertanyaan screening</legend>
       <p className="text-sm text-muted">
         Ditanyakan di formulir lamaran, maksimal {MAX_QUESTIONS}. Untuk pertanyaan Ya/Tidak, pilih
         jawaban yang diharapkan: jawaban lain ditandai &quot;Tidak sesuai&quot; untuk HR, tanpa
@@ -117,7 +117,7 @@ export function ScreeningEditor({
                     <label className="flex items-center gap-2 self-end pb-3 text-sm font-semibold">
                       <input
                         type="checkbox"
-                        className="h-4 w-4 accent-primary"
+                        className="h-4 w-4 accent-navy"
                         checked={question.required}
                         onChange={(event) => update(index, { required: event.target.checked })}
                       />

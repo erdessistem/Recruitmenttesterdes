@@ -54,12 +54,12 @@ export function StageLine({
       {/* Track (vertical on phones, horizontal from sm). Stations are centered in each 1/6 column. */}
       <li
         aria-hidden="true"
-        className="absolute bottom-[30px] left-[10px] top-3 w-1 rounded-full bg-border sm:inset-x-[8.333%] sm:bottom-auto sm:top-[10px] sm:h-1 sm:w-auto"
+        className="absolute bottom-[30px] left-[10px] top-3 w-1 rounded-full bg-sand sm:inset-x-[8.333%] sm:bottom-auto sm:top-[10px] sm:h-1 sm:w-auto"
       >
         <div
           className={cn(
             "h-[calc(var(--p)*100%)] w-full rounded-full sm:h-full sm:w-[calc(var(--p)*100%)]",
-            closed ? "bg-muted" : "bg-primary",
+            closed ? "bg-muted" : "bg-navy",
             animate && "jalur-fill-y sm:jalur-fill",
           )}
           style={{ ["--p" as string]: progress }}
@@ -84,9 +84,9 @@ export function StageLine({
                   current && !closed && !hired ? "h-6 w-6 border-sinyal-ink bg-sinyal" : "h-4 w-4",
                   !current &&
                     reached &&
-                    (closed ? "border-muted bg-muted" : "border-primary bg-primary"),
+                    (closed ? "border-muted bg-muted" : "border-navy bg-navy"),
                   !reached && "border-border-strong bg-surface",
-                  current && hired && "h-6 w-6 border-primary bg-primary",
+                  current && hired && "h-6 w-6 border-navy bg-navy",
                   closedHere &&
                     (status === "rejected"
                       ? "h-5 w-5 border-danger bg-surface"
@@ -152,14 +152,14 @@ export function StageMeter({
           className={cn(
             "h-1.5 w-3 rounded-full",
             index > currentIndex
-              ? "bg-border"
+              ? "bg-line"
               : index === currentIndex && !closed && currentStage !== "hired"
                 ? "bg-sinyal"
                 : closed
                   ? status === "rejected" && index === currentIndex
                     ? "bg-danger"
                     : "bg-muted"
-                  : "bg-primary",
+                  : "bg-navy",
           )}
         />
       ))}
@@ -173,7 +173,7 @@ export function StageRoute({ className }: { className?: string }) {
     <ol className={cn("relative grid gap-4 sm:grid-cols-6 sm:gap-0", className)}>
       <li
         aria-hidden="true"
-        className="absolute bottom-2 left-[6px] top-2 w-1 rounded-full bg-primary-soft sm:inset-x-[8.333%] sm:bottom-auto sm:top-[6px] sm:h-1 sm:w-auto"
+        className="absolute bottom-2 left-[6px] top-2 w-1 rounded-full bg-sand sm:inset-x-[8.333%] sm:bottom-auto sm:top-[6px] sm:h-1 sm:w-auto"
       />
       {STAGES.map((stage) => (
         <li
@@ -182,7 +182,7 @@ export function StageRoute({ className }: { className?: string }) {
         >
           <span
             aria-hidden="true"
-            className="relative z-10 h-4 w-4 shrink-0 rounded-full border-2 border-primary bg-surface"
+            className="relative z-10 h-4 w-4 shrink-0 rounded-full border-2 border-navy bg-surface"
           />
           <span className="text-sm">{STAGE_LABELS[stage]}</span>
         </li>

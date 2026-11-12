@@ -7,7 +7,7 @@ export default async function NewVacancy() {
   return (
     <div className="mx-auto max-w-4xl">
       <BackLink href="/admin/lowongan">Semua lowongan</BackLink>
-      <h1 className="mt-4 text-3xl font-bold tracking-tight">Buat lowongan</h1>
+      <h1 className="mt-4 text-h2">Buat lowongan</h1>
       <VacancyForm />
     </div>
   );

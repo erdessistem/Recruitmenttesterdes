@@ -1,49 +1,127 @@
+/* Hallmark · shape: Index-First (home), app screens (admin) · genre: playful · theme: brand · redesign: full
+ * paper: oklch(96.6% 0.018 78) · accent: oklch(51.5% 0.152 40) · display: Bricolage Grotesque · body: Plus Jakarta Sans · hero: Settled · nav: logo tile and two pills on cream · footer: one navy line · signature: the route line in navy with a marigold station
+ * axes: light/grotesk-heavy/warm · posture: Restrained · surface: absolute · contrast: pass · fold: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V3 · weakest: V, one brand system on every page by design; the home leads with the vacancy list itself instead of a feature row */
+/* Hallmark · waive 7b · cards, fields and the logo tile are pure white on cream · the Erdes brand kit names white as its card and logo-tile colour, and the logo file has a white ground */
 @import "tailwindcss";
 
 /*
- * Design tokens for the "Jalur" direction. Brand colors are placeholders:
- * swapping the brand later means editing only this block.
+ * Erdes "Warm Market" tokens, taken from the brand kit's tokens.json.
+ * The kit's spacing steps (4, 8, 16, 24, 40, 64px) are Tailwind's 1, 2, 4, 6, 10 and 16.
  */
 @theme {
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
 
-  --color-ink: #18222d;
-  --color-paper: #f4f6f5;
-  --color-background: var(--color-paper);
-  --color-foreground: var(--color-ink);
-  --color-surface: #ffffff;
-  --color-muted: #5b6673;
-  --color-border: #d8dee3;
-  /* 3:1 on white and paper: input boundaries and unreached stations (WCAG 1.4.11). */
-  --color-border-strong: #848f9b;
+  /* Brand kit colours. */
+  --color-cream: #fbf3e7;
+  --color-sand: #f1dfc2;
+  --color-white: #ffffff;
+  --color-line: #e8d8be;
+  --color-navy: #192e4b;
+  --color-muted: #5d5952;
+  --color-terracotta: #b3441d;
+  --color-marigold: #e2b04a;
+  --color-marigold-light: #ffd98a;
+
+  /* Not in the kit: the kit button's hover (terracotta at brightness .93) and an error colour. */
+  --color-terracotta-deep: #a63f1b;
   --color-danger: #b42318;
   --color-danger-soft: #fdeceb;
 
-  /* "Rel": the route line, primary actions and links. */
-  --color-primary: #0f6e56;
-  --color-primary-hover: #0b5a46;
-  --color-primary-soft: #e3f1ec;
-  --color-primary-foreground: #ffffff;
+  /* Roles the components use. */
+  --color-ink: var(--color-navy);
+  --color-paper: var(--color-cream);
+  --color-background: var(--color-cream);
+  --color-foreground: var(--color-navy);
+  --color-surface: var(--color-white);
+  --color-border: var(--color-line);
+  /* 3:1 on white, cream and sand: field edges and unreached stations (WCAG 1.4.11). */
+  --color-border-strong: var(--color-muted);
 
-  /* "Sinyal": you-are-here and time-sensitive markers only. */
-  --color-sinyal: #ef9f27;
-  --color-sinyal-soft: #fdf0d9;
-  --color-sinyal-ink: #633806;
+  /* The one accent: primary actions and links. */
+  --color-primary: var(--color-terracotta);
+  --color-primary-hover: var(--color-terracotta-deep);
+  --color-primary-soft: var(--color-sand);
+  --color-primary-foreground: var(--color-white);
 
-  --radius-control: 0.5rem;
-  --radius-panel: 0.875rem;
+  /* "Sinyal": you-are-here and time-sensitive markers. Always with navy text. */
+  --color-sinyal: var(--color-marigold);
+  --color-sinyal-soft: var(--color-sand);
+  --color-sinyal-ink: var(--color-navy);
+
+  /* Kit radii: sm for inputs and tags, md for small cards, lg for cards and panels. */
+  --radius-control: 10px;
+  --radius-chip: 14px;
+  --radius-panel: 22px;
+
+  /* Kit type scale. Display and h1 shrink on phones. */
+  --text-display: clamp(2.5rem, 4.2vw + 1rem, 4rem);
+  --text-display--line-height: 1.02;
+  --text-display--font-weight: 700;
+  --text-display--letter-spacing: -0.025em;
+  --text-h1: clamp(2rem, 2.2vw + 1.25rem, 2.625rem);
+  --text-h1--line-height: 1.05;
+  --text-h1--font-weight: 700;
+  --text-h1--letter-spacing: -0.025em;
+  --text-h2: 1.75rem;
+  --text-h2--line-height: 1.12;
+  --text-h2--font-weight: 700;
+  --text-h2--letter-spacing: -0.02em;
+  --text-h3: 1.25rem;
+  --text-h3--line-height: 1.2;
+  --text-h3--font-weight: 700;
+  --text-h3--letter-spacing: -0.015em;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 @layer base {
+  html,
+  body {
+    overflow-x: clip;
+  }
+  html {
+    scrollbar-color: var(--color-muted) var(--color-cream);
+  }
   body {
     background: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    caret-color: var(--color-navy);
+  }
+  ::selection {
+    background: var(--color-marigold-light);
+    color: var(--color-navy);
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  legend {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    overflow-wrap: break-word;
+    min-width: 0;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
   }
   *:focus-visible {
-    outline: 2px solid var(--color-primary);
+    outline: 3px solid var(--color-navy);
     outline-offset: 2px;
+  }
+  /* Navy and terracotta grounds swap the ring to white. */
+  .on-dark :focus-visible,
+  .on-dark:focus-visible {
+    outline-color: var(--color-white);
+  }
+  input[type="checkbox"],
+  input[type="radio"] {
+    accent-color: var(--color-navy);
   }
 }
 
@@ -52,6 +130,18 @@
   .tabular {
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.01em;
+  }
+  /* The logo symbol, cropped from the supplied lockup, on a white tile. */
+  .logo-tile {
+    display: inline-block;
+    flex: none;
+    width: 3.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-control);
+    background-color: var(--color-white);
+    background-repeat: no-repeat;
+    background-size: 4.9rem auto;
+    background-position: 50% 0.125rem;
   }
   .control {
     min-height: 2.75rem;
@@ -64,14 +154,19 @@
     transition: border-color 120ms ease;
   }
   .control:hover {
-    border-color: var(--color-muted);
+    border-color: var(--color-navy);
   }
   .control:focus-visible {
-    border-color: var(--color-primary);
+    border-color: var(--color-navy);
     outline-offset: 0;
   }
   .control[aria-invalid="true"] {
     border-color: var(--color-danger);
+  }
+  .control:disabled {
+    cursor: not-allowed;
+    background: var(--color-cream);
+    opacity: 0.6;
   }
   .form-section {
     border: 1px solid var(--color-border);
@@ -81,30 +176,35 @@
   }
   .form-title {
     margin-bottom: 1.5rem;
-    font-size: 1.25rem;
-    font-weight: 700;
+    font-size: var(--text-h3);
+    line-height: 1.2;
   }
+  /* The kit's secondary button at the admin's working size. */
   .action-button {
     display: inline-flex;
     min-height: 2.5rem;
     align-items: center;
     gap: 0.375rem;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-control);
-    background: var(--color-surface);
-    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1.5px var(--color-navy);
+    padding: 0.5rem 1rem;
     font-size: 0.875rem;
     font-weight: 600;
+    white-space: nowrap;
     color: var(--color-foreground);
     transition:
       background-color 120ms ease,
-      transform 150ms cubic-bezier(0.23, 1, 0.32, 1);
+      transform 160ms var(--ease-out);
   }
   .action-button:hover {
-    background: var(--color-paper);
+    background: var(--color-sand);
   }
   .action-button:active {
     transform: scale(0.97);
+  }
+  .action-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
   }
   .admin-card {
     border: 1px solid var(--color-border);
@@ -136,13 +236,14 @@
   .admin-table tbody tr:last-child td {
     border-bottom: 0;
   }
+  /* Kit table head: navy on sand. */
   .admin-table th {
-    color: var(--color-muted);
+    background: var(--color-sand);
     font-size: 0.8125rem;
     font-weight: 600;
   }
   .admin-table tbody tr:hover {
-    background: var(--color-paper);
+    background: var(--color-cream);
   }
 }
 
@@ -171,7 +272,311 @@
     animation: none;
   }
 }
+
+/*
+ * Kio, the booth mascot. Geometry and keyframes are the brand kit's, unchanged
+ * (components/bundle.css). Origins are in the SVG's own 200 x 230 units.
+ */
+.er-mascot {
+  display: block;
+  flex: none;
+  overflow: visible;
+}
+.er-mascot * {
+  transform-box: view-box;
+}
+.er-mascot .m-shadow {
+  opacity: 0.14;
+  transform-origin: 100px 214px;
+}
+.er-mascot .m-all {
+  transform-origin: 100px 210px;
+}
+.er-mascot .m-legL {
+  transform-origin: 78px 178px;
+}
+.er-mascot .m-legR {
+  transform-origin: 122px 178px;
+}
+.er-mascot .m-armL {
+  transform-origin: 38px 128px;
+}
+.er-mascot .m-armR {
+  transform-origin: 162px 128px;
+}
+.er-mascot .m-eyeL {
+  transform-origin: 80px 122px;
+}
+.er-mascot .m-eyeR {
+  transform-origin: 120px 122px;
+}
+.er-mascot .m-awning {
+  transform-origin: 100px 62px;
+}
+.er-mascot .m-shutter {
+  transform-origin: 100px 100px;
+  transform: scaleY(0);
+}
+.er-mascot .m-cup {
+  transform-origin: 139px 152px;
+  transform: scale(0);
+}
+.er-mascot .m-conf {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.er-mascot .m-closed,
+.er-mascot .m-o,
+.er-mascot .m-z,
+.er-mascot .m-dot,
+.er-mascot .m-conf {
+  opacity: 0;
+}
+
+@keyframes er-m-breathe {
+  50% {
+    transform: scale(1.025, 0.975);
+  }
+}
+@keyframes er-m-blink {
+  0%,
+  91%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+@keyframes er-m-sway {
+  0%,
+  100% {
+    transform: rotate(-2.5deg);
+  }
+  50% {
+    transform: rotate(2.5deg);
+  }
+}
+@keyframes er-m-wave {
+  from {
+    transform: rotate(-80deg);
+  }
+  to {
+    transform: rotate(-125deg);
+  }
+}
+@keyframes er-m-cheer {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-4deg);
+  }
+  50% {
+    transform: translateY(-18px) rotate(4deg);
+  }
+}
+@keyframes er-m-cheer-armL {
+  from {
+    transform: rotate(95deg);
+  }
+  to {
+    transform: rotate(122deg);
+  }
+}
+@keyframes er-m-cheer-armR {
+  from {
+    transform: rotate(-95deg);
+  }
+  to {
+    transform: rotate(-122deg);
+  }
+}
+@keyframes er-m-conf {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0);
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) rotate(260deg);
+  }
+}
+@keyframes er-m-look {
+  0%,
+  100% {
+    transform: translateX(-4px);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+}
+@keyframes er-m-dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-6px);
+  }
+}
+@keyframes er-m-pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+@keyframes er-m-snooze {
+  0%,
+  100% {
+    transform: rotate(-4deg) scale(1, 1);
+  }
+  50% {
+    transform: rotate(-4deg) scale(1.03, 0.96);
+  }
+}
+@keyframes er-m-z {
+  0% {
+    opacity: 0;
+    transform: translate(-6px, 8px);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(8px, -14px);
+  }
+}
+@keyframes er-m-shake {
+  0%,
+  40%,
+  100% {
+    transform: translateX(0);
+  }
+  5%,
+  15%,
+  25%,
+  35% {
+    transform: translateX(-6px);
+  }
+  10%,
+  20%,
+  30% {
+    transform: translateX(6px);
+  }
+}
+
+.er-mascot--idle .m-all {
+  animation: er-m-breathe 3s ease-in-out infinite;
+}
+.er-mascot--idle .m-eye,
+.er-mascot--wave .m-eye {
+  animation: er-m-blink 4s infinite;
+}
+
+.er-mascot--wave .m-all {
+  animation: er-m-sway 1.3s ease-in-out infinite;
+}
+.er-mascot--wave .m-armR {
+  animation: er-m-wave 0.32s ease-in-out infinite alternate;
+}
+
+.er-mascot--celebrate .m-all {
+  animation: er-m-cheer 0.6s ease-in-out infinite;
+}
+.er-mascot--celebrate .m-armL {
+  animation: er-m-cheer-armL 0.3s ease-in-out infinite alternate;
+}
+.er-mascot--celebrate .m-armR {
+  animation: er-m-cheer-armR 0.3s ease-in-out infinite alternate;
+}
+.er-mascot--celebrate .m-conf {
+  animation: er-m-conf 1.3s ease-out infinite;
+}
+
+.er-mascot--think .m-all {
+  transform: rotate(3deg);
+}
+.er-mascot--think .m-eyes {
+  animation: er-m-look 2.6s ease-in-out infinite;
+}
+.er-mascot--think .m-dot {
+  animation: er-m-dot 1.2s ease-in-out infinite;
+}
+.er-mascot--think .m-signdot {
+  animation: er-m-pulse 1.2s ease-in-out infinite;
+}
+
+.er-mascot--sleep .m-all {
+  animation: er-m-snooze 4s ease-in-out infinite;
+}
+.er-mascot--sleep .m-eye,
+.er-mascot--oops .m-smile {
+  opacity: 0;
+}
+.er-mascot--sleep .m-closed,
+.er-mascot--oops .m-o {
+  opacity: 1;
+}
+.er-mascot--sleep .m-z {
+  animation: er-m-z 3s ease-out infinite;
+}
+
+.er-mascot--oops .m-all {
+  animation: er-m-shake 1.8s ease-in-out infinite;
+}
+.er-mascot--oops .m-eye {
+  transform: scale(1.2);
+}
+.er-mascot--oops .m-armL {
+  transform: rotate(35deg);
+}
+.er-mascot--oops .m-armR {
+  transform: rotate(-35deg);
+}
+.er-mascot--oops .m-signdot {
+  animation: er-m-pulse 0.6s linear infinite;
+}
+
+/*
+ * Ours, not the kit's: Kio plays for under five seconds, then holds the pose,
+ * so nothing on a page moves forever (WCAG 2.2.2). Each part sets its own count.
+ */
+.er-mascot--once * {
+  animation-iteration-count: var(--n, 1) !important;
+  animation-fill-mode: forwards !important;
+}
+.er-mascot--once.er-mascot--wave .m-all {
+  --n: 3;
+}
+.er-mascot--once.er-mascot--wave .m-armR {
+  --n: 12;
+}
+.er-mascot--once.er-mascot--celebrate .m-all {
+  --n: 7;
+}
+.er-mascot--once.er-mascot--celebrate .m-armL,
+.er-mascot--once.er-mascot--celebrate .m-armR {
+  --n: 14;
+}
+.er-mascot--once.er-mascot--celebrate .m-conf {
+  --n: 3;
+}
+.er-mascot--once.er-mascot--oops .m-all {
+  --n: 2;
+}
+.er-mascot--once.er-mascot--oops .m-signdot {
+  --n: 6;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .er-mascot * {
+    animation: none !important;
+  }
   .action-button,
   .control {
     transition: none;
@@ -183,7 +588,7 @@
     display: none !important;
   }
   body {
-    background: white;
+    background: var(--color-white);
   }
   .print-card {
     border: 0 !important;

@@ -29,7 +29,7 @@ export default async function TrackingPage({ params }: { params: Promise<{ token
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-sm text-muted">Lamaran {application.fullName} untuk</p>
-            <h1 className="mt-1 text-3xl font-bold tracking-tight">
+            <h1 className="mt-1 text-h1">
               {vacancy?.title ?? "posisi ini"}
             </h1>
             <p className="mt-2 text-sm text-muted">Dilamar {formatDate(application.appliedAt)}</p>
@@ -63,7 +63,7 @@ export default async function TrackingPage({ params }: { params: Promise<{ token
           </p>
         </div>
 
-        <h2 className="mt-10 text-lg font-bold">Riwayat lamaran</h2>
+        <h2 className="mt-10 text-h3">Riwayat lamaran</h2>
         <ol className="mt-4 divide-y divide-border">
           {[...history].reverse().map((event) => (
             <li key={event.id} className="flex flex-col gap-1 py-3 sm:flex-row sm:gap-6">

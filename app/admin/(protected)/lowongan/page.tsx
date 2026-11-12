@@ -32,7 +32,7 @@ export default async function Vacancies({
   return (
     <div className="mx-auto max-w-7xl">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <h1 className="text-3xl font-bold tracking-tight">Lowongan</h1>
+        <h1 className="text-h2">Lowongan</h1>
         {editor && (
           <Link href="/admin/lowongan/baru" className={buttonClass("primary")}>
             <Plus aria-hidden="true" className="h-4 w-4" />
@@ -116,7 +116,7 @@ export default async function Vacancies({
                     {apps.filter((a) => a.vacancyId === v.id).length}
                   </Link>
                 </td>
-                <td className="tabular text-muted">{v.closeAt ? formatDate(v.closeAt) : "—"}</td>
+                <td className="tabular text-muted">{v.closeAt ? formatDate(v.closeAt) : "-"}</td>
                 {editor && (
                   <td>
                     <form action={changeVacancyStatus} className="flex gap-2">
@@ -133,7 +133,7 @@ export default async function Vacancies({
                           </option>
                         ))}
                       </select>
-                      <button className={buttonClass("ghost", "min-h-9 text-primary")}>
+                      <button className={buttonClass("ghost", "min-h-9 px-4")}>
                         Simpan
                       </button>
                     </form>

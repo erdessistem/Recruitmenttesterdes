@@ -31,10 +31,10 @@ export function Dialog({
         event.preventDefault();
         onClose();
       }}
-      className="m-auto w-[min(32rem,calc(100%-2rem))] rounded-panel border border-border bg-surface p-6 text-foreground shadow-xl transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] backdrop:bg-ink/50 starting:scale-[0.96] starting:opacity-0 motion-reduce:transition-none"
+      className="m-auto w-[min(32rem,calc(100%-2rem))] rounded-panel border border-border bg-surface p-6 text-foreground transition-[opacity,transform] duration-200 ease-out backdrop:bg-ink/50 starting:scale-[0.96] starting:opacity-0 motion-reduce:transition-none"
     >
       <div className="flex items-start justify-between gap-4">
-        <h2 id={titleId} className="text-lg font-bold">
+        <h2 id={titleId} className="text-h3">
           {title}
         </h2>
         <button

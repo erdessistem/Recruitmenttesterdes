@@ -11,7 +11,7 @@ export default async function AdminAccountsPage() {
   return (
     <div className="mx-auto max-w-5xl">
       <BackLink href="/admin/pengaturan">Pengaturan</BackLink>
-      <h1 className="mt-4 text-3xl font-bold tracking-tight">Akun admin</h1>
+      <h1 className="mt-4 text-h2">Akun admin</h1>
       <p className="mt-2 max-w-[65ch] text-muted">
         Tambahkan akun untuk tim HR atau atasan. Setiap perubahan tahap tercatat dengan email akun
         yang melakukannya.

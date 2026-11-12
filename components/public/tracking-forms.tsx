@@ -131,7 +131,7 @@ export function RecoveryForm() {
       </form>
       {items && (
         <div className="mt-8">
-          <h2 className="text-lg font-bold">Hasil pencarian</h2>
+          <h2 className="text-h3">Hasil pencarian</h2>
           {items.length === 0 ? (
             <p className="mt-3 text-sm text-muted">
               Tidak ada lamaran yang cocok. Periksa kembali data Anda.
@@ -139,7 +139,7 @@ export function RecoveryForm() {
           ) : (
             <ul className="mt-4 space-y-3">
               {items.map((item) => (
-                <li key={item.handle} className="rounded-panel border border-border p-4">
+                <li key={item.handle} className="rounded-chip bg-cream p-4">
                   <p className="font-semibold">{item.vacancy}</p>
                   <p className="mt-1 text-sm text-muted">{formatDate(item.appliedAt)}</p>
                   <p className="tabular mt-2 break-all text-sm font-semibold">
@@ -219,7 +219,7 @@ export function WithdrawalForm({ token }: { token: string }) {
   }
   return (
     <section className="mt-10 border-t border-border pt-8">
-      <h2 className="text-lg font-bold">Tarik lamaran</h2>
+      <h2 className="text-h3">Tarik lamaran</h2>
       <p className="mt-2 text-sm text-muted">
         Anda dapat mengundurkan diri dari proses rekrutmen ini kapan saja selama lamaran masih
         aktif.
@@ -230,7 +230,7 @@ export function WithdrawalForm({ token }: { token: string }) {
           setMessage("");
           setOpen(true);
         }}
-        className={buttonClass("secondary", "mt-4 text-danger")}
+        className={buttonClass("danger", "mt-4")}
       >
         Tarik lamaran
       </button>

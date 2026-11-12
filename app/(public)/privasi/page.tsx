@@ -8,7 +8,7 @@ export default async function Privacy() {
     <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
       <BackLink href="/">Beranda karier</BackLink>
       <article className="mt-6 rounded-panel border border-border bg-surface p-6 sm:p-10">
-        <h1 className="text-3xl font-bold tracking-tight">Kebijakan privasi rekrutmen</h1>
+        <h1 className="text-h1">Kebijakan privasi rekrutmen</h1>
         <p className="mt-2 text-sm text-muted">Versi {settings.privacyVersion}</p>
         <div className="mt-8 max-w-[70ch] space-y-5 leading-7">
           <p>

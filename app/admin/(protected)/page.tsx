@@ -28,18 +28,18 @@ export default async function Dashboard() {
   const active = STAGES.reduce((sum, stage) => sum + stats.stageCounts[stage], 0);
   return (
     <div className="mx-auto max-w-7xl">
-      <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+      <h1 className="text-h2">Dashboard</h1>
       <dl className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-panel border border-border bg-border xl:grid-cols-4">
         {cards.map(([label, count]) => (
           <div key={label} className="bg-surface px-5 py-4">
             <dt className="text-sm text-muted">{label}</dt>
-            <dd className="tabular mt-1 text-3xl font-bold">{count}</dd>
+            <dd className="tabular mt-1 font-display text-3xl font-bold">{count}</dd>
           </div>
         ))}
       </dl>
 
       <section className="admin-card mt-6" aria-labelledby="todo-title">
-        <h2 id="todo-title" className="text-lg font-bold">
+        <h2 id="todo-title" className="text-h3">
           Perlu perhatian
         </h2>
         {nothingToDo ? (
@@ -107,7 +107,7 @@ export default async function Dashboard() {
 
       <section className="admin-card mt-6">
         <div className="flex flex-wrap items-baseline justify-between gap-3">
-          <h2 className="text-lg font-bold">Pelamar aktif per tahap</h2>
+          <h2 className="text-h3">Pelamar aktif per tahap</h2>
           <p className="text-sm text-muted">
             {active} aktif, {stats.rejectedCount} ditolak, {stats.withdrawnCount} mengundurkan diri
           </p>
@@ -116,7 +116,7 @@ export default async function Dashboard() {
           <ol className="relative grid min-w-[36rem] grid-cols-6">
             <li
               aria-hidden="true"
-              className="absolute inset-x-[8.333%] top-[46px] h-1 rounded-full bg-primary-soft"
+              className="absolute inset-x-[8.333%] top-[46px] h-1 rounded-full bg-sand"
             />
             {STAGES.map((stage) => {
               const count = stats.stageCounts[stage];
@@ -126,13 +126,13 @@ export default async function Dashboard() {
                     href={`/admin/pelamar?stage=${stage}&status=active`}
                     className="group flex flex-col items-center rounded-control px-2 pb-1 hover:bg-paper"
                   >
-                    <span className="tabular text-2xl font-bold leading-8">{count}</span>
+                    <span className="tabular font-display text-2xl font-bold leading-8">{count}</span>
                     <span className="flex h-6 items-center">
                       <span
                         aria-hidden="true"
                         className={
                           count > 0
-                            ? "relative z-10 h-4 w-4 rounded-full border-2 border-primary bg-primary"
+                            ? "relative z-10 h-4 w-4 rounded-full border-2 border-navy bg-navy"
                             : "relative z-10 h-4 w-4 rounded-full border-2 border-border-strong bg-surface"
                         }
                       />
@@ -151,7 +151,7 @@ export default async function Dashboard() {
       <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <section className="admin-card min-w-0">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-lg font-bold">Lamaran terbaru</h2>
+            <h2 className="text-h3">Lamaran terbaru</h2>
             <Link
               href="/admin/pelamar"
               className="text-sm font-semibold text-primary hover:underline"
@@ -181,7 +181,7 @@ export default async function Dashboard() {
                           {a.fullName || a.id}
                         </Link>
                       </td>
-                      <td>{title.get(a.vacancyId) ?? "—"}</td>
+                      <td>{title.get(a.vacancyId) ?? "-"}</td>
                       <td>
                         <span className="inline-flex items-center gap-2">
                           <StageMeter currentStage={a.currentStage} status={a.status} />
@@ -203,7 +203,7 @@ export default async function Dashboard() {
           )}
         </section>
         <section className="admin-card min-w-0">
-          <h2 className="text-lg font-bold">Pelamar per lowongan</h2>
+          <h2 className="text-h3">Pelamar per lowongan</h2>
           <ul className="mt-3 divide-y divide-border">
             {stats.applicantsPerVacancy.map((v) => (
               <li key={v.vacancyId}>

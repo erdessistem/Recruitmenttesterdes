@@ -133,7 +133,7 @@ export function ApplicantTable({
                 <th className="w-12">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 accent-[var(--color-primary)]"
+                    className="h-4 w-4 accent-navy"
                     aria-label="Pilih semua di halaman ini"
                     checked={all}
                     onChange={() => setSelected(all ? [] : rows.map((row) => row.id))}
@@ -157,7 +157,7 @@ export function ApplicantTable({
                     <td>
                       <input
                         type="checkbox"
-                        className="h-4 w-4 accent-[var(--color-primary)]"
+                        className="h-4 w-4 accent-navy"
                         aria-label={`Pilih ${row.name}`}
                         checked={checked}
                         onChange={() => toggle(row.id)}
@@ -193,7 +193,7 @@ export function ApplicantTable({
                   </td>
                   <td className="tabular whitespace-nowrap">
                     {row.days == null ? (
-                      <span className="text-muted">—</span>
+                      <span className="text-muted">-</span>
                     ) : row.waiting ? (
                       <Badge tone="sinyal">{row.days} hari</Badge>
                     ) : (
@@ -229,7 +229,7 @@ export function ApplicantTable({
         <div
           role="region"
           aria-label="Tindakan untuk pelamar terpilih"
-          className="sticky bottom-4 z-20 mt-4 flex flex-wrap items-center gap-3 rounded-panel bg-ink p-3 text-white shadow-xl"
+          className="sticky bottom-4 z-20 mt-4 flex flex-wrap items-center gap-3 on-dark rounded-panel bg-navy p-3 text-white"
         >
           <span className="px-2 text-sm font-semibold">{chosen.length} dipilih</span>
           <select

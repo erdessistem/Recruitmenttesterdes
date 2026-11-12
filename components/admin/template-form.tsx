@@ -48,13 +48,13 @@ export function TemplateForm({ templates }: { templates: WhatsAppTemplates }) {
         </label>
       ))}
       {message && (
-        <p role="status" className="text-sm text-primary">
+        <p role="status" className="text-sm font-semibold">
           {message}
         </p>
       )}
       <button
         disabled={pending}
-        className="rounded-control bg-primary px-5 py-3 font-semibold text-white disabled:opacity-50"
+        className="inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-45 motion-reduce:transition-none"
       >
         {pending ? "Menyimpan…" : "Simpan template"}
       </button>

@@ -43,7 +43,7 @@ export default async function Applicants({
     return {
       id: a.id,
       name: a.fullName || a.id,
-      vacancy: title.get(a.vacancyId) ?? "—",
+      vacancy: title.get(a.vacancyId) ?? "-",
       stage: a.currentStage,
       status: a.status,
       appliedAt: a.appliedAt,
@@ -57,7 +57,7 @@ export default async function Applicants({
   return (
     <div className="mx-auto max-w-7xl">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <h1 className="text-3xl font-bold tracking-tight">Pelamar</h1>
+        <h1 className="text-h2">Pelamar</h1>
         {editor && (
           <a
             href={`/admin/pelamar/export${listQuery({ ...f, view: undefined })}`}

@@ -115,7 +115,7 @@ export default async function ApplicantDetail({
         .join(", "),
     ],
     ["Pengalaman", lastJob ? `${experience}. Terakhir ${lastJob}` : experience],
-    ["Alasan berhenti", application.leaveReason || "—"],
+    ["Alasan berhenti", application.leaveReason || "-"],
     [
       "Gaji",
       <>
@@ -131,7 +131,7 @@ export default async function ApplicantDetail({
       </>,
     ],
     ["Mulai kerja", AVAILABILITY_LABELS[application.availability]],
-    ["Alamat domisili", application.city || "—"],
+    ["Alamat domisili", application.city || "-"],
   ];
 
   const profile: Array<[string, string]> = [
@@ -170,7 +170,7 @@ export default async function ApplicantDetail({
           {formatWhatsAppDisplay(application.whatsapp)}
         </a>
       ) : (
-        "—"
+        "-"
       ),
     ],
     [
@@ -180,7 +180,7 @@ export default async function ApplicantDetail({
           {application.email}
         </a>
       ) : (
-        "—"
+        "-"
       ),
     ],
     [
@@ -275,7 +275,7 @@ export default async function ApplicantDetail({
           <section className="admin-card">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-0">
-                <h1 className="text-3xl font-bold tracking-tight">
+                <h1 className="text-h2">
                   {application.fullName || application.id}
                 </h1>
                 <p className="mt-1 text-muted">
@@ -315,7 +315,7 @@ export default async function ApplicantDetail({
           </section>
 
           <section className="admin-card">
-            <h2 className="text-lg font-bold">Ringkasan</h2>
+            <h2 className="text-h3">Ringkasan</h2>
             <dl className="mt-3 divide-y divide-border">
               {summary.map(([label, value]) => (
                 <div key={label} className="grid gap-1 py-3 sm:grid-cols-[9rem_1fr] sm:gap-4">
@@ -326,7 +326,7 @@ export default async function ApplicantDetail({
             </dl>
             <h3 className="mt-5 text-sm font-semibold">Motivasi melamar</h3>
             <p className="mt-2 max-w-[70ch] whitespace-pre-line text-sm leading-6">
-              {application.motivation || "—"}
+              {application.motivation || "-"}
             </p>
             {(cv || linkedin) && (
               <div className="mt-5 flex flex-wrap gap-2">
@@ -357,12 +357,12 @@ export default async function ApplicantDetail({
           </section>
 
           <section className="admin-card">
-            <h2 className="text-lg font-bold">Data pribadi dan keluarga</h2>
+            <h2 className="text-h3">Data pribadi dan keluarga</h2>
             <dl className="mt-3 divide-y divide-border">
               {profile.map(([label, value]) => (
                 <div key={label} className="grid gap-1 py-3 sm:grid-cols-[9rem_1fr] sm:gap-4">
                   <dt className="text-sm text-muted">{label}</dt>
-                  <dd className="whitespace-pre-line break-words text-sm">{value || "—"}</dd>
+                  <dd className="whitespace-pre-line break-words text-sm">{value || "-"}</dd>
                 </div>
               ))}
             </dl>
@@ -370,7 +370,7 @@ export default async function ApplicantDetail({
 
           {answers.length > 0 && (
             <section className="admin-card">
-              <h2 className="text-lg font-bold">Jawaban screening</h2>
+              <h2 className="text-h3">Jawaban screening</h2>
               <dl className="mt-3 divide-y divide-border">
                 {answers.map((answer) => {
                   const mismatch = isMismatch(answer);
@@ -400,7 +400,7 @@ export default async function ApplicantDetail({
           )}
 
           <section className="admin-card">
-            <h2 className="text-lg font-bold">Kontak dan data lain</h2>
+            <h2 className="text-h3">Kontak dan data lain</h2>
             <dl className="mt-3 divide-y divide-border">
               {[
                 ...contact,
@@ -426,7 +426,7 @@ export default async function ApplicantDetail({
           </section>
 
           <section className="admin-card">
-            <h2 className="text-lg font-bold">Riwayat dan catatan</h2>
+            <h2 className="text-h3">Riwayat dan catatan</h2>
             {timeline.length ? (
               <ol className="mt-4 space-y-4">
                 {timeline.map((item) => (
@@ -434,7 +434,7 @@ export default async function ApplicantDetail({
                     key={item.key}
                     className={cn(
                       "border-l-2 pl-4",
-                      item.kind === "note" ? "border-sinyal" : "border-primary",
+                      item.kind === "note" ? "border-marigold" : "border-navy",
                     )}
                   >
                     <p className="text-sm font-semibold">{item.title}</p>
@@ -476,7 +476,7 @@ export default async function ApplicantDetail({
           />
         ) : (
           <aside className="admin-card text-sm text-muted lg:sticky lg:top-6">
-            <h2 className="text-lg font-bold text-foreground">Mode lihat saja</h2>
+            <h2 className="text-h3 text-foreground">Mode lihat saja</h2>
             <p className="mt-2">
               Akun Viewer dapat melihat data pelamar, tetapi tidak dapat memindahkan tahap, menolak,
               atau menambah catatan. Hubungi HR untuk perubahan.
@@ -490,11 +490,11 @@ export default async function ApplicantDetail({
 
 /** A name with an optional detail (such as the relationship) and a click-to-chat number. */
 function PersonContact({ name, detail, phone }: { name: string; detail?: string; phone: string }) {
-  if (!name && !phone) return <>—</>;
+  if (!name && !phone) return <>-</>;
   const url = toWhatsAppUrl(phone);
   return (
     <>
-      {name || "—"}
+      {name || "-"}
       {detail && <span className="text-muted"> ({detail})</span>}
       {phone && (
         <>

@@ -6,7 +6,7 @@ export default function RecoveryPage() {
     <main className="mx-auto max-w-xl px-4 py-8 sm:px-6 sm:py-12">
       <BackLink href="/lacak">Lacak lamaran</BackLink>
       <div className="mt-6 rounded-panel border border-border bg-surface p-6 sm:p-10">
-        <h1 className="text-3xl font-bold tracking-tight">Cari Applicant ID</h1>
+        <h1 className="text-h1">Cari Applicant ID</h1>
         <p className="mt-3 text-muted">
           Masukkan nama lengkap dan nomor WhatsApp yang digunakan saat melamar.
         </p>

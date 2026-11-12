@@ -9,7 +9,7 @@ export default function LoginPage() {
         <BackLink href="/">Beranda karier</BackLink>
         <div className="mt-4 rounded-panel border border-border bg-surface p-8">
           <Image src="/logo.png" alt="PT. Erdes - Desa Maju Bersama" width={852} height={624} priority className="h-16 w-auto" />
-          <h1 className="mt-6 text-3xl font-bold tracking-tight">Masuk admin</h1>
+          <h1 className="mt-6 text-h2">Masuk admin</h1>
           <p className="mt-2 text-sm text-muted">Kelola proses rekrutmen Anda.</p>
           <LoginForm />
         </div>

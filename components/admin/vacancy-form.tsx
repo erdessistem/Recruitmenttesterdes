@@ -159,7 +159,7 @@ export function VacancyForm({ vacancy }: { vacancy?: Vacancy }) {
         </label>
       ))}
       <fieldset className="space-y-4 border-t border-border pt-6">
-        <legend className="text-lg font-bold">Gaji</legend>
+        <legend className="text-h3">Gaji</legend>
         <p className="text-sm text-muted">
           Opsional, per bulan. Isi salah satu atau keduanya. Selalu terlihat oleh admin untuk
           dibandingkan dengan ekspektasi gaji pelamar.
@@ -197,7 +197,7 @@ export function VacancyForm({ vacancy }: { vacancy?: Vacancy }) {
             type="checkbox"
             name="salary_visible"
             defaultChecked={vacancy?.salaryVisible ?? false}
-            className="mt-0.5 h-4 w-4 accent-primary"
+            className="mt-0.5 h-4 w-4 accent-navy"
           />
           <span>
             <span className="font-semibold">Tampilkan ke pelamar</span>
@@ -216,7 +216,7 @@ export function VacancyForm({ vacancy }: { vacancy?: Vacancy }) {
       </div>
       <button
         disabled={pending}
-        className="rounded-control bg-primary px-5 py-3 font-semibold text-white disabled:opacity-50"
+        className="inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-45 motion-reduce:transition-none"
       >
         {pending ? "Menyimpan…" : "Simpan lowongan"}
       </button>

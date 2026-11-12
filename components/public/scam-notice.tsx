@@ -8,9 +8,9 @@ export function ScamNotice({ whatsapp, className }: { whatsapp?: string; classNa
   return (
     <aside
       aria-label="Waspada penipuan"
-      className={cn("flex gap-3 rounded-panel bg-primary-soft p-4 text-sm leading-6", className)}
+      className={cn("flex gap-3 rounded-panel bg-sand p-4 text-sm leading-6", className)}
     >
-      <ShieldCheck aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+      <ShieldCheck aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-navy" />
       <p>
         <span className="font-semibold">Rekrutmen Erdes Group tidak dipungut biaya.</span> Kami
         tidak pernah meminta transfer uang

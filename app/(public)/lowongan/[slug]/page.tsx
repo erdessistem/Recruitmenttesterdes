@@ -1,6 +1,5 @@
 import { cache } from "react";
 import Link from "next/link";
-import { MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
 import { repository } from "@/lib/repositories";
 import { isVacancyPubliclyOpen } from "@/lib/domain/vacancy";
@@ -42,7 +41,7 @@ export default async function VacancyPage({ params }: { params: Promise<{ slug: 
     ["Jenis pekerjaan", EMPLOYMENT_TYPE_LABELS[vacancy.employmentType]],
     ...(salary ? ([["Gaji", `${salary} per bulan`]] as const) : []),
     ["Kuota", `${vacancy.quota} orang`],
-    ["Dibuka", vacancy.openAt ? formatDate(vacancy.openAt) : "—"],
+    ["Dibuka", vacancy.openAt ? formatDate(vacancy.openAt) : "-"],
     ["Ditutup", vacancy.closeAt ? formatDate(vacancy.closeAt) : "Tanpa batas waktu"],
   ] as const;
   return (
@@ -50,13 +49,12 @@ export default async function VacancyPage({ params }: { params: Promise<{ slug: 
       <BackLink href="/#lowongan">Semua lowongan</BackLink>
       <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
         <article className="rounded-panel border border-border bg-surface p-6 sm:p-10">
-          <p className="text-sm font-semibold text-primary">{vacancy.department}</p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">{vacancy.title}</h1>
-          <h2 className="mt-10 text-xl font-bold">Tentang posisi ini</h2>
+          <h1 className="text-h1">{vacancy.title}</h1>
+          <h2 className="mt-10 text-h2">Tentang posisi ini</h2>
           <p className="mt-3 max-w-[70ch] whitespace-pre-line leading-7">{vacancy.description}</p>
-          <h2 className="mt-10 text-xl font-bold">Persyaratan</h2>
+          <h2 className="mt-10 text-h2">Persyaratan</h2>
           <p className="mt-3 max-w-[70ch] whitespace-pre-line leading-7">{vacancy.requirements}</p>
-          <h2 className="mt-10 text-xl font-bold">Proses rekrutmen</h2>
+          <h2 className="mt-10 text-h2">Proses rekrutmen</h2>
           <p className="mt-2 max-w-[70ch] text-sm leading-6 text-muted">
             Setelah melamar, Anda menerima Applicant ID untuk memantau tahap berikut kapan saja.
           </p>
@@ -96,19 +94,16 @@ export default async function VacancyPage({ params }: { params: Promise<{ slug: 
       </div>
       {others.length > 0 && (
         <section className="mt-12">
-          <h2 className="text-xl font-bold">Lowongan lainnya</h2>
+          <h2 className="text-h2">Lowongan lainnya</h2>
           <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {others.slice(0, 6).map((other) => (
               <li key={other.id}>
                 <Link
                   href={`/lowongan/${other.slug}`}
-                  className="block h-full rounded-panel border border-border bg-surface p-5 transition-colors hover:border-border-strong"
+                  className="block h-full rounded-panel border border-border bg-surface p-5 transition-colors hover:border-navy motion-reduce:transition-none"
                 >
-                  <p className="font-semibold">{other.title}</p>
-                  <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted">
-                    <MapPin aria-hidden="true" className="h-4 w-4" />
-                    {other.location}
-                  </p>
+                  <p className="font-display text-h3">{other.title}</p>
+                  <p className="mt-1 text-sm text-muted">{other.location}</p>
                 </Link>
               </li>
             ))}
@@ -116,7 +111,7 @@ export default async function VacancyPage({ params }: { params: Promise<{ slug: 
         </section>
       )}
       {open && (
-        <div className="no-print fixed inset-x-0 bottom-0 z-20 border-t border-border bg-surface/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur lg:hidden">
+        <div className="no-print fixed inset-x-0 bottom-0 z-20 border-t border-border bg-cream/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur lg:hidden">
           <ButtonLink href={`/lowongan/${vacancy.slug}/lamar`} className="w-full">
             Lamar posisi ini
           </ButtonLink>

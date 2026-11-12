@@ -115,8 +115,8 @@ export function ActionPanel({
     <aside
       aria-label="Tindakan rekrutmen"
       className={cn(
-        "no-print fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface shadow-[0_-8px_24px_rgb(24_34_45/0.12)]",
-        "pb-[env(safe-area-inset-bottom)] lg:sticky lg:top-6 lg:z-auto lg:rounded-panel lg:border lg:pb-0 lg:shadow-none",
+        "no-print fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface",
+        "pb-[env(safe-area-inset-bottom)] lg:sticky lg:top-6 lg:z-auto lg:rounded-panel lg:border lg:pb-0",
       )}
     >
       <button
@@ -140,7 +140,7 @@ export function ActionPanel({
           !sheetOpen && "hidden",
         )}
       >
-        <h2 className="hidden text-lg font-bold lg:block">Tindakan</h2>
+        <h2 className="hidden text-h3 lg:block">Tindakan</h2>
 
         {notice && (
           <div

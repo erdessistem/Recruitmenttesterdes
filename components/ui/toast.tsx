@@ -13,9 +13,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={show}>
       {children}
-      <div className="fixed bottom-4 right-4 z-50" role="status" aria-live="polite">
+      <div className="on-dark fixed bottom-4 right-4 z-50" role="status" aria-live="polite">
         {toast && (
-          <div className="rounded-control bg-foreground px-4 py-3 text-sm text-white shadow-lg">
+          <div
+            key={toast.id}
+            className="rounded-chip bg-navy px-4 py-3 text-sm font-medium text-white transition-[opacity,transform] duration-300 ease-out starting:translate-y-full starting:opacity-0 motion-reduce:transition-none"
+          >
             {toast.message}
           </div>
         )}

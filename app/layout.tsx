@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Bricolage_Grotesque, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
+/** Brand kit faces: Bricolage Grotesque for headings, Plus Jakarta Sans for everything else. */
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
   variable: "--font-jakarta",
+  display: "swap",
+});
+const bricolage = Bricolage_Grotesque({
+  subsets: ["latin"],
+  weight: ["700"],
+  variable: "--font-bricolage",
   display: "swap",
 });
 
@@ -25,7 +32,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="id" className={jakarta.variable}>
+    <html lang="id" className={`${jakarta.variable} ${bricolage.variable}`}>
       <body>{children}</body>
     </html>
   );

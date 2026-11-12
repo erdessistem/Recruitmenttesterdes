@@ -17,7 +17,7 @@ export default async function SettingsPage() {
   if (!canManage(admin.role)) {
     return (
       <div className="mx-auto max-w-4xl">
-        <h1 className="text-3xl font-bold tracking-tight">Akun saya</h1>
+        <h1 className="text-h2">Akun saya</h1>
         <p className="mt-2 text-muted">
           {admin.name}, {admin.email}. Peran: {ADMIN_ROLE_LABELS[admin.role]}.
         </p>
@@ -35,14 +35,14 @@ export default async function SettingsPage() {
   ).length;
   return (
     <div className="mx-auto max-w-4xl">
-      <h1 className="text-3xl font-bold tracking-tight">Pengaturan</h1>
+      <h1 className="text-h2">Pengaturan</h1>
       <Link
         href="/admin/pengaturan/akun"
         className="admin-card mt-6 flex items-center gap-4 transition-colors hover:bg-paper motion-reduce:transition-none"
       >
         <Users aria-hidden="true" className="h-5 w-5 shrink-0 text-primary" />
         <span className="min-w-0 flex-1">
-          <span className="block font-bold">Akun admin</span>
+          <span className="block font-semibold">Akun admin</span>
           <span className="block text-sm text-muted">
             Tambah akun HR atau Viewer, ubah peran, reset password, nonaktifkan akun.
           </span>
@@ -52,7 +52,7 @@ export default async function SettingsPage() {
       <CompanyForm profile={settings.companyProfile} />
       <PasswordForm />
       <RetentionForm eligible={eligible} months={settings.retentionMonths} />
-      <h2 className="mt-10 text-2xl font-bold">Template WhatsApp</h2>
+      <h2 className="mt-10 text-h2">Template WhatsApp</h2>
       <p className="mt-2 text-muted">Sesuaikan pesan yang dapat disalin dari detail pelamar.</p>
       <TemplateForm templates={settings.waTemplates} />
     </div>
