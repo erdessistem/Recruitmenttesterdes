@@ -550,8 +550,19 @@
   animation-iteration-count: var(--n, 1) !important;
   animation-fill-mode: forwards !important;
 }
+/*
+ * Exception: on the home page, after the wave Kio settles into the idle loop
+ * (slow breathing and a blink every 4s) so it does not look frozen. The sway
+ * stops at 2.75 cycles, where it is upright (0deg), so the hand-off is seamless.
+ * Reduced motion still turns all of this off.
+ */
 .er-mascot--once.er-mascot--wave .m-all {
-  --n: 3;
+  animation:
+    er-m-sway 1.3s ease-in-out 2.75,
+    er-m-breathe 3s ease-in-out 3.575s infinite !important;
+}
+.er-mascot--once.er-mascot--wave .m-eye {
+  animation-iteration-count: infinite !important;
 }
 .er-mascot--once.er-mascot--wave .m-armR {
   --n: 12;
