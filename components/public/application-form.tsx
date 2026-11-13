@@ -830,8 +830,8 @@ export function ApplicationForm({
               )}
             </dl>
             <p className="mt-4 rounded-panel bg-sinyal-soft p-4 text-sm text-sinyal-ink">
-              Pastikan nomor WhatsApp di atas benar. Nomor ini dipakai untuk melacak lamaran dan
-              memulihkan Applicant ID.
+              Pastikan nomor WhatsApp di atas benar. Nomor ini dipakai untuk menghubungi Anda,
+              memulihkan Applicant ID, dan menarik lamaran.
             </p>
             <div className="mt-6">
               <label className="flex items-start gap-3 text-sm">

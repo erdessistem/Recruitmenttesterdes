@@ -16,7 +16,7 @@ async function ip() {
     ? (h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown")
     : "local";
 }
-export async function lookup(input: { applicant_id: string; whatsapp: string }) {
+export async function lookup(input: { applicant_id: string }) {
   if (!(await allowAttempt("lookup", await ip(), 10, 600_000)))
     return { ok: false as const, message: "Terlalu banyak percobaan. Coba lagi nanti." };
   const application = await lookupApplication(repository, input);

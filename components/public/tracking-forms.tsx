@@ -8,7 +8,7 @@ import { buttonClass } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Dialog } from "@/components/ui/dialog";
 
-function Values({ names = false }: { names?: boolean }) {
+function Values({ names = false, phone = true }: { names?: boolean; phone?: boolean }) {
   return (
     <>
       <Field
@@ -23,16 +23,18 @@ function Values({ names = false }: { names?: boolean }) {
           spellCheck={false}
         />
       </Field>
-      <Field label="No. WhatsApp" hint="Nomor yang dipakai saat melamar, misalnya 0812 3456 7890.">
-        <input
-          className="control"
-          name="whatsapp"
-          type="tel"
-          inputMode="tel"
-          required
-          autoComplete="tel"
-        />
-      </Field>
+      {phone && (
+        <Field label="No. WhatsApp" hint="Nomor yang dipakai saat melamar, misalnya 0812 3456 7890.">
+          <input
+            className="control"
+            name="whatsapp"
+            type="tel"
+            inputMode="tel"
+            required
+            autoComplete="tel"
+          />
+        </Field>
+      )}
     </>
   );
 }
@@ -49,7 +51,6 @@ export function LookupForm() {
     try {
       const result = await lookup({
         applicant_id: String(data.get("applicant_id") ?? ""),
-        whatsapp: String(data.get("whatsapp") ?? ""),
       });
       if (result.ok) router.push(`/lacak/${encodeURIComponent(result.token)}`);
       else {
@@ -63,7 +64,7 @@ export function LookupForm() {
   }
   return (
     <form method="post" onSubmit={submit} className="mt-6 space-y-4">
-      <Values />
+      <Values phone={false} />
       {error && (
         <p role="alert" className="text-sm text-danger">
           {error}

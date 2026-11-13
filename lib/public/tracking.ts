@@ -1,17 +1,32 @@
 import "server-only";
 import { randomBytes } from "node:crypto";
 import type { Repository } from "@/lib/repositories/types";
-import { trackingLookupSchema, lostIdRecoverySchema } from "@/lib/validation/tracking";
+import {
+  trackingLookupSchema,
+  lostIdRecoverySchema,
+  withdrawalSchema,
+} from "@/lib/validation/tracking";
 import { normalizeApplicantIdForLookup } from "@/lib/format/applicant-id";
 import { withStore } from "@/lib/security/shared-store";
 
 const TICKET_MS = 5 * 60_000;
 const ticketKey = (handle: string) => `recover:${handle}`;
 
-export const LOOKUP_ERROR =
-  "Data lamaran tidak ditemukan. Periksa kembali Applicant ID dan nomor WhatsApp.";
+export const LOOKUP_ERROR = "Data lamaran tidak ditemukan. Periksa kembali Applicant ID Anda.";
+export const WITHDRAW_ERROR =
+  "Data tidak cocok. Periksa kembali Applicant ID dan nomor WhatsApp.";
+
+/** Read-only tracking: the Applicant ID alone opens the status page. */
 export async function lookupApplication(repo: Repository, input: unknown) {
   const result = trackingLookupSchema.safeParse(input);
+  if (!result.success) return null;
+  const application = await repo.getApplicationById(result.data.applicant_id);
+  return application && application.token ? application : null;
+}
+
+/** Withdrawal still requires Applicant ID + WhatsApp (DECISIONS.md §20 #1). */
+async function verifyApplicant(repo: Repository, input: unknown) {
+  const result = withdrawalSchema.safeParse(input);
   if (!result.success) return null;
   const application = await repo.getApplicationById(result.data.applicant_id);
   return application && application.whatsapp === result.data.whatsapp && application.token
@@ -19,8 +34,8 @@ export async function lookupApplication(repo: Repository, input: unknown) {
     : null;
 }
 export async function withdrawApplication(repo: Repository, token: string, input: unknown) {
-  const application = await lookupApplication(repo, input);
-  if (!application || application.token !== token) return { ok: false, message: LOOKUP_ERROR };
+  const application = await verifyApplicant(repo, input);
+  if (!application || application.token !== token) return { ok: false, message: WITHDRAW_ERROR };
   if (application.status !== "active" || application.currentStage === "hired")
     return { ok: false, message: "Lamaran ini tidak dapat ditarik." };
   try {

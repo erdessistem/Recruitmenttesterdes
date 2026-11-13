@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 const steps = [
   { title: "Lamar online", body: "Isi formulir sekitar 5 menit. Tidak perlu membuat akun." },
   { title: "Simpan Applicant ID", body: "Anda langsung menerima ID dan link lacak pribadi." },
-  { title: "Lacak status", body: "Cek tahap lamaran kapan saja dengan ID dan nomor WhatsApp." },
+  { title: "Lacak status", body: "Cek tahap lamaran kapan saja dengan Applicant ID Anda." },
 ];
 
 export default async function Home({

@@ -30,7 +30,7 @@ export const faq: FaqItem[] = [
   {
     question: "Bagaimana cara mengetahui perkembangan lamaran?",
     answer:
-      "Buka halaman lacak, lalu masukkan Applicant ID dan nomor WhatsApp yang Anda gunakan saat melamar. Tim kami juga akan menghubungi Anda lewat WhatsApp.",
+      "Buka halaman lacak, lalu masukkan Applicant ID dari halaman bukti lamaran Anda. Tim kami juga akan menghubungi Anda lewat WhatsApp.",
     link: { href: "/lacak", label: "Lacak lamaran" },
   },
   {

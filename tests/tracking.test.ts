@@ -9,12 +9,12 @@ afterEach(() => vi.restoreAllMocks());
 const now = new Date("2026-11-03T00:00:00Z");
 function setup() { const seed = createSeedData(now); return { repo: new MemoryRepository({ seed, now: () => now }), application: seed.applications[0] }; }
 describe("candidate tracking", () => {
-  it("normalizes ID and phone and does not disclose a match for a wrong phone", async () => {
+  it("looks up by normalized Applicant ID alone", async () => {
     const { repo, application } = setup();
-    const input = { applicant_id: application.id.toLowerCase().replaceAll("-", " "), whatsapp: "081234567890" };
+    const input = { applicant_id: application.id.toLowerCase().replaceAll("-", " ") };
     expect((await lookupApplication(repo, input))?.id).toBe(application.id);
-    expect(await lookupApplication(repo, { ...input, whatsapp: "081111111111" })).toBeNull();
-    expect(await lookupApplication(repo, { ...input, applicant_id: "unknown" })).toBeNull();
+    expect(await lookupApplication(repo, { applicant_id: "unknown" })).toBeNull();
+    expect(await lookupApplication(repo, { applicant_id: "" })).toBeNull();
   });
   it("returns masked recovery results and one-use opaque reveal handles without tokens", async () => {
     const { repo, application } = setup();

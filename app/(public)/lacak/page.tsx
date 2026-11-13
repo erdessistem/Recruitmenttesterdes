@@ -9,7 +9,7 @@ export default function TrackingPage() {
       <div className="mt-6 rounded-panel border border-border bg-surface p-6 sm:p-10">
         <h1 className="text-h1">Lacak lamaran</h1>
         <p className="mt-3 text-muted">
-          Masukkan Applicant ID dan nomor WhatsApp yang digunakan saat melamar.
+          Masukkan Applicant ID dari halaman bukti lamaran Anda.
         </p>
         <LookupForm />
         <p className="mt-6 border-t border-border pt-6 text-sm text-muted">
