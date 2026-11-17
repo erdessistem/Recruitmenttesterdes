@@ -39,7 +39,7 @@ export function ActionPanel({
 }) {
   const router = useRouter();
   const suggested = defaultTarget(stage);
-  const [target, setTarget] = useState<Stage>(suggested);
+  const [target, setTarget] = useState<Stage | "rejected">(suggested);
   const [publicNote, setPublicNote] = useState("");
   const [note, setNote] = useState("");
   const [reason, setReason] = useState("");
@@ -58,8 +58,10 @@ export function ActionPanel({
     setMessage(messages[stage]);
   }
 
-  const backward = STAGES.indexOf(target) < STAGES.indexOf(stage);
+  const rejectChosen = target === "rejected";
+  const backward = !rejectChosen && STAGES.indexOf(target) < STAGES.indexOf(stage);
   const risky = backward || target === "hired" || stage === "hired";
+  const targetLabel = rejectChosen ? "Ditolak" : STAGE_LABELS[target];
   const whatsappUrl = toWhatsAppUrl(whatsapp, message);
 
   async function perform(action: "move" | "reject" | "reopen" | "note") {
@@ -73,7 +75,7 @@ export function ActionPanel({
         confirmed: true,
       });
       const texts = {
-        move: `Dipindahkan ke ${STAGE_LABELS[target]}.`,
+        move: `Dipindahkan ke ${targetLabel}.`,
         reject: "Lamaran ditolak. Alasan disimpan sebagai catatan internal.",
         reopen: "Lamaran dibuka kembali.",
         note: "Catatan disimpan.",
@@ -81,7 +83,7 @@ export function ActionPanel({
       setNotice({
         ok: result.ok,
         text: result.ok ? texts[action] : result.message,
-        whatsappStage: result.ok && action === "move" ? target : undefined,
+        whatsappStage: result.ok && action === "move" && !rejectChosen ? target : undefined,
       });
       if (result.ok) {
         if (action === "move") setPublicNote("");
@@ -174,7 +176,7 @@ export function ActionPanel({
               id="target-stage"
               className="control mt-2"
               value={target}
-              onChange={(event) => setTarget(event.target.value as Stage)}
+              onChange={(event) => setTarget(event.target.value as Stage | "rejected")}
             >
               {STAGES.filter((item) => item !== stage).map((item) => (
                 <option key={item} value={item}>
@@ -182,28 +184,44 @@ export function ActionPanel({
                   {item === suggested && stage !== "hired" ? " (berikutnya)" : ""}
                 </option>
               ))}
+              <option value="rejected" disabled={stage === "hired"}>
+                Ditolak{stage === "hired" ? " (pindahkan dari Diterima dulu)" : ""}
+              </option>
             </select>
-            <label className="mt-3 block text-sm font-semibold" htmlFor="public-note">
-              Catatan untuk kandidat <span className="font-normal text-muted">(opsional)</span>
-            </label>
-            <textarea
-              id="public-note"
-              className="control mt-2 min-h-20"
-              maxLength={1000}
-              value={publicNote}
-              onChange={(event) => setPublicNote(event.target.value)}
-              aria-describedby="public-note-hint"
-            />
-            <p id="public-note-hint" className="mt-1 text-xs text-muted">
-              Terlihat oleh kandidat di halaman lacak.
-            </p>
-            <Button
-              className="mt-3 w-full"
-              disabled={pending || target === stage}
-              onClick={() => (risky ? setConfirmMove(true) : perform("move"))}
-            >
-              Pindahkan ke {STAGE_LABELS[target]}
-            </Button>
+            {rejectChosen ? (
+              <Button
+                variant="danger"
+                className="mt-3 w-full"
+                disabled={pending}
+                onClick={() => setRejecting(true)}
+              >
+                Tolak lamaran
+              </Button>
+            ) : (
+              <>
+                <label className="mt-3 block text-sm font-semibold" htmlFor="public-note">
+                  Catatan untuk kandidat <span className="font-normal text-muted">(opsional)</span>
+                </label>
+                <textarea
+                  id="public-note"
+                  className="control mt-2 min-h-20"
+                  maxLength={1000}
+                  value={publicNote}
+                  onChange={(event) => setPublicNote(event.target.value)}
+                  aria-describedby="public-note-hint"
+                />
+                <p id="public-note-hint" className="mt-1 text-xs text-muted">
+                  Terlihat oleh kandidat di halaman lacak.
+                </p>
+                <Button
+                  className="mt-3 w-full"
+                  disabled={pending || target === stage}
+                  onClick={() => (risky ? setConfirmMove(true) : perform("move"))}
+                >
+                  Pindahkan ke {targetLabel}
+                </Button>
+              </>
+            )}
           </section>
         )}
 
@@ -284,30 +302,12 @@ export function ActionPanel({
             Simpan catatan
           </Button>
         </section>
-
-        {status === "active" && (
-          <section className="mt-6 border-t border-border pt-5">
-            <Button
-              variant="ghost"
-              className="w-full text-danger"
-              disabled={pending || stage === "hired"}
-              onClick={() => setRejecting(true)}
-            >
-              Tolak lamaran
-            </Button>
-            {stage === "hired" && (
-              <p className="mt-1 text-center text-xs text-muted">
-                Pindahkan dari tahap Diterima sebelum menolak.
-              </p>
-            )}
-          </section>
-        )}
       </div>
 
       <Dialog
         open={confirmMove}
         onClose={() => setConfirmMove(false)}
-        title={`Pindahkan ke ${STAGE_LABELS[target]}?`}
+        title={`Pindahkan ke ${targetLabel}?`}
       >
         <p className="text-sm leading-relaxed text-muted">
           {stage === "hired"
